@@ -1,5 +1,5 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
-import { AppActions, WindowsActions } from './index';
+import { AppActions, WindowsActions,FileActions } from './index';
 
 
 
@@ -42,4 +42,14 @@ export const ClearAllFocused = () => {
 }
 export const CloseALLTabsFromAllWindows = () => {
   return WindowsActions.CLOSE_ALL_TABS_FROM_ALL_WINDOWS()
+}
+
+export const AddSelectedFile = (payload:string) => {
+  return FileActions.ADD_SELECTED_FILE(payload)
+}
+export const RemoveSelectedFile = (payload:string) => {
+  return FileActions.REMOVE_SELECTED_FILE(payload)
+}
+export const ClearFiles = () => {
+  return FileActions.CLEAR_FILES()
 }

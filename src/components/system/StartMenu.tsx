@@ -5,7 +5,7 @@ import Image from 'next/image'
 import { Menu, Button, Accordion, Group } from '@mantine/core'
 import useStore from '@/hooks/useStore'
 import { WindowAddTab } from '@/store/actions'
-import { uuid } from '@/types/file'
+import { uuid } from '@/utils/file'
 
 const StartMenu = () => {
 
@@ -25,6 +25,7 @@ const StartMenu = () => {
                   minimized: false,
                   title: window.title,
                   uuid: uuid(6),
+                  focused: true,
                 }
               }))
             }}

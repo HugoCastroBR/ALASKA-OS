@@ -6,6 +6,7 @@ import Image from 'next/image'
 import useStore from '@/hooks/useStore'
 import { programProps } from '@/types/programs'
 import { ClearAllFocused, WindowToggleMinimizeTab } from '@/store/actions'
+import Clock from '../molecules/Clock'
 
 
 
@@ -71,16 +72,16 @@ const TaskBar = () => {
     border-t border-white border-opacity-20 flex justify-start items-center
     '
     >
-      <div className='w-11/12 flex h-full justify-start items-center flex-wrap overflow-hidden'>
+      <div className='w-10/12 flex h-full justify-start items-center flex-wrap overflow-hidden'>
         <StartMenu />
         {handleRenderTabs()}
       </div>
-      <div className='w-1/12 h-full flex justify-end items-center pr-1'>
+      <div className='w-2/12 h-full flex justify-end items-center pr-1'>
         <div className='flex w-1/2 items-center justify-evenly'>
 
         </div>
-        <div className='flex w-1/2 items-center justify-evenly'>
-
+        <div className='flex w-1/2 items-center justify-end'>
+          <Clock />
         </div>
       </div>
     </footer>

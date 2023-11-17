@@ -1,8 +1,10 @@
 import useStore from '@/hooks/useStore'
 import { WindowToggleMinimizeTab, WindowToggleMaximizeTab, WindowRemoveTab, WindowSetTabFocused, ClearAllFocused } from '@/store/actions'
 import { DefaultWindowProps } from '@/types/containers'
+import Image from 'next/image'
 import React from 'react'
 import Draggable from 'react-draggable'
+import CustomText from '../atoms/CustomText'
 
 
 
@@ -23,7 +25,7 @@ const DefaultWindow = ({
 
 
   const MinimizeTab = () => {
-    
+    dispatch(ClearAllFocused())
     dispatch(WindowToggleMinimizeTab({
       title: currentWindow?.title || '',
       uuid: currentTab?.uuid || '',
@@ -33,7 +35,6 @@ const DefaultWindow = ({
     }
   }
   const MaximizeTab = () => {
-    dispatch(ClearAllFocused())
     dispatch(WindowSetTabFocused({
       title: currentWindow?.title || '',
       uuid: currentTab?.uuid || '',
@@ -82,7 +83,16 @@ const DefaultWindow = ({
           w-full h-8 bg-slate-50 bg-opacity-50 backdrop-filter backdrop-blur-sm
           flex items-center justify-between px-2 cursor-move handle${currentTab.uuid} fixed z-20
           `}>
-          {currentTab.uuid}
+          <Image
+          alt='Program Icon'
+          src={currentWindow?.icon || '/assets/icons/Alaska.png'}
+          width={20}
+          height={20}
+          />
+          <CustomText
+            text={title}
+            className='ml-12 text-base font-semibold'
+          />
           <div className='flex justify-end items-center'>
             {
               onMinimize &&

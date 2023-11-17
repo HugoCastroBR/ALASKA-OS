@@ -1,18 +1,50 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { SimpleGrid } from '@mantine/core';
 import DefaultWindow from '../containers/DefaultWindow';
 import Console from './Console';
 import useStore from '@/hooks/useStore';
+import useCommands from '@/hooks/useCommands';
+import { desktopPath } from '@/utils/constants';
+import useFS from '@/hooks/useFS';
+import { getExtension, verifyIfIsFile } from '@/utils/file';
+import DesktopFile from '../molecules/DesktopFile';
+import { generateIcon } from '@/utils/icons';
+import DesktopFolder from '../molecules/DesktopFolder';
+import Explorer from '../programs/Explorer';
 
 const DesktopView = () => {
 
 
   const {states, dispatch} = useStore()
+  const { fs } = useFS()
 
+  const [desktopItems, setDesktopItems] = React.useState<string[]>([]);
+
+  const reloadDesktop = () => {
+    fs?.readdir(desktopPath, (err, files) => {
+      if(err){
+        console.log(err);
+      }else{
+        setDesktopItems(files || [])
+      }
+    })
+  }
+
+  useEffect(() => {
+    if(fs){
+      fs.readdir(desktopPath, (err, files) => {
+        if(err){
+          console.log(err);
+        }else{
+          setDesktopItems(files || [])
+        }
+      })
+    }
+  },[fs,states.Windows, states.File])
   const generateGrid = () => {
     const grid = []
-    for(let i = 0; i < 160; i++){
+    for(let i = 0; i < 140; i++){
       grid.push(
       <div 
         key={i}
@@ -40,12 +72,36 @@ const DesktopView = () => {
               window={window}
             />
             )
-            
+          case 'Explorer':
+            return(
+              <Explorer
+                path='/'
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
       })
     })
+  }
+
+  const handlerUploadTXTToDesktop = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const text = (e.target?.result || '').toString();
+      const fileName = file.name;
+      console.log(text, fileName);
+      fs?.writeFile(`${desktopPath}/${fileName}`, text, (err) => {
+        if (err) throw err;
+        console.log('File Saved!');
+        reloadDesktop()
+      })
+      
+    };
+    reader.readAsText(file);
   }
 
   return (
@@ -59,15 +115,47 @@ const DesktopView = () => {
     }}
     >
       <Dropzone
-        onDrop={(files) => console.log(files)}
-        className='w-full h-full flex justify-center items-center'
+        onDrop={(files) => {
+          if(states.File.selectedFiles.length > 0){
+            return
+          }else{
+            if(getExtension(files[0].name) === 'txt'){
+              handlerUploadTXTToDesktop(files[0])
+
+              
+            }
+          }
+        }}
+        className='w-full h-full flex justify-start items-start'
         onClick={(e) => e.stopPropagation()}
       >
         {handleRenderTabs()}
-        <SimpleGrid cols={20} verticalSpacing={1} spacing={2}>
-
-          {/* {generateGrid()} */}
-        </SimpleGrid>
+        
+        {desktopItems.map((item, index) => {
+              if(verifyIfIsFile(item)){
+                return(
+                  <DesktopFile
+                    key={index}
+                    title={item}
+                    path={`${desktopPath}/${item}`}
+                    icon={generateIcon(getExtension(item)) || '/assets/icons/file.png'}
+                  />
+                )
+                
+              }else{
+                return(
+                  <DesktopFolder
+                  key={index}
+                  title={item}
+                  path={`${desktopPath}/${item}`}
+                  icon={generateIcon(getExtension(item)) || '/assets/icons/folder.png'}
+                />
+                )
+              }
+            })}
+        {/* <SimpleGrid cols={19} verticalSpacing={2} spacing={2}>
+          {generateGrid()}
+        </SimpleGrid> */}
       </Dropzone>
     </div>
   )

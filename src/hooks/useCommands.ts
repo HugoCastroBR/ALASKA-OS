@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import useFS from "./useFS";
 import { basePath } from "@/utils/constants";
 import { ApiError } from "browserfs/dist/node/core/api_error";
-import { convertSizeToKBMBGB, verifyIfIsFile } from "@/types/file";
+import { convertSizeToKBMBGB, verifyIfIsFile } from "@/utils/file";
 export default function useCommands() {
   
   const [history, setHistory] = useState<string[]>([])
@@ -372,7 +372,7 @@ export default function useCommands() {
         setHistory([...history, err.message]);
         return;
       }
-      fs?.mkdir(destination, (err) => {
+      fs?.mkdir(destination, (err:ApiError) => {
         if(err) {
           setHistory([...history, "Error copying directory"]);
           setHistory([...history, err.message]);

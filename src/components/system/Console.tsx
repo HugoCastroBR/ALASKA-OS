@@ -68,15 +68,17 @@ const Console = ({
       bg-slate-200 bg-opacity-40 
       flex flex-col justify-start items-start overflow-y-auto p-2
       '>
-        {history.map((item, index) => (
-          <p
-            key={index}
-            className='
-          text-black text-sm
-          p-1 py-px w-full
-          '
-          >{`${currentDirectory}> `}{item}</p>
-        ))}
+        {history.length > 1 && 
+          history.map((item, index) => (
+            <p
+              key={index}
+              className='
+            text-black text-sm
+            p-1 py-px w-full
+            '
+            >{`${currentDirectory}> `}{item}</p>
+          )
+        )}
         <div className='flex w-full h-8 items-center'>
           {`${currentDirectory}> `}
           <input
