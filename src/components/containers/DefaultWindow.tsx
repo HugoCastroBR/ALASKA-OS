@@ -1,3 +1,5 @@
+import useStore from '@/hooks/useStore'
+import { WindowToggleMinimizeTab, WindowToggleMaximizeTab, WindowRemoveTab, WindowSetTabFocused, ClearAllFocused } from '@/store/actions'
 import { DefaultWindowProps } from '@/types/containers'
 import React from 'react'
 import Draggable from 'react-draggable'
@@ -5,40 +7,116 @@ import Draggable from 'react-draggable'
 
 
 const DefaultWindow = ({
+  children,
   title,
-  children
-}:DefaultWindowProps) => {
+  onMinimize,
+  onMaximize,
+  onClose,
+  currentTab,
+  currentWindow,
+  resizable,
+  uuid,
+  className,
+}: DefaultWindowProps) => {
+
+  const { states, dispatch } = useStore()
+
+
+  const MinimizeTab = () => {
+    
+    dispatch(WindowToggleMinimizeTab({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+    if(currentTab.focused){
+      dispatch(ClearAllFocused())
+    }
+  }
+  const MaximizeTab = () => {
+    dispatch(ClearAllFocused())
+    dispatch(WindowSetTabFocused({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+    dispatch(WindowToggleMaximizeTab({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+  }
+
+  const CloseTab = () => {
+    dispatch(WindowRemoveTab({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+  }
 
 
   return (
     <Draggable
-      handle='.handle'
+      handle={`.handle${currentTab.uuid}`}
       bounds='#desktop-view'
     >
       <section
-        className='
+        onClick={
+          () => {
+            dispatch(WindowSetTabFocused({
+              title: currentWindow?.title || '',
+              uuid: currentTab?.uuid || '',
+            }))
+          }
+        }
+        className={`
         absolute w-1/2 h-1/2 top-1/4 left-1/4
         flex flex-col  overflow-hidden
-        shadow-2xl 
-        hover:resize
-      '
+        ${currentTab?.minimized ? 'hidden' : ''}
+        ${currentTab?.maximized ? '!w-full !h-[calc(96%)]' : ''}
+        ${currentTab?.maximized ? '' : 'backdrop-filter backdrop-blur-sm shadow-2xl'}
+        ${currentTab?.focused ? 'z-30' : 'z-20'}
+        ${currentTab?.maximized ? '!top-0 !left-0' : ''}
+        ${resizable && !currentTab?.maximized ? 'hover:resize' : ''}
+        `}
       >
         <div
-          className='
+          className={`
           w-full h-8 bg-slate-50 bg-opacity-50 backdrop-filter backdrop-blur-sm
-          flex items-center justify-between px-2 cursor-move handle fixed z-20
-      '>
-          {title}
+          flex items-center justify-between px-2 cursor-move handle${currentTab.uuid} fixed z-20
+          `}>
+          {currentTab.uuid}
           <div className='flex justify-end items-center'>
-            <span className='i-mdi-minus text-2xl
-            mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
-          '/>
-            <span className='i-mdi-window-maximize text-2xl
-            mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
-          '/>
-            <span className='i-mdi-close text-2xl
-            mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
-          '/>
+            {
+              onMinimize &&
+              <span
+                onClick={() => {
+                  MinimizeTab()
+                  onMinimize()
+                }}
+                className='i-mdi-minus text-2xl
+              mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
+              '/>
+            }
+            {
+              onMaximize &&
+              <span
+                onClick={() => {
+                  MaximizeTab()
+                  onMaximize()
+                }}
+                className='i-mdi-window-maximize text-2xl
+              mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
+              '/>
+            }
+            {
+              onClose &&
+              <span
+                onClick={() => {
+                  CloseTab()
+                  onClose()
+                }}
+                className='i-mdi-close text-2xl
+              mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
+              '/>
+            }
           </div>
         </div>
         <div className='w-full h-full pt-8'>

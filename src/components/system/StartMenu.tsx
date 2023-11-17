@@ -4,11 +4,47 @@ import CustomText from '../atoms/CustomText'
 import Image from 'next/image'
 import { Menu, Button, Accordion, Group } from '@mantine/core'
 import useStore from '@/hooks/useStore'
+import { WindowAddTab } from '@/store/actions'
+import { uuid } from '@/types/file'
 
 const StartMenu = () => {
 
   const { states, dispatch } = useStore()
 
+
+  const renderPrograms = () => {
+    return states.Windows.windows.map((window, index) => {
+      return (
+        <>
+          <Menu.Item key={index}
+            onClick={() => {
+              dispatch(WindowAddTab({
+                title: window.title,
+                tab: {
+                  maximized: false,
+                  minimized: false,
+                  title: window.title,
+                  uuid: uuid(6),
+                }
+              }))
+            }}
+          >
+            <Group placeholder={window.title}>
+              <Image
+                src={window.icon || '/assets/icons/Alaska.png'}
+                alt='Program Icon'
+                width={24}
+                height={24}
+              />
+              <CustomText
+                text={window.title}
+              />
+            </Group>
+          </Menu.Item>
+        </>
+      )
+    })
+  }
 
 
   return (
@@ -31,7 +67,7 @@ const StartMenu = () => {
               border: 'none',
               padding: '0px',
               margin: '0px',
-              height: '39px',
+              height: '40px',
               paddingBlockEnd: '0px',
             }
           }}
@@ -51,7 +87,7 @@ const StartMenu = () => {
             />
             <CustomText
               text='Start'
-              className='text-white  cursor-pointer'
+              className= 'cursor-pointer'
             />
           </div></Button>
       </Menu.Target>
@@ -77,19 +113,7 @@ const StartMenu = () => {
             text='Start Menu'
           />
         </Menu.Label>
-        <Menu.Item>
-          <Group placeholder='Programs'>
-            <Image
-              src='/assets/icons/Alaska.png'
-              alt='System Settings Icon'
-              width={24}
-              height={24}
-            />
-            <CustomText
-              text='System'
-            />
-          </Group>
-        </Menu.Item>
+        {renderPrograms()}
       </Menu.Dropdown>
     </Menu>
 

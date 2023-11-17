@@ -3,8 +3,12 @@ import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { SimpleGrid } from '@mantine/core';
 import DefaultWindow from '../containers/DefaultWindow';
 import Console from './Console';
+import useStore from '@/hooks/useStore';
 
 const DesktopView = () => {
+
+
+  const {states, dispatch} = useStore()
 
   const generateGrid = () => {
     const grid = []
@@ -24,6 +28,25 @@ const DesktopView = () => {
     return grid
   }
 
+  const handleRenderTabs = () => {
+    return states.Windows.windows.map((window, index) => {
+      return window.tabs.map((tab, index) => {
+        switch (tab.title) {
+          case 'Console':
+            return(
+              <Console
+              key={index}
+              tab={tab}
+              window={window}
+            />
+            )
+            
+          default:
+            return (<></>)
+        }
+      })
+    })
+  }
 
   return (
     <div 
@@ -40,8 +63,9 @@ const DesktopView = () => {
         className='w-full h-full flex justify-center items-center'
         onClick={(e) => e.stopPropagation()}
       >
+        {handleRenderTabs()}
         <SimpleGrid cols={20} verticalSpacing={1} spacing={2}>
-          <Console/>
+
           {/* {generateGrid()} */}
         </SimpleGrid>
       </Dropzone>
