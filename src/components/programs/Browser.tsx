@@ -3,11 +3,15 @@ import React from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import { Divider } from '@mantine/core'
 import { programProps } from '@/types/programs'
+import useStore from '@/hooks/useStore'
+import { WindowSetTabFocused } from '@/store/actions'
 
 const Browser = ({
   tab,
   window,
 }:programProps) => {
+
+  const {states,dispatch} = useStore()
 
   const [sites, setSites] = React.useState<string[]>(
     [
@@ -129,6 +133,12 @@ const Browser = ({
       </div>
       <div className='h-full'>
         <iframe
+          onClick={() => {
+            dispatch(WindowSetTabFocused({
+              title: window.title || '',
+              uuid: tab.uuid || '',
+            }))
+          }}
           src={currentSite}
           className='w-full h-full'
         />

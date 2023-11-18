@@ -30,6 +30,8 @@ export function generateIcon(extension:string){
       return '/assets/icons/json.png'
     case 'md':
       return '/assets/icons/md.png'
+    case 'rtf':
+      return '/assets/icons/rtf.png'
     case 'pdf':
       return '/assets/icons/pdf.png'
     case 'smc':

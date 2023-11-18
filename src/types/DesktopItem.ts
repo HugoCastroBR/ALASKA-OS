@@ -1,7 +1,8 @@
 export type desktopFileProps = {
   title: string
-  icon?: string
   path: string
+  isProgram?: boolean
+  icon?: string
   onDoubleClick?: () => void
   onClick?: () => void
 }

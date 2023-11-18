@@ -16,7 +16,6 @@ const Notepad = ({
 
   const [text, setText] = useState<string>('')
   const { fs } = useFS()
-  const { states, dispatch } = useStore()
   const [saveAsInputOpen, setSaveAsInputOpen] = useState(false);
   const [saveAsName, setSaveAsName] = useState<string>(`${removeExtension(tab.ficTitle || '')}_new`)
   useEffect(() => {
@@ -106,7 +105,7 @@ const Notepad = ({
       <DefaultWindow
         currentTab={tab}
         currentWindow={window}
-        title='NotePad'
+        title={tab.ficTitle || 'Notepad'}
         uuid={tab.uuid}
         onClose={() => { }}
         onMaximize={() => { }}
@@ -138,7 +137,7 @@ const Notepad = ({
           }}
           className='
           w-full h-full bg-gray-200 flex flex-col resize
-          outline-none 
+          outline-none mt-6
           '
         />
 

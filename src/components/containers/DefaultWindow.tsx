@@ -64,6 +64,7 @@ const DefaultWindow = ({
         onClick={
           () => {
             dispatch(ClearAllFocused())
+            console.log("focus on:",currentTab?.uuid)
             dispatch(WindowSetTabFocused({
               title: currentWindow?.title || '',
               uuid: currentTab?.uuid || '',
@@ -133,7 +134,18 @@ const DefaultWindow = ({
             }
           </div>
         </div>
-        <div className='w-full h-full pt-8'>
+        <div 
+        onClick={
+          () => {
+            dispatch(ClearAllFocused())
+            console.log("focus on:",currentTab?.uuid)
+            dispatch(WindowSetTabFocused({
+              title: currentWindow?.title || '',
+              uuid: currentTab?.uuid || '',
+            }))
+          }
+        }
+        className='w-full h-full pt-8'>
           {children}
         </div>
       </section>

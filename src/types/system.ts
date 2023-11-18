@@ -1,19 +1,6 @@
 
-export type MenuItem = {
-  label: string;
-  onClick: () => void;
-  onHover?: () => void;
-  onLeave?: () => void;
-  disabled?: boolean;
-  icon?: string;
-}
 
-export type MouseMenuContext = {
-  x: number;
-  y: number;
-  visible: boolean;
-  menuItems?: Array<MenuItem>;
-}
+
 
 export type CommandArgs = 
 { [key: string]: string; } | undefined;

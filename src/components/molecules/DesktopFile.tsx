@@ -14,7 +14,8 @@ const DesktopFile = ({
   icon,
   onClick,
   onDoubleClick,
-  path
+  path,
+  isProgram
 }: desktopFileProps) => {
 
   const { states, dispatch } = useStore()
@@ -39,6 +40,7 @@ const DesktopFile = ({
 
 
   const handlerOpen = (extension:string) => {
+    if(isProgram) return
     switch (extension) {
       case "txt":
         return(
@@ -54,6 +56,48 @@ const DesktopFile = ({
             }
           }))
         )
+    case 'md':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Markdown Editor',
+          tab: {
+            title: 'Markdown Editor',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
+    case 'rtf':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Rich Text Editor',
+          tab: {
+            title: 'Rich Text Editor',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
+    case 'pdf':
+      return(
+        dispatch(WindowAddTab({
+          title: 'PDF Reader',
+          tab: {
+            title: 'PDF Reader',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
     }
   }
 
@@ -99,12 +143,15 @@ const DesktopFile = ({
       <div
         onClick={() => {
           onClick && onClick()
+          if(isProgram) return
           dispatch(AddSelectedFile(path))
           if (isItemSelected) {
             dispatch(RemoveSelectedFile(path))
           }
         }}
         onDoubleClick={() => {
+          onDoubleClick && onDoubleClick()
+          if(isProgram) return
           if(verifyIfIsImage(title)){
             return(
               dispatch(WindowAddTab({

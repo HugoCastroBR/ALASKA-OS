@@ -2,7 +2,7 @@
 'use client'
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
-import type { MouseMenuContext } from '@/types/system'
+import type { MouseMenuContext } from '@/types/mouse'
 import { verifyIfIsFile } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
@@ -12,6 +12,7 @@ const MouseMenuContext = ({
   x,
   y,
   visible,
+  onRefresh,
 }:MouseMenuContext) => {
   if (!visible) return null
 
@@ -86,6 +87,18 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionRefresh = () => {
+    return (
+      <MouseOption
+        title='Refresh'
+        onClick={() => {
+          onRefresh && onRefresh()
+        }}
+        className='i-mdi-refresh'
+      />
+    )
+  }
+
   
 
   return (
@@ -105,6 +118,7 @@ const MouseMenuContext = ({
       }}
     > 
       <MouseOptionDelete />
+      <MouseOptionRefresh />
 
       {/* <MouseOptionCopy /> */}
     </div>

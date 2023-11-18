@@ -19,6 +19,9 @@ import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
 import Notepad from '../programs/Notepad';
 import MouseMenuContext from './MouseMenuContext';
+import MarkdownEditor from '../programs/MarkdownEditor';
+import RichTextEditor from '../programs/RichTextEditor';
+import PdfReader from '../programs/PdfReader';
 
 const DesktopView = () => {
 
@@ -122,6 +125,30 @@ const DesktopView = () => {
                   window={window}
                 />
               )
+          case 'Markdown Editor':
+            return(
+              <MarkdownEditor
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Rich Text Editor':
+            return(
+              <RichTextEditor
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'PDF Reader':
+            return (
+              <PdfReader
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -157,9 +184,32 @@ const DesktopView = () => {
     })
   };
 
+  const handlerUploadPDFToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
   const [x, setX] = React.useState(0)
   const [y, setY] = React.useState(0)
+
+  const reloadPath = (path:string) => {
+    fs?.readdir(path, (err, files) => {
+      if(err){
+        console.log(err);
+      }else{
+        if(path === desktopPath){
+          setDesktopItems(files || [])
+        }
+      }
+    })
+  }
 
   return (
     <div 
@@ -181,6 +231,9 @@ const DesktopView = () => {
     }}
     >
       <MouseMenuContext
+          onRefresh={() => {
+            reloadPath('/Desktop')
+          }}
           visible={isRightMenuOpen}
           x={x}
           y={y}
@@ -188,7 +241,7 @@ const DesktopView = () => {
       <Dropzone 
         disabled={!states.Mouse.mouseInDesktop}
         onDrop={(files) => {
-          console.log(files)
+          if(!states.Mouse.mouseInDesktop) return
           if(states.File.selectedFiles.length > 0){
             return
           }else{
@@ -198,6 +251,9 @@ const DesktopView = () => {
               }
               if(verifyIfIsImage(file.name)){
                 handlerUploadImageToDesktop(file)
+              }
+              if(getExtension(file.name) === 'pdf'){
+                handlerUploadPDFToDesktop(file)
               }
             })
           }
@@ -218,6 +274,33 @@ const DesktopView = () => {
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
           className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
+          {states.Windows.windows.map((window, index) => {
+            if(window.showOnDesktop){
+              return(
+                <DesktopFile
+                  key={index}
+                  path='/'
+                  icon={window.icon || '/assets/icons/Alaska.png'}
+                  title={window.title}
+                  isProgram
+                  onDoubleClick={() => {
+                    console.log('open window')
+                    dispatch(WindowAddTab({
+                      title: window.title,
+                      tab: {
+                        uuid: uuid(6),
+                        title: window.title,
+                        maximized: false,
+                        minimized: false,
+                        value: '/Desktop'
+                      }
+                    }))
+                  }}
+                />
+              )
+            }
+            
+          })}
           {desktopItems.map((item, index) => {
               if(verifyIfIsFile(item)){
                 return(

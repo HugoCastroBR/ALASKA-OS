@@ -33,11 +33,29 @@ export const WindowsSlice = createSlice({
         title: "Pokemon Fire Red",
         icon: "/assets/icons/pokemonFR.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: false
+        showOnDesktop: true
       },
       {
         title: "Notepad",
         icon: "/assets/icons/txt.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'Markdown Editor',
+        icon: '/assets/icons/md.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'Rich Text Editor',
+        icon: '/assets/icons/rtf.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'PDF Reader',
+        icon: '/assets/icons/pdf.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: false
       }

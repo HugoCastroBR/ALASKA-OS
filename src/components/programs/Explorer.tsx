@@ -17,7 +17,7 @@ import CustomText from '../atoms/CustomText'
 import NewDirFileItem from '../molecules/NewDirFileItem'
 import NewDirFolderItem from '../molecules/NewDirFolderItem'
 import { Dropzone } from '@mantine/dropzone'
-import { SetMouseInDesktop, SetMousePath } from '@/store/actions'
+import { SetMouseInDesktop, SetMousePath, WindowSetTabFocused } from '@/store/actions'
 // import { MouseSetMouseContextPath, MouseSetMousePath } from '@/store/actions'
 // import NewDirFileItem from './NewDirFileItem'
 // import NewDirFolderItem from './NewDirFolderItem'
@@ -219,9 +219,20 @@ const Explorer = ({
           dispatch(SetMouseInDesktop(true))
           dispatch(SetMousePath(''))
         }}
+        onDragOver={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          dispatch(SetMouseInDesktop(false))
+          dispatch(SetMousePath(currentPath))
+        }}
         onClick={(e) => {
           e.stopPropagation()
           e.preventDefault()
+          dispatch(WindowSetTabFocused({
+            title: window.title || '',
+            uuid: tab.uuid || '',
+          }))
+
         }}
         onDrop={(files) => {
           if(files){

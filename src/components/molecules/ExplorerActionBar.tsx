@@ -75,8 +75,8 @@ const ExplorerActionBar = ({
           className='h-full hover:bg-slate-100 hover:bg-opacity-30 transition duration-300 ease-in-out w-1/2 flex items-center justify-center cursor-pointer'>
             <IconReload 
             color='white' style={{
-              width: rem(26),
-              height: rem(26),
+              width: rem(24),
+              height: rem(24),
               }} />
           </div>
 
