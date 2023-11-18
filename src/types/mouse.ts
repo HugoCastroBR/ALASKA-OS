@@ -4,3 +4,8 @@ export type mouseContextMenuOptionsProps = {
   title: string
   onClick?: () => void
 }
+
+export type MouseProps = {
+  mousePath: string;
+  mouseInDesktop: boolean;
+}

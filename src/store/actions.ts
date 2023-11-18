@@ -1,5 +1,5 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
-import { AppActions, WindowsActions,FileActions } from './index';
+import { AppActions, WindowsActions,FileActions,MouseActions } from './index';
 
 
 
@@ -52,4 +52,11 @@ export const RemoveSelectedFile = (payload:string) => {
 }
 export const ClearFiles = () => {
   return FileActions.CLEAR_FILES()
+}
+
+export const SetMousePath = (payload:string) => {
+  return MouseActions.SET_MOUSE_PATH(payload)
+}
+export const SetMouseInDesktop = (payload:boolean) => {
+  return MouseActions.SET_MOUSE_IN_DESKTOP(payload)
 }

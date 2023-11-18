@@ -48,17 +48,9 @@ const DesktopView = () => {
         }
       })
     }
-  },[fs,states.Windows, states.File])
+  },[fs,states.Windows, states.File,states.Mouse])
 
-  const refreshDesktopEvery30Seconds = () => {
-    setInterval(() => {
-      reloadDesktop()
-    }, 30000);
-  }
-
-  refreshDesktopEvery30Seconds()
-
-
+  
   const generateGrid = () => {
     const grid = []
     for(let i = 0; i < 140; i++){
@@ -193,7 +185,8 @@ const DesktopView = () => {
           x={x}
           y={y}
         />
-      <Dropzone
+      <Dropzone 
+        disabled={!states.Mouse.mouseInDesktop}
         onDrop={(files) => {
           console.log(files)
           if(states.File.selectedFiles.length > 0){

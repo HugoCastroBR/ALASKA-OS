@@ -17,6 +17,7 @@ import CustomText from '../atoms/CustomText'
 import NewDirFileItem from '../molecules/NewDirFileItem'
 import NewDirFolderItem from '../molecules/NewDirFolderItem'
 import { Dropzone } from '@mantine/dropzone'
+import { SetMouseInDesktop, SetMousePath } from '@/store/actions'
 // import { MouseSetMouseContextPath, MouseSetMousePath } from '@/store/actions'
 // import NewDirFileItem from './NewDirFileItem'
 // import NewDirFolderItem from './NewDirFolderItem'
@@ -74,7 +75,7 @@ const Explorer = ({
 
   useEffect(() => {
     Reload()
-  }, [fs, currentPath, states.File])
+  }, [fs, currentPath, states.File, states.Mouse])
 
   const uploadFileToDesktop = (fileName: string, fileContent: string) => {
     console.log(fileName)
@@ -210,6 +211,14 @@ const Explorer = ({
             </div>
             <Dropzone
         className='w-10/12  h-full flex bg-slate-200 bg-opacity-40'
+        onMouseEnter={() => {
+          dispatch(SetMouseInDesktop(false))
+          dispatch(SetMousePath(currentPath))
+        }}
+        onMouseLeave={() => {
+          dispatch(SetMouseInDesktop(true))
+          dispatch(SetMousePath(''))
+        }}
         onClick={(e) => {
           e.stopPropagation()
           e.preventDefault()
