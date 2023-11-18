@@ -7,6 +7,7 @@ export type tabStateProps = {
   ficTitle?: string
   focused?: boolean
   content?: string
+  value?: string
   url?: string
   extension?: string
   local?: boolean

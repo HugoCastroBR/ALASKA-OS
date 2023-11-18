@@ -7,11 +7,14 @@ import useStore from '@/hooks/useStore';
 import useCommands from '@/hooks/useCommands';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
-import { getExtension, verifyIfIsFile } from '@/utils/file';
+import { getExtension, uuid, verifyIfIsFile } from '@/utils/file';
 import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
+import { ClearFiles, WindowAddTab } from '@/store/actions';
+import path from 'path';
+import Browser from '../programs/Browser';
 
 const DesktopView = () => {
 
@@ -42,6 +45,16 @@ const DesktopView = () => {
       })
     }
   },[fs,states.Windows, states.File])
+
+  const refreshDesktopEvery30Seconds = () => {
+    setInterval(() => {
+      reloadDesktop()
+    }, 30000);
+  }
+
+  refreshDesktopEvery30Seconds()
+
+
   const generateGrid = () => {
     const grid = []
     for(let i = 0; i < 140; i++){
@@ -75,7 +88,14 @@ const DesktopView = () => {
           case 'Explorer':
             return(
               <Explorer
-                path='/'
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Browser':
+            return(
+              <Browser
                 key={index}
                 tab={tab}
                 window={window}
@@ -128,6 +148,12 @@ const DesktopView = () => {
         }}
         className='w-full h-full flex justify-start items-start'
         onClick={(e) => e.stopPropagation()}
+        onDoubleClick={
+          (e) => {
+            e.stopPropagation()
+            dispatch(ClearFiles())
+          }
+        }
       >
         {handleRenderTabs()}
         
@@ -145,6 +171,18 @@ const DesktopView = () => {
               }else{
                 return(
                   <DesktopFolder
+                  onDoubleClick={() => {
+                    dispatch(WindowAddTab({
+                      title: 'Explorer',
+                      tab: {
+                        uuid: uuid(6),
+                        title: 'Explorer',
+                        maximized: false,
+                        minimized: false,
+                        value: `${desktopPath}/${item}`
+                      }
+                    }))
+                  }}
                   key={index}
                   title={item}
                   path={`${desktopPath}/${item}`}

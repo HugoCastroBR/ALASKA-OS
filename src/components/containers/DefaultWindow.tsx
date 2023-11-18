@@ -61,6 +61,7 @@ const DefaultWindow = ({
       <section
         onClick={
           () => {
+            dispatch(ClearAllFocused())
             dispatch(WindowSetTabFocused({
               title: currentWindow?.title || '',
               uuid: currentTab?.uuid || '',
@@ -70,8 +71,9 @@ const DefaultWindow = ({
         className={`
         absolute w-1/2 h-1/2 top-1/4 left-1/4
         flex flex-col  overflow-hidden
+        rounded-lg
         ${currentTab?.minimized ? 'hidden' : ''}
-        ${currentTab?.maximized ? '!w-full !h-[calc(96%)]' : ''}
+        ${currentTab?.maximized ? '!w-full !h-[calc(96%)] rounded-none ' : ''}
         ${currentTab?.maximized ? '' : 'backdrop-filter backdrop-blur-sm shadow-2xl'}
         ${currentTab?.focused ? 'z-30' : 'z-20'}
         ${currentTab?.maximized ? '!top-0 !left-0' : ''}

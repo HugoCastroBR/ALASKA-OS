@@ -13,6 +13,9 @@ import useStore from '@/hooks/useStore'
 import DefaultWindow from '../containers/DefaultWindow'
 import DesktopFile from '../molecules/DesktopFile'
 import DesktopFolder from '../molecules/DesktopFolder'
+import CustomText from '../atoms/CustomText'
+import NewDirFileItem from '../molecules/NewDirFileItem'
+import NewDirFolderItem from '../molecules/NewDirFolderItem'
 // import { MouseSetMouseContextPath, MouseSetMousePath } from '@/store/actions'
 // import NewDirFileItem from './NewDirFileItem'
 // import NewDirFolderItem from './NewDirFolderItem'
@@ -21,7 +24,6 @@ import DesktopFolder from '../molecules/DesktopFolder'
 const Explorer = ({
   tab,
   window,
-  path
 }: explorerProps) => {
 
   const { states, dispatch } = useStore()
@@ -30,7 +32,7 @@ const Explorer = ({
 
 
   const [dirFiles, setDirFiles] = useState<string[]>([])
-  const [currentPath, setCurrentPath] = useState<string>(path)
+  const [currentPath, setCurrentPath] = useState<string>(tab.value || '/')
 
   useEffect(() => {
     fs?.readdir(currentPath, (err, files) => {
@@ -51,7 +53,15 @@ const Explorer = ({
     })
   }
 
+  // const refreshExplorerEvery30Seconds = () => {
+  //   setInterval(() => {
+  //     Reload()
+  //   }, 30000);
+  // }
+  // refreshExplorerEvery30Seconds()
+
   useEffect(() => {
+    console.log(tab.value)
     Reload()
   }, [currentPath])
 
@@ -82,17 +92,16 @@ const Explorer = ({
     <DefaultWindow
       currentTab={tab}
       currentWindow={window}
-      title='Explorer'
       uuid={tab.uuid}
       onClose={() => { }}
       onMaximize={() => { }}
       onMinimize={() => { }}
       resizable
-      className='w-3/5 h-3/5 flex flex-col '
+      title='Explorer' 
     >
       <div
-        className='w-full h-full bg-gray-800 flex flex-col'>
-        <div className='flex w-full h-1/6 bg-gray-900 overflow-hidden'>
+        className='w-full h-full flex flex-col bg-slate-300 bg-opacity-40 backdrop-blur-md'>
+        <div className='flex w-full h-20  overflow-hidden'>
           <ExplorerActionBar
             onReload={Reload}
             onBack={() => {
@@ -105,8 +114,8 @@ const Explorer = ({
             path={currentPath}
           />
         </div>
-        <div className='flex w-full h-5/6'>
-          <div className='w-2/12 pt-2'>
+        <div className='flex w-full h-full'>
+          <div className='w-2/12 pt-2 bg-slate-300 bg-opacity-40 '>
             <Group justify="center">
               <FileButton onChange={async (e) => {
                 if(e){
@@ -134,54 +143,64 @@ const Explorer = ({
                 }
               }} >
                 {(props) => <Button {...props}
-                  className={`hover:bg-gray-700 transition-all duration-300 ease-in-out`}
+                  className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
                   styles={{
                     root: {
-                      backgroundColor: '#2d374833',
-                      border: '1px solid gray',
+                      backgroundColor: 'transparent',
+                      border: '1px solid white',
                       borderStyle: 'dashed',
                       color: 'white',
                       width: '90%'
                     }
                   }}
-                >Upload File</Button>}
+                >
+                  <CustomText
+                    text='Upload File'
+                    className='text-white text-xs'
+                  />
+                </Button>}
               </FileButton>
               <Button
                 onClick={() => {
                   setNewFileInputOpen(true)
       
                 }}
-                className={`hover:bg-gray-600 transition-all duration-300 ease-in-out`}
+                className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
                 styles={{
                   root: {
-                    backgroundColor: '#2d374833',
-                    border: '1px solid gray',
+                    backgroundColor: 'transparent',
+                    border: '1px solid white',
                     color: 'white',
                     width: '90%'
                   }
                 }}
-              >New File</Button>
+              >  <CustomText
+              text='New File'
+              className='text-white text-xs'
+            /></Button>
               <Button
                 onClick={() => {
                   setNewFolderInputOpen(true)
                 }}
-                className={`hover:bg-gray-600 transition-all duration-300 ease-in-out`}
+                className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
                 styles={{
                   root: {
-                    backgroundColor: '#2d374833',
-                    border: '1px solid gray',
+                    backgroundColor: 'transparent',
+                    border: '1px solid white',
                     color: 'white',
                     width: '90%'
                   }
                 }}
-              >New Folder</Button>
+              >  <CustomText
+              text='New Folder'
+              className='text-white text-xs'
+            /></Button>
             </Group>
 
 
           </div>
-          <div className='bg-gray-700 w-10/12 flex p-2'>
-            <SimpleGrid cols={10} spacing="1px" verticalSpacing="1px">
-              {
+          <div className='bg-slate-200 bg-opacity-40 w-10/12 flex justify-start items-start flex-wrap h-auto p-2'>
+            {
                 dirFiles.map((file, index) => {
                   if (verifyIfIsFile(file)) {
                     return (
@@ -207,7 +226,8 @@ const Explorer = ({
                   }
                 })
               }
-              {/* {newFileInputOpen && 
+              
+              {newFileInputOpen && 
               <NewDirFileItem
                 title='New File'
                 icon='/assets/icons/file.png'
@@ -231,8 +251,7 @@ const Explorer = ({
                     Reload()
                   }}
                 />
-              } */}
-            </SimpleGrid>
+              }
           </div>
         </div>
       </div>

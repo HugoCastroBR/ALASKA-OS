@@ -62,6 +62,7 @@ const Console = ({
       onClose={() => {}}
       onMaximize={() => {}}
       onMinimize={() => {}}
+      resizable
       title='Console'>
       <div
         className='w-full h-full

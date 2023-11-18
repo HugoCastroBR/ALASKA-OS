@@ -55,28 +55,28 @@ const ExplorerActionBar = ({
         </Tabs.Tab>
       </Tabs.List>
       <Tabs.Panel value="Directory">
-      <div className='flex w-full h-16 overflow-hidden'>
-        <div className=' flex w-2/12 justify-evenly items-center overflow-hidden '>
+      <div className='flex w-full h-16 overflow-hidden pb-6'>
+        <div className=' flex w-2/12 justify-center items-center overflow-hidden '>
           <div
           onClick={() => {
             onBack()
           }}
-          className='h-full hover:bg-gray-700 transition duration-300 ease-in-out w-1/4 flex items-center justify-center cursor-pointer'>
+          className='h-full hover:bg-slate-100 hover:bg-opacity-30  transition duration-300 ease-in-out w-1/2 flex items-center justify-center cursor-pointer'>
             <IconArrowBack 
             color='white' style={{
-              width: rem(24),
-              height: rem(24),
+              width: rem(26),
+              height: rem(26),
             }} />
           </div>
           <div 
           onClick={() => {
             onReload()
           }}
-          className='h-full hover:bg-gray-700 transition duration-300 ease-in-out w-1/4 flex items-center justify-center cursor-pointer'>
+          className='h-full hover:bg-slate-100 hover:bg-opacity-30 transition duration-300 ease-in-out w-1/2 flex items-center justify-center cursor-pointer'>
             <IconReload 
             color='white' style={{
-              width: rem(24),
-              height: rem(24),
+              width: rem(26),
+              height: rem(26),
               }} />
           </div>
 

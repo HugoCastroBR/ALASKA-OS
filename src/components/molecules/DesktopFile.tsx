@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { extractParentPath, getExtension, uuid } from "@/utils/file"
 import Image from "next/image"
 import CustomText from "../atoms/CustomText"
-import {  AddSelectedFile, WindowAddTab } from "@/store/actions"
+import { AddSelectedFile, RemoveSelectedFile, WindowAddTab } from "@/store/actions"
 import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
@@ -24,7 +24,13 @@ const DesktopFile = ({
 
   const { fs } = useFS()
 
-
+  useEffect(() => {
+    if(states.File.selectedFiles.includes(path)){
+      setIsItemSelected(true)
+    }else{
+      setIsItemSelected(false)
+    }
+  }, [states.File.selectedFiles])
 
   const CodeExtension = ["js" || "ts" || "css"]
   return (
@@ -32,19 +38,24 @@ const DesktopFile = ({
       <div
         onClick={() => {
           onClick && onClick()
-          }}
-        onDoubleClick={() => {}}
+          dispatch(AddSelectedFile(path))
+          if (isItemSelected) {
+            dispatch(RemoveSelectedFile(path))
+          }
+        }}
+        onDoubleClick={() => { }}
         onDragStart={(e) => {
           dispatch(AddSelectedFile(path))
           //from
         }}
         className={`
-        h-28 p-px m-1
+        h-28 p-px m-px
         flex flex-col justify-evenly items-center cursor-pointer
         hover:bg-cyan-300 transition-all duration-300 ease-in-out
         hover:bg-opacity-30 rounded-md
-        ${isItemSelected ? 'bg-gray-600' : ''}
-        `}>
+        ${isItemSelected ? 'bg-white bg-opacity-30 ' : ''}
+        `}
+      >
         {icon && <Image src={icon} alt={title} width={48} height={48} />}
         {isRename ?
           <input
@@ -57,9 +68,9 @@ const DesktopFile = ({
                 const renameFrom = path
                 const renameTo = `${extractParentPath(path)}/${inputValue}`
                 fs?.rename(renameFrom, renameTo, (err) => {
-                  if(err){
+                  if (err) {
                     console.log(err);
-                  }else{
+                  } else {
                     console.log('renamed');
                   }
                 })

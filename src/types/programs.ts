@@ -7,7 +7,6 @@ export type programProps = {
 }
 
 export type explorerProps = programProps & {
-  path: string
   previousPath?: string
   onBack?: () => void
 }
