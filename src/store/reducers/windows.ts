@@ -58,6 +58,12 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/pdf.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: false
+      },
+      {
+        title: 'Code Editor',
+        icon: '/assets/icons/vscode.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
       }
 
     ] as windowStateProps[]

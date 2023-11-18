@@ -22,6 +22,7 @@ import MouseMenuContext from './MouseMenuContext';
 import MarkdownEditor from '../programs/MarkdownEditor';
 import RichTextEditor from '../programs/RichTextEditor';
 import PdfReader from '../programs/PdfReader';
+import CodeEditor from '../programs/CodeEditor';
 
 const DesktopView = () => {
 
@@ -148,6 +149,14 @@ const DesktopView = () => {
                 tab={tab}
                 window={window}
               />
+            )
+          case 'Code Editor':
+            return(
+              <CodeEditor
+              key={index}
+              tab={tab}
+              window={window}
+            />
             )
           default:
             return (<></>)

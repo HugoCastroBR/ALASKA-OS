@@ -101,6 +101,7 @@ const StartMenu = () => {
             padding: '0px',
             margin: '0px',
             height: '400px',
+            width: '240px',
             marginTop: '6px',
             borderRadius: '0px',
             borderTopRightRadius: '8px',
@@ -109,6 +110,7 @@ const StartMenu = () => {
             border: '1px solid rgba(129, 233, 235, 0.2)',
             filter: 'drop-shadow(0px 0px 4px 1px rgba(26, 36, 35, 0.35))',
             boxShadow: '0px 0px 4px 1px rgba(26, 36, 35, 0.35)',
+            overflowY: 'scroll',
           }
         }}
       >

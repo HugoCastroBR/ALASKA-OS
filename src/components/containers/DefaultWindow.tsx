@@ -64,7 +64,6 @@ const DefaultWindow = ({
         onClick={
           () => {
             dispatch(ClearAllFocused())
-            console.log("focus on:",currentTab?.uuid)
             dispatch(WindowSetTabFocused({
               title: currentWindow?.title || '',
               uuid: currentTab?.uuid || '',
@@ -138,7 +137,6 @@ const DefaultWindow = ({
         onClick={
           () => {
             dispatch(ClearAllFocused())
-            console.log("focus on:",currentTab?.uuid)
             dispatch(WindowSetTabFocused({
               title: currentWindow?.title || '',
               uuid: currentTab?.uuid || '',

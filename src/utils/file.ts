@@ -77,3 +77,7 @@ export const toBase64 = (file: File) =>
     reader.onload = () => resolve(reader.result);
     reader.onerror = (error) => reject(error);
   });
+
+export const verifyIfIsObject = (value: any) => {
+  return typeof value === 'object' && value !== null;
+}

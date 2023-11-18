@@ -6,6 +6,11 @@ export type programProps = {
   window: windowStateProps
 }
 
+export type consoleProps = programProps & {
+  vanilla?: boolean
+  interceptBrowserConsole?: boolean
+}
+
 export type explorerProps = programProps & {
   previousPath?: string
   onBack?: () => void

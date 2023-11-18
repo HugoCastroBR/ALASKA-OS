@@ -521,6 +521,7 @@ export default function useCommands() {
 
   return {
     history,
+    setHistory,
     currentDirectory,
     runCommand,
     commands,
