@@ -16,7 +16,9 @@ const StartMenu = () => {
     return states.Windows.windows.map((window, index) => {
       return (
         <>
-          <Menu.Item key={index}
+          <Menu.Item
+          className='hover:bg-cyan-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out'
+          key={index}
             onClick={() => {
               dispatch(WindowAddTab({
                 title: window.title,
@@ -104,9 +106,9 @@ const StartMenu = () => {
             borderTopRightRadius: '8px',
             backdropFilter: 'blur(6px)',
             backgroundColor: 'rgba(255, 255, 255, 0.4)',
-            border: '1px solid rgba(255, 255, 255, 0.2)',
-            filter: 'drop-shadow(0px 4px 4px rgba(255, 255, 255, 0.25))',
-            boxShadow: '0px 4px 4px rgba(255, 255, 255, 0.25)',
+            border: '1px solid rgba(129, 233, 235, 0.2)',
+            filter: 'drop-shadow(0px 0px 4px 1px rgba(26, 36, 35, 0.35))',
+            boxShadow: '0px 0px 4px 1px rgba(26, 36, 35, 0.35)',
           }
         }}
       >

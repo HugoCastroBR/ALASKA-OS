@@ -84,9 +84,9 @@ const DesktopFolder = ({
         className={`
         h-28 p-px m-px
         flex flex-col justify-evenly items-center cursor-pointer
-        hover:bg-cyan-300 transition-all duration-300 ease-in-out
-        hover:bg-opacity-30 rounded-md
-        ${isItemSelected ? 'bg-white bg-opacity-30 ' : ''}
+        hover:bg-cyan-200 transition-all duration-300 ease-in-out
+        hover:bg-opacity-60 rounded-md
+        ${isItemSelected ? 'bg-white bg-opacity-40 ' : ''}
         `}
       >
         {icon && <Image src={icon} alt={title} width={48} height={48} />}

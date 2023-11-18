@@ -102,6 +102,9 @@ const DesktopFile = ({
   }
 
   useEffect(() => {
+    if(path === '/') return
+    if(!verifyIfIsImage(title)) return
+    if(!path) return
     fs?.readFile(path,'utf-8', (err, data) => {
       if(data){
         setImage64(data)
@@ -176,8 +179,8 @@ const DesktopFile = ({
         className={`
         h-28 p-px m-px
         flex flex-col justify-evenly items-center cursor-pointer
-        hover:bg-cyan-300 transition-all duration-300 ease-in-out
-        hover:bg-opacity-30 rounded-md
+        hover:bg-cyan-200 transition-all duration-300 ease-in-out
+        hover:bg-opacity-60 rounded-md
         ${isItemSelected ? 'bg-white bg-opacity-30 ' : ''}
         `}
       >
