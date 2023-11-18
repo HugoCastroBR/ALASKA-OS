@@ -19,6 +19,7 @@ const DefaultWindow = ({
   resizable,
   uuid,
   className,
+  preventDefaultClose,
 }: DefaultWindowProps) => {
 
   const { states, dispatch } = useStore()
@@ -46,6 +47,7 @@ const DefaultWindow = ({
   }
 
   const CloseTab = () => {
+    if(preventDefaultClose) return
     dispatch(WindowRemoveTab({
       title: currentWindow?.title || '',
       uuid: currentTab?.uuid || '',
@@ -78,7 +80,7 @@ const DefaultWindow = ({
         ${currentTab?.focused ? 'z-30' : 'z-20'}
         ${currentTab?.maximized ? '!top-0 !left-0' : ''}
         ${resizable && !currentTab?.maximized ? 'hover:resize' : ''}
-        `}
+        ${className}`}
       >
         <div
           className={`

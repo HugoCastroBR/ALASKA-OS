@@ -26,6 +26,7 @@ const StartMenu = () => {
                   title: window.title,
                   uuid: uuid(6),
                   focused: true,
+                  value: '/Desktop',
                 }
               }))
             }}

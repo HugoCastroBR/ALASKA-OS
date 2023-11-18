@@ -38,6 +38,24 @@ const DesktopFile = ({
   const [Image64, setImage64] = useState<string | null>(null)
 
 
+  const handlerOpen = (extension:string) => {
+    switch (extension) {
+      case "txt":
+        return(
+          dispatch(WindowAddTab({
+            title: 'Notepad',
+            tab: {
+              title: 'Notepad',
+              ficTitle: title,
+              uuid: uuid(6),
+              value: path,
+              maximized: false,
+              minimized: false
+            }
+          }))
+        )
+    }
+  }
 
   useEffect(() => {
     fs?.readFile(path,'utf-8', (err, data) => {
@@ -87,17 +105,22 @@ const DesktopFile = ({
           }
         }}
         onDoubleClick={() => {
-          verifyIfIsImage(title) && dispatch(WindowAddTab({
-            title: 'Image Reader',
-            tab: {
-              title: 'Image Reader',
-              ficTitle: title,
-              uuid: uuid(6),
-              value: path,
-              maximized: false,
-              minimized: false
-            }
-          }))
+          if(verifyIfIsImage(title)){
+            return(
+              dispatch(WindowAddTab({
+                title: 'Image Reader',
+                tab: {
+                  title: 'Image Reader',
+                  ficTitle: title,
+                  uuid: uuid(6),
+                  value: path,
+                  maximized: false,
+                  minimized: false
+                }
+              }))
+            )
+          }
+          handlerOpen(getExtension(title))
         }}
         onDragStart={(e) => {
           dispatch(AddSelectedFile(path))

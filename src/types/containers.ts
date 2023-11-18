@@ -8,6 +8,7 @@ export type DefaultWindowProps = {
   uuid: string;
   resizable?: boolean;
   className?: string;
+  preventDefaultClose?: boolean;
   onClose?: () => void;
   onMinimize?: () => void;
   onMaximize?: () => void;

@@ -17,6 +17,8 @@ import path from 'path';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
+import Notepad from '../programs/Notepad';
+import MouseMenuContext from './MouseMenuContext';
 
 const DesktopView = () => {
 
@@ -120,6 +122,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Notepad':
+              return(
+                <Notepad
+                  key={index}
+                  tab={tab}
+                  window={window}
+                />
+              )
           default:
             return (<></>)
         }
@@ -155,6 +165,9 @@ const DesktopView = () => {
     })
   };
 
+  const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
+  const [x, setX] = React.useState(0)
+  const [y, setY] = React.useState(0)
 
   return (
     <div 
@@ -162,10 +175,24 @@ const DesktopView = () => {
     className='w-full 
     overflow-hidden
     '
+    onContextMenu={(e) => {
+      e.preventDefault()
+      setX(e.pageX)
+      setY(e.pageY)
+      setIsRightMenuOpen(true)
+    }}
+    onClick={() => {
+      setIsRightMenuOpen(false)
+    }}
     style={{
       height: 'calc(100vh - 40px)'
     }}
     >
+      <MouseMenuContext
+          visible={isRightMenuOpen}
+          x={x}
+          y={y}
+        />
       <Dropzone
         onDrop={(files) => {
           console.log(files)
@@ -183,7 +210,10 @@ const DesktopView = () => {
           }
         }}
         className='w-full h-full flex justify-start items-start flex-wrap'
-        onClick={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsRightMenuOpen(false)
+        }}
         onDoubleClick={
           (e) => {
             e.stopPropagation()
