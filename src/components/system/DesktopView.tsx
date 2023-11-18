@@ -130,7 +130,7 @@ const DesktopView = () => {
   const handlerUploadTXTToDesktop = async (file: File) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
-      const text = (file).toString();
+      const text = (e.target?.result || '').toString();
       const fileName = file.name;
       console.log(text, fileName);
       fs?.writeFile(`${desktopPath}/${fileName}`, text, (err) => {
@@ -144,35 +144,15 @@ const DesktopView = () => {
   }
 
   const handlerUploadImageToDesktop = async (file: File) => {
-    const reader = new FileReader();
+
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
     
-
-    await new Promise<string>((resolve, reject) => {
-      reader.onload = async (e) => {
-        const base64Image = reader.readAsDataURL(file);
-        console.log(base64Image);
-        fs?.writeFile(`${desktopPath}/${file.name}`, base64Image, (err) => {
-          if (err) throw err;
-          console.log('Image Saved!');
-          reloadDesktop();
-        });
-      };
-      reader.readAsDataURL(file);
-    });
-
-
-    reader.onloadstart = () => {
-      console.log('loading');
-    }
-    reader.onerror = () => {
-      console.log('error');
-    }
-    reader.onprogress = () => {
-      console.log('progress');
-    }
-    reader.onloadend = () => {
-      console.log('end');
-    }
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
   };
 
 
@@ -192,16 +172,17 @@ const DesktopView = () => {
           if(states.File.selectedFiles.length > 0){
             return
           }else{
-            console.log(files[0].name)
-            if(getExtension(files[0].name) === 'txt'){
-              handlerUploadTXTToDesktop(files[0])
-            }
-            if(verifyIfIsImage(files[0].name)){
-              handlerUploadImageToDesktop(files[0])
-            }
+            files.forEach((file) => {
+              if(getExtension(file.name) === 'txt'){
+                handlerUploadTXTToDesktop(file)
+              }
+              if(verifyIfIsImage(file.name)){
+                handlerUploadImageToDesktop(file)
+              }
+            })
           }
         }}
-        className='w-full h-full flex justify-start items-start'
+        className='w-full h-full flex justify-start items-start flex-wrap'
         onClick={(e) => e.stopPropagation()}
         onDoubleClick={
           (e) => {
@@ -212,7 +193,9 @@ const DesktopView = () => {
       >
         {handleRenderTabs()}
         
-        {desktopItems.map((item, index) => {
+        <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
+          className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
+          {desktopItems.map((item, index) => {
               if(verifyIfIsFile(item)){
                 return(
                   <DesktopFile
@@ -246,6 +229,7 @@ const DesktopView = () => {
                 )
               }
             })}
+        </SimpleGrid>
         {/* <SimpleGrid cols={19} verticalSpacing={2} spacing={2}>
           {generateGrid()}
         </SimpleGrid> */}

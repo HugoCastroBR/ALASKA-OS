@@ -20,4 +20,4 @@ export type explorerActionBarProps = {
 
 export type ImageReaderProps = programProps & {
   path: string
-}
+} 

@@ -50,7 +50,20 @@ const DesktopFolder = ({
       }}
       onDrop={(files) => {
         if(!states.File.selectedFiles[0]) return
-        if(states.File.selectedFiles.length > 1) return
+        if(states.File.selectedFiles.length > 1){
+          states.File.selectedFiles.forEach((file) => {
+            const from = file
+            const to = `${path}/${getLastPathSegment(file)}`
+            fs?.rename(from, to, (err) => {
+              if(err){
+                console.log(err);
+              }else{
+                console.log('Moved');
+              }
+              dispatch(ClearFiles())
+            })
+          })
+        }
         const from = states.File.selectedFiles[0]
         const to = `${path}/${getLastPathSegment(states.File.selectedFiles[0])}`
         console.log(from, to);
