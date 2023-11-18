@@ -7,6 +7,7 @@ import useStore from '@/hooks/useStore'
 import { programProps } from '@/types/programs'
 import { ClearAllFocused, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
+import { truncateText } from '@/utils/text'
 
 
 
@@ -26,7 +27,7 @@ const TaskBarItem = ({tab,window,}:programProps) => {
       }
     }}
     className={`
-      flex items-center w-36 bg-slate-50 h-10
+      flex items-center w-40 bg-slate-50 h-10
       bg-opacity-50 backdrop-filter backdrop-blur-sm
       justify-between px-2 mx-px cursor-pointer
       transition-all duration-100 ease-in-out
@@ -39,7 +40,7 @@ const TaskBarItem = ({tab,window,}:programProps) => {
         width={20}
         height={20}
       />
-      {tab.ficTitle || tab.title}
+      {truncateText(tab.ficTitle || tab.title, 12)}
     </div>
   )
 }

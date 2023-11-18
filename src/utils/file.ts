@@ -63,3 +63,17 @@ export function getLastPathSegment(path: string): string {
   const pathSegments = path.split('/');
   return pathSegments[pathSegments.length - 1];
 }
+
+export function verifyIfIsImage(filename: string): boolean {
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+  const extension = getExtension(filename);
+  return imageExtensions.includes(extension);
+}
+
+export const toBase64 = (file: File) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = (error) => reject(error);
+  });

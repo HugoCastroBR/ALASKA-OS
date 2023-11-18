@@ -17,3 +17,7 @@ export type explorerActionBarProps = {
   onBack: () => void
   onReload: () => void
 }
+
+export type ImageReaderProps = programProps & {
+  path: string
+}

@@ -7,7 +7,7 @@ import useStore from '@/hooks/useStore';
 import useCommands from '@/hooks/useCommands';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
-import { getExtension, uuid, verifyIfIsFile } from '@/utils/file';
+import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage } from '@/utils/file';
 import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
@@ -15,6 +15,8 @@ import Explorer from '../programs/Explorer';
 import { ClearFiles, WindowAddTab } from '@/store/actions';
 import path from 'path';
 import Browser from '../programs/Browser';
+import ImageReader from '../programs/ImageReader';
+import PokemonFireRed from '../Games/PokemonFireRed';
 
 const DesktopView = () => {
 
@@ -101,6 +103,23 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Image Reader':
+            return(
+              <ImageReader
+                key={index}
+                tab={tab}
+                path={tab.value || ''}
+                window={window}
+              />
+            )
+          case 'Pokemon Fire Red':
+            return(
+              <PokemonFireRed
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -111,7 +130,7 @@ const DesktopView = () => {
   const handlerUploadTXTToDesktop = async (file: File) => {
     const reader = new FileReader();
     reader.onload = async (e) => {
-      const text = (e.target?.result || '').toString();
+      const text = (file).toString();
       const fileName = file.name;
       console.log(text, fileName);
       fs?.writeFile(`${desktopPath}/${fileName}`, text, (err) => {
@@ -123,6 +142,39 @@ const DesktopView = () => {
     };
     reader.readAsText(file);
   }
+
+  const handlerUploadImageToDesktop = async (file: File) => {
+    const reader = new FileReader();
+    
+
+    await new Promise<string>((resolve, reject) => {
+      reader.onload = async (e) => {
+        const base64Image = reader.readAsDataURL(file);
+        console.log(base64Image);
+        fs?.writeFile(`${desktopPath}/${file.name}`, base64Image, (err) => {
+          if (err) throw err;
+          console.log('Image Saved!');
+          reloadDesktop();
+        });
+      };
+      reader.readAsDataURL(file);
+    });
+
+
+    reader.onloadstart = () => {
+      console.log('loading');
+    }
+    reader.onerror = () => {
+      console.log('error');
+    }
+    reader.onprogress = () => {
+      console.log('progress');
+    }
+    reader.onloadend = () => {
+      console.log('end');
+    }
+  };
+
 
   return (
     <div 
@@ -136,13 +188,16 @@ const DesktopView = () => {
     >
       <Dropzone
         onDrop={(files) => {
+          console.log(files)
           if(states.File.selectedFiles.length > 0){
             return
           }else{
+            console.log(files[0].name)
             if(getExtension(files[0].name) === 'txt'){
               handlerUploadTXTToDesktop(files[0])
-
-              
+            }
+            if(verifyIfIsImage(files[0].name)){
+              handlerUploadImageToDesktop(files[0])
             }
           }
         }}

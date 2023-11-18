@@ -22,6 +22,18 @@ export const WindowsSlice = createSlice({
         icon: "/assets/icons/browser.png",
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: "Image Reader",
+        icon: "/assets/icons/image.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: "Pokemon Fire Red",
+        icon: "/assets/icons/pokemonFR.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
       }
 
     ] as windowStateProps[]
