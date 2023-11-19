@@ -8,7 +8,7 @@ import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFolderProps } from "@/types/DesktopFolder"
 import { Dropzone } from "@mantine/dropzone"
-import { AddSelectedFile, ClearFiles, RemoveSelectedFile, WindowAddTab } from "@/store/actions"
+import { AddSelectedFile, ClearFiles, RemoveSelectedFile, SetIsRename, WindowAddTab } from "@/store/actions"
 
 const DesktopFolder = ({
   title,
@@ -32,6 +32,14 @@ const DesktopFolder = ({
       setIsItemSelected(false)
     }
   }, [states.File.selectedFiles])
+
+  useEffect(() => {
+    if(!states.File.setIsRename) return
+    if(!states.File.selectedFiles.length) return
+    if(states.File.selectedFiles.includes(path)){
+      setIsRename(true)
+    }
+  },[states.File.selectedFiles, states.File.setIsRename])
 
   return (
     <Dropzone
@@ -92,7 +100,7 @@ const DesktopFolder = ({
         {icon && <Image src={icon} alt={title} width={48} height={48} />}
         {isRename ?
           <input
-            className="w-16 h-6 bg-gray-800 text-white text-xs outline-none text-center "
+            className="w-16 h-6 bg-slate-100 bg-opacity-70 rounded text-black text-xs outline-none text-center "
             onChange={(e) => setInputValue(e.target.value)}
             autoFocus
             value={inputValue}
@@ -104,7 +112,9 @@ const DesktopFolder = ({
                   if(err){
                     console.log(err);
                   }else{
-                    console.log('renamed');
+                    setIsRename(false)
+                    dispatch(SetIsRename(false))
+                    dispatch(ClearFiles())
                   }
                 })
               }

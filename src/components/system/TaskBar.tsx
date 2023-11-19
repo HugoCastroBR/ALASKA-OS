@@ -5,9 +5,10 @@ import StartMenu from './StartMenu'
 import Image from 'next/image'
 import useStore from '@/hooks/useStore'
 import { programProps } from '@/types/programs'
-import { ClearAllFocused, WindowToggleMinimizeTab } from '@/store/actions'
+import { ClearAllFocused, WindowRemoveTab, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
+import CustomText from '../atoms/CustomText'
 
 
 
@@ -40,7 +41,25 @@ const TaskBarItem = ({tab,window,}:programProps) => {
         width={20}
         height={20}
       />
-      {truncateText(tab.ficTitle || tab.title, 12)}
+      <CustomText
+        text={truncateText(tab.ficTitle || tab.title, 12)}
+        className='text-xs'
+      />
+      <div 
+      onClick={(e) => {
+        e.stopPropagation()
+        dispatch(WindowRemoveTab({
+          title: window.title,
+          uuid: tab.uuid,
+        }))
+      
+      }}
+      className='h-4 w-4 bg-transparent flex justify-center items-center
+      rounded-sm hover:bg-cyan-400 hover:bg-opacity-30 transition-all
+      duration-200 ease-in-out
+      '>
+        <span className='i-mdi-close text-lg' ></span>
+      </div>
     </div>
   )
 }

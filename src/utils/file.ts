@@ -81,3 +81,50 @@ export const toBase64 = (file: File) =>
 export const verifyIfIsObject = (value: any) => {
   return typeof value === 'object' && value !== null;
 }
+
+interface Base64ToFileOptions {
+  fileName: string;
+  fileType: string;
+}
+export const base64ToFile = (base64String: string, options: Base64ToFileOptions): File => {
+  const { fileName, fileType } = options;
+
+  const byteCharacters = atob(base64String);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  const blob = new Blob([byteArray], { type: fileType });
+  const file = new File([blob], fileName, { type: fileType });
+
+  return file;
+};
+
+export const convertFileExtensionToFileType = (extension: string) => {
+  const fileTypes: { [key: string]: string } = {
+    'jpg': 'image/jpeg',
+    'jpeg': 'image/jpeg',
+    'png': 'image/png',
+    'gif': 'image/gif',
+    'txt': 'text/plain',
+    'pdf': 'application/pdf',
+    'zip': 'application/zip',
+    'rar': 'application/x-rar-compressed',
+    '7z': 'application/x-7z-compressed',
+    'mp3': 'audio/mpeg',
+    'mp4': 'video/mp4',
+    'webm': 'video/webm',
+    'mkv': 'video/x-matroska',
+    'doc': 'application/msword',
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    'xls': 'application/vnd.ms-excel',
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'ppt': 'application/vnd.ms-powerpoint',
+    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+  };
+
+  return fileTypes[extension];
+}

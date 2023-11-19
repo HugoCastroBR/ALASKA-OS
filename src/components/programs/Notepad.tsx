@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import useFS from '@/hooks/useFS'
 import useStore from '@/hooks/useStore'
-import { Button } from '@mantine/core'
+import { Button, Divider } from '@mantine/core'
 import CustomText from '../atoms/CustomText'
 import { extractParentPath, getExtension, removeExtension } from '@/utils/file'
 import { programProps } from '@/types/programs'
@@ -128,7 +128,6 @@ const Notepad = ({
             setSaveAsInputOpen(true)
           }}
         />
-
         <textarea
           value={text}
           autoFocus
@@ -136,7 +135,7 @@ const Notepad = ({
             setText(e.target.value)
           }}
           className='
-          w-full h-full bg-gray-200 flex flex-col resize
+          w-full h-full bg-white flex flex-col resize
           outline-none mt-6
           '
         />

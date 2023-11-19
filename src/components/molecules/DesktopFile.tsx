@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react"
 import { extractParentPath, getExtension, uuid, verifyIfIsImage } from "@/utils/file"
 import Image from "next/image"
 import CustomText from "../atoms/CustomText"
-import { AddSelectedFile, RemoveSelectedFile, WindowAddTab } from "@/store/actions"
+import { AddSelectedFile, ClearFiles, RemoveSelectedFile, SetIsRename, WindowAddTab } from "@/store/actions"
 import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
@@ -114,6 +114,14 @@ const DesktopFile = ({
     })
   }, [path,fs])
 
+  useEffect(() => {
+    if(!states.File.setIsRename) return
+    if(!states.File.selectedFiles.length) return
+    if(states.File.selectedFiles.includes(path)){
+      setIsRename(true)
+    }
+  },[states.File.selectedFiles, states.File.setIsRename])
+
   const renderIcon = () => {
     if(verifyIfIsImage(title)){
       if(Image64 === null){
@@ -190,7 +198,7 @@ const DesktopFile = ({
         {renderIcon()}
         {isRename ?
           <input
-            className="w-16 h-6 bg-gray-800 text-white text-xs outline-none text-center "
+            className="w-16 h-6 bg-slate-100 text-black rounded bg-opacity-70 text-xs outline-none text-center "
             onChange={(e) => setInputValue(e.target.value)}
             autoFocus
             value={inputValue}
@@ -202,7 +210,9 @@ const DesktopFile = ({
                   if (err) {
                     console.log(err);
                   } else {
-                    console.log('renamed');
+                    setIsRename(false)
+                    dispatch(SetIsRename(false))
+                    dispatch(ClearFiles())
                   }
                 })
               }

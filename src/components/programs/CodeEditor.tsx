@@ -3,7 +3,7 @@ import { programProps } from '@/types/programs'
 import React, { useEffect, useState } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Button, Loader } from '@mantine/core';
+import { Button, Divider, Loader } from '@mantine/core';
 import { get } from 'http';
 import { extractParentPath, getExtension, removeExtension } from '@/utils/file';
 import useFS from '@/hooks/useFS';
@@ -167,6 +167,7 @@ const CodeEditor = ({
         onMaximize={() => { }}
         onMinimize={() => { }}
       >
+
         <AppTaskMenu
           codeMode
           onSave={() => {
@@ -184,7 +185,7 @@ const CodeEditor = ({
             console.log(content)
             eval(content)
           }}
-          closeConsole={() => { 
+          closeConsole={() => {
             setConsoleOpen(!consoleOpen)
           }}
         />

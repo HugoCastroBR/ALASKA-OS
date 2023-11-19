@@ -109,162 +109,162 @@ const Explorer = ({
       resizable
       title='Explorer'
     >
-        <div
-          className='w-full h-full flex flex-col bg-slate-300 bg-opacity-40 backdrop-blur-md'>
-          <div className='flex w-full h-20  overflow-hidden'>
-            <ExplorerActionBar
-              onReload={Reload}
-              onBack={() => {
-                if (currentPath.split('/').slice(0, -1).join('/') === '') {
-                  setCurrentPath('/')
-                } else {
-                  setCurrentPath(currentPath.split('/').slice(0, -1).join('/'))
-                }
-              }}
-              path={currentPath}
-            />
-          </div>
-          <div className='flex w-full h-full'>
-            <div className='w-2/12 pt-2 bg-slate-300 bg-opacity-40 '>
-              <Group justify="center">
-                <FileButton onChange={async (e) => {
-                  if (e) {
-                    const file = e
-                    if (file.type === 'text/plain') {
-                      const fileContent = await file.text()
-                      uploadFileToDesktop(file.name, fileContent)
-                      Reload()
-                    }
-                    if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif') {
-                      const fileContent = await file.arrayBuffer()
-                      const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-                      uploadFileToDesktop(file.name, fileContentBase64)
-                    } if (file.type === 'application/pdf') {
-                      const fileContent = await file.arrayBuffer()
-                      const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-                      uploadFileToDesktop(file.name, fileContentBase64)
-                    }
-                    else {
-                      console.log('not supported')
-                      const fileContent = await file.arrayBuffer()
-                      const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-                      uploadFileToDesktop(file.name, fileContentBase64)
-                    }
+      <div
+        className='w-full h-full flex flex-col bg-slate-300 bg-opacity-40 backdrop-blur-md'>
+        <div className='flex w-full h-20  overflow-hidden'>
+          <ExplorerActionBar
+            onReload={Reload}
+            onBack={() => {
+              if (currentPath.split('/').slice(0, -1).join('/') === '') {
+                setCurrentPath('/')
+              } else {
+                setCurrentPath(currentPath.split('/').slice(0, -1).join('/'))
+              }
+            }}
+            path={currentPath}
+          />
+        </div>
+        <div className='flex w-full h-full'>
+          <div className='w-2/12 pt-2 bg-slate-300 bg-opacity-40 '>
+            <Group justify="center">
+              <FileButton onChange={async (e) => {
+                if (e) {
+                  const file = e
+                  if (file.type === 'text/plain') {
+                    const fileContent = await file.text()
+                    uploadFileToDesktop(file.name, fileContent)
+                    Reload()
                   }
-                }} >
-                  {(props) => <Button {...props}
-                    className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
-                    styles={{
-                      root: {
-                        backgroundColor: 'transparent',
-                        border: '1px solid white',
-                        borderStyle: 'dashed',
-                        color: 'white',
-                        width: '90%'
-                      }
-                    }}
-                  >
-                    <CustomText
-                      text='Upload File'
-                      className='text-white text-xs'
-                    />
-                  </Button>}
-                </FileButton>
-                <Button
-                  onClick={() => {
-                    setNewFileInputOpen(true)
-
-                  }}
+                  if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif') {
+                    const fileContent = await file.arrayBuffer()
+                    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+                    uploadFileToDesktop(file.name, fileContentBase64)
+                  } if (file.type === 'application/pdf') {
+                    const fileContent = await file.arrayBuffer()
+                    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+                    uploadFileToDesktop(file.name, fileContentBase64)
+                  }
+                  else {
+                    console.log('not supported')
+                    const fileContent = await file.arrayBuffer()
+                    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+                    uploadFileToDesktop(file.name, fileContentBase64)
+                  }
+                }
+              }} >
+                {(props) => <Button {...props}
                   className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
                   styles={{
                     root: {
                       backgroundColor: 'transparent',
                       border: '1px solid white',
+                      borderStyle: 'dashed',
                       color: 'white',
                       width: '90%'
                     }
                   }}
-                >  <CustomText
-                    text='New File'
+                >
+                  <CustomText
+                    text='Upload File'
                     className='text-white text-xs'
-                  /></Button>
-                <Button
-                  onClick={() => {
-                    setNewFolderInputOpen(true)
-                  }}
-                  className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
-                  styles={{
-                    root: {
-                      backgroundColor: 'transparent',
-                      border: '1px solid white',
-                      color: 'white',
-                      width: '90%'
-                    }
-                  }}
-                >  <CustomText
-                    text='New Folder'
-                    className='text-white text-xs'
-                  /></Button>
-              </Group>
+                  />
+                </Button>}
+              </FileButton>
+              <Button
+                onClick={() => {
+                  setNewFileInputOpen(true)
+
+                }}
+                className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
+                styles={{
+                  root: {
+                    backgroundColor: 'transparent',
+                    border: '1px solid white',
+                    color: 'white',
+                    width: '90%'
+                  }
+                }}
+              >  <CustomText
+                  text='New File'
+                  className='text-white text-xs'
+                /></Button>
+              <Button
+                onClick={() => {
+                  setNewFolderInputOpen(true)
+                }}
+                className={`hover:bg-slate-100  transition-all duration-300 ease-in-out`}
+                styles={{
+                  root: {
+                    backgroundColor: 'transparent',
+                    border: '1px solid white',
+                    color: 'white',
+                    width: '90%'
+                  }
+                }}
+              >  <CustomText
+                  text='New Folder'
+                  className='text-white text-xs'
+                /></Button>
+            </Group>
 
 
-            </div>
-            <Dropzone
-        className='w-10/12  h-full flex bg-slate-200 bg-opacity-40'
-        onMouseEnter={() => {
-          dispatch(SetMouseInDesktop(false))
-          dispatch(SetMousePath(currentPath))
-        }}
-        onMouseLeave={() => {
-          dispatch(SetMouseInDesktop(true))
-          dispatch(SetMousePath(''))
-        }}
-        onDragOver={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
-          dispatch(SetMouseInDesktop(false))
-          dispatch(SetMousePath(currentPath))
-        }}
-        onClick={(e) => {
-          e.stopPropagation()
-          e.preventDefault()
-          dispatch(WindowSetTabFocused({
-            title: window.title || '',
-            uuid: tab.uuid || '',
-          }))
+          </div>
+          <Dropzone
+            className='w-10/12  h-full flex bg-slate-200 bg-opacity-40'
+            onMouseEnter={() => {
+              dispatch(SetMouseInDesktop(false))
+              dispatch(SetMousePath(currentPath))
+            }}
+            onMouseLeave={() => {
+              dispatch(SetMouseInDesktop(true))
+              dispatch(SetMousePath(''))
+            }}
+            onDragOver={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              dispatch(SetMouseInDesktop(false))
+              dispatch(SetMousePath(currentPath))
+            }}
+            onClick={(e) => {
+              e.stopPropagation()
+              e.preventDefault()
+              dispatch(WindowSetTabFocused({
+                title: window.title || '',
+                uuid: tab.uuid || '',
+              }))
 
-        }}
-        onDrop={(files) => {
-          if(files){
-            files.forEach((file) => {
-              if(file.type === 'text/plain'){
-                file.text().then((text) => {
-                  uploadFileToCurrentPath(file.name, text)
-                  Reload()
+            }}
+            onDrop={(files) => {
+              if (files) {
+                files.forEach((file) => {
+                  if (file.type === 'text/plain') {
+                    file.text().then((text) => {
+                      uploadFileToCurrentPath(file.name, text)
+                      Reload()
+                    })
+                  }
+                  if (file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif') {
+                    file.arrayBuffer().then((buffer) => {
+                      const fileContentBase64 = Buffer.from(buffer).toString('base64')
+                      uploadFileToCurrentPath(file.name, fileContentBase64)
+                      Reload()
+                    })
+                  }
+                  if (file.type === 'application/pdf') {
+                    file.arrayBuffer().then((buffer) => {
+                      const fileContentBase64 = Buffer.from(buffer).toString('base64')
+                      uploadFileToCurrentPath(file.name, fileContentBase64)
+                      Reload()
+                    })
+                  }
                 })
+
               }
-              if(file.type === 'image/png' || file.type === 'image/jpeg' || file.type === 'image/jpg' || file.type === 'image/gif'){
-                file.arrayBuffer().then((buffer) => {
-                  const fileContentBase64 = Buffer.from(buffer).toString('base64')
-                  uploadFileToCurrentPath(file.name, fileContentBase64)
-                  Reload()
-                })
-              }
-              if(file.type === 'application/pdf'){
-                file.arrayBuffer().then((buffer) => {
-                  const fileContentBase64 = Buffer.from(buffer).toString('base64')
-                  uploadFileToCurrentPath(file.name, fileContentBase64)
-                  Reload()
-                })
-              }
-            })
-            
-          }
-          
-        }}
-      >
+
+            }}
+          >
             <div className=' w-full flex justify-start items-start flex-wrap h-auto p-2'>
-              
+
               {
                 dirFiles.map((file, index) => {
                   if (verifyIfIsFile(file)) {
@@ -292,35 +292,22 @@ const Explorer = ({
                 })
               }
 
-              {newFileInputOpen &&
+              {(states.File.setIsNewFile && !states.Mouse.mouseInDesktop) && (
                 <NewDirFileItem
                   title='New File'
                   icon='/assets/icons/file.png'
-                  inExplorer
-                  inExplorerPath={currentPath}
-                  inExplorerCB={() => {
-                    setNewFileInputOpen(false)
-                    Reload()
-                  }}
                 />
-              }
-              {
-                newFolderInputOpen &&
-                <NewDirFolderItem
-                  title='New Folder'
-                  icon='/assets/icons/folder.png'
-                  inExplorer
-                  inExplorerPath={currentPath}
-                  inExplorerCB={() => {
-                    setNewFolderInputOpen(false)
-                    Reload()
-                  }}
-                />
-              }
+              )}
+              {(states.File.setIsNewFolder && !states.Mouse.mouseInDesktop) && (
+              <NewDirFolderItem
+                title='New Folder'
+                icon='/assets/icons/folder.png'
+              />
+            )}
             </div>
-            </Dropzone>
-          </div>
+          </Dropzone>
         </div>
+      </div>
     </DefaultWindow>
   )
 }

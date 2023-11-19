@@ -53,6 +53,18 @@ export const RemoveSelectedFile = (payload:string) => {
 export const ClearFiles = () => {
   return FileActions.CLEAR_FILES()
 }
+export const SetIsRename = (payload:boolean) => {
+  return FileActions.SET_IS_RENAME(payload)
+}
+export const SetIsNewFile = (payload:boolean) => {
+  return FileActions.SET_IS_NEW_FILE(payload)
+}
+export const SetIsNewFolder = (payload:boolean) => {
+  return FileActions.SET_IS_NEW_FOLDER(payload)
+}
+export const SetCopiedFiles = () => {
+  return FileActions.SET_COPIED_FILES()
+}
 
 export const SetMousePath = (payload:string) => {
   return MouseActions.SET_MOUSE_PATH(payload)

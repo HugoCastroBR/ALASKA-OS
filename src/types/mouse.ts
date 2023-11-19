@@ -6,6 +6,7 @@ export type mouseContextMenuOptionsProps = {
 }
 
 export type MouseProps = {
+  mousePathHistory: string[];
   mousePath: string;
   mouseInDesktop: boolean;
 }

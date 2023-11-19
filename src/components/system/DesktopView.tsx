@@ -23,6 +23,8 @@ import MarkdownEditor from '../programs/MarkdownEditor';
 import RichTextEditor from '../programs/RichTextEditor';
 import PdfReader from '../programs/PdfReader';
 import CodeEditor from '../programs/CodeEditor';
+import NewDirFileItem from '../molecules/NewDirFileItem';
+import NewDirFolderItem from '../molecules/NewDirFolderItem';
 
 const DesktopView = () => {
 
@@ -220,6 +222,10 @@ const DesktopView = () => {
     })
   }
 
+  // useEffect(() => {
+  //   console.log(states.Mouse.mouseInDesktop);
+  // },[states.Mouse.mouseInDesktop])
+
   return (
     <div 
     id='desktop-view'
@@ -344,6 +350,18 @@ const DesktopView = () => {
                 )
               }
             })}
+            {(states.File.setIsNewFile && states.Mouse.mouseInDesktop) && (
+              <NewDirFileItem
+                title='New File'
+                icon='/assets/icons/file.png'
+              />
+            )}
+            {(states.File.setIsNewFolder && states.Mouse.mouseInDesktop) && (
+              <NewDirFolderItem
+                title='New Folder'
+                icon='/assets/icons/folder.png'
+              />
+            )}
         </SimpleGrid>
         {/* <SimpleGrid cols={19} verticalSpacing={2} spacing={2}>
           {generateGrid()}
