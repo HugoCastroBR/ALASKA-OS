@@ -1,14 +1,65 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
 import { SimpleGrid } from '@mantine/core';
 import DefaultWindow from '../containers/DefaultWindow';
 import Console from './Console';
+import useStore from '@/hooks/useStore';
+import useCommands from '@/hooks/useCommands';
+import { desktopPath } from '@/utils/constants';
+import useFS from '@/hooks/useFS';
+import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage } from '@/utils/file';
+import DesktopFile from '../molecules/DesktopFile';
+import { generateIcon } from '@/utils/icons';
+import DesktopFolder from '../molecules/DesktopFolder';
+import Explorer from '../programs/Explorer';
+import { ClearFiles, WindowAddTab } from '@/store/actions';
+import path from 'path';
+import Browser from '../programs/Browser';
+import ImageReader from '../programs/ImageReader';
+import PokemonFireRed from '../Games/PokemonFireRed';
+import Notepad from '../programs/Notepad';
+import MouseMenuContext from './MouseMenuContext';
+import MarkdownEditor from '../programs/MarkdownEditor';
+import RichTextEditor from '../programs/RichTextEditor';
+import PdfReader from '../programs/PdfReader';
+import CodeEditor from '../programs/CodeEditor';
+import NewDirFileItem from '../molecules/NewDirFileItem';
+import NewDirFolderItem from '../molecules/NewDirFolderItem';
 
 const DesktopView = () => {
 
+
+  const {states, dispatch} = useStore()
+  const { fs } = useFS()
+
+  const [desktopItems, setDesktopItems] = React.useState<string[]>([]);
+
+  const reloadDesktop = () => {
+    fs?.readdir(desktopPath, (err, files) => {
+      if(err){
+        console.log(err);
+      }else{
+        setDesktopItems(files || [])
+      }
+    })
+  }
+
+  useEffect(() => {
+    if(fs){
+      fs.readdir(desktopPath, (err, files) => {
+        if(err){
+          console.log(err);
+        }else{
+          setDesktopItems(files || [])
+        }
+      })
+    }
+  },[fs,states.Windows, states.File,states.Mouse])
+
+  
   const generateGrid = () => {
     const grid = []
-    for(let i = 0; i < 160; i++){
+    for(let i = 0; i < 140; i++){
       grid.push(
       <div 
         key={i}
@@ -24,6 +75,156 @@ const DesktopView = () => {
     return grid
   }
 
+  const handleRenderTabs = () => {
+    return states.Windows.windows.map((window, index) => {
+      return window.tabs.map((tab, index) => {
+        switch (tab.title) {
+          case 'Console':
+            return(
+              <Console
+              key={index}
+              tab={tab}
+              window={window}
+            />
+            )
+          case 'Explorer':
+            return(
+              <Explorer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Browser':
+            return(
+              <Browser
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Image Reader':
+            return(
+              <ImageReader
+                key={index}
+                tab={tab}
+                path={tab.value || ''}
+                window={window}
+              />
+            )
+          case 'Pokemon Fire Red':
+            return(
+              <PokemonFireRed
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Notepad':
+              return(
+                <Notepad
+                  key={index}
+                  tab={tab}
+                  window={window}
+                />
+              )
+          case 'Markdown Editor':
+            return(
+              <MarkdownEditor
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Rich Text Editor':
+            return(
+              <RichTextEditor
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'PDF Reader':
+            return (
+              <PdfReader
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Code Editor':
+            return(
+              <CodeEditor
+              key={index}
+              tab={tab}
+              window={window}
+            />
+            )
+          default:
+            return (<></>)
+        }
+      })
+    })
+  }
+
+  const handlerUploadTXTToDesktop = async (file: File) => {
+    const reader = new FileReader();
+    reader.onload = async (e) => {
+      const text = (e.target?.result || '').toString();
+      const fileName = file.name;
+      console.log(text, fileName);
+      fs?.writeFile(`${desktopPath}/${fileName}`, text, (err) => {
+        if (err) throw err;
+        console.log('File Saved!');
+        reloadDesktop()
+      })
+      
+    };
+    reader.readAsText(file);
+  }
+
+  const handlerUploadImageToDesktop = async (file: File) => {
+
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  };
+
+  const handlerUploadPDFToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
+  const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
+  const [x, setX] = React.useState(0)
+  const [y, setY] = React.useState(0)
+
+  const reloadPath = (path:string) => {
+    fs?.readdir(path, (err, files) => {
+      if(err){
+        console.log(err);
+      }else{
+        if(path === desktopPath){
+          setDesktopItems(files || [])
+        }
+      }
+    })
+  }
+
+  // useEffect(() => {
+  //   console.log(states.Mouse.mouseInDesktop);
+  // },[states.Mouse.mouseInDesktop])
 
   return (
     <div 
@@ -31,19 +232,140 @@ const DesktopView = () => {
     className='w-full 
     overflow-hidden
     '
+    onContextMenu={(e) => {
+      e.preventDefault()
+      setX(e.pageX)
+      setY(e.pageY)
+      setIsRightMenuOpen(true)
+    }}
+    onClick={() => {
+      setIsRightMenuOpen(false)
+    }}
     style={{
       height: 'calc(100vh - 40px)'
     }}
     >
-      <Dropzone
-        onDrop={(files) => console.log(files)}
-        className='w-full h-full flex justify-center items-center'
-        onClick={(e) => e.stopPropagation()}
+      <MouseMenuContext
+          onRefresh={() => {
+            reloadPath('/Desktop')
+          }}
+          visible={isRightMenuOpen}
+          x={x}
+          y={y}
+        />
+      <Dropzone 
+        disabled={!states.Mouse.mouseInDesktop}
+        onDrop={(files) => {
+          if(!states.Mouse.mouseInDesktop) return
+          if(states.File.selectedFiles.length > 0){
+            return
+          }else{
+            files.forEach((file) => {
+              if(getExtension(file.name) === 'txt'){
+                handlerUploadTXTToDesktop(file)
+              }
+              if(verifyIfIsImage(file.name)){
+                handlerUploadImageToDesktop(file)
+              }
+              if(getExtension(file.name) === 'pdf'){
+                handlerUploadPDFToDesktop(file)
+              }
+            })
+          }
+        }}
+        className='w-full h-full flex justify-start items-start flex-wrap'
+        onClick={(e) => {
+          e.stopPropagation()
+          setIsRightMenuOpen(false)
+        }}
+        onDoubleClick={
+          (e) => {
+            e.stopPropagation()
+            dispatch(ClearFiles())
+          }
+        }
       >
-        <SimpleGrid cols={20} verticalSpacing={1} spacing={2}>
-          <Console/>
-          {/* {generateGrid()} */}
+        {handleRenderTabs()}
+        
+        <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
+          className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
+          {states.Windows.windows.map((window, index) => {
+            if(window.showOnDesktop){
+              return(
+                <DesktopFile
+                  key={index}
+                  path='/'
+                  icon={window.icon || '/assets/icons/Alaska.png'}
+                  title={window.title}
+                  isProgram
+                  onDoubleClick={() => {
+                    console.log('open window')
+                    dispatch(WindowAddTab({
+                      title: window.title,
+                      tab: {
+                        uuid: uuid(6),
+                        title: window.title,
+                        maximized: false,
+                        minimized: false,
+                        value: '/Desktop'
+                      }
+                    }))
+                  }}
+                />
+              )
+            }
+            
+          })}
+          {desktopItems.map((item, index) => {
+              if(verifyIfIsFile(item)){
+                return(
+                  <DesktopFile
+                    key={index}
+                    title={item}
+                    path={`${desktopPath}/${item}`}
+                    icon={generateIcon(getExtension(item)) || '/assets/icons/file.png'}
+                  />
+                )
+                
+              }else{
+                return(
+                  <DesktopFolder
+                  onDoubleClick={() => {
+                    dispatch(WindowAddTab({
+                      title: 'Explorer',
+                      tab: {
+                        uuid: uuid(6),
+                        title: 'Explorer',
+                        maximized: false,
+                        minimized: false,
+                        value: `${desktopPath}/${item}`
+                      }
+                    }))
+                  }}
+                  key={index}
+                  title={item}
+                  path={`${desktopPath}/${item}`}
+                  icon={generateIcon(getExtension(item)) || '/assets/icons/folder.png'}
+                />
+                )
+              }
+            })}
+            {(states.File.setIsNewFile && states.Mouse.mouseInDesktop) && (
+              <NewDirFileItem
+                title='New File'
+                icon='/assets/icons/file.png'
+              />
+            )}
+            {(states.File.setIsNewFolder && states.Mouse.mouseInDesktop) && (
+              <NewDirFolderItem
+                title='New Folder'
+                icon='/assets/icons/folder.png'
+              />
+            )}
         </SimpleGrid>
+        {/* <SimpleGrid cols={19} verticalSpacing={2} spacing={2}>
+          {generateGrid()}
+        </SimpleGrid> */}
       </Dropzone>
     </div>
   )
