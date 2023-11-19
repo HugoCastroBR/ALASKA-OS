@@ -26,6 +26,7 @@ import CodeEditor from '../programs/CodeEditor';
 import NewDirFileItem from '../molecules/NewDirFileItem';
 import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
+import Music from '../programs/Music';
 
 const DesktopView = () => {
 
@@ -294,7 +295,7 @@ const DesktopView = () => {
           }
         }
       >
-        
+        <Music/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
