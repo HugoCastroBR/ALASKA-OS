@@ -64,6 +64,12 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/vscode.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: 'Calendar',
+        icon: '/assets/icons/calendar.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
       }
 
     ] as windowStateProps[]
