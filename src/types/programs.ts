@@ -26,3 +26,21 @@ export type explorerActionBarProps = {
 export type ImageReaderProps = programProps & {
   path: string
 } 
+
+export type MusicProps = {
+  title: string
+  artist: string
+  cover: string
+  musicFile: File
+  duration: number
+}
+
+export type MusicItemProps = {
+  title: string
+  artist: string
+  cover: string
+  musicFile: File
+  duration: number
+  currentPlaying?: boolean
+  onClick?: (music:MusicProps) => void
+}

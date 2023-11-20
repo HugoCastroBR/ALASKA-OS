@@ -1,3 +1,4 @@
+
 export const verifyIfIsFile = (filename: string) => {
   const parts = filename.split('.');
   return parts.length > 1;
@@ -127,4 +128,37 @@ export const convertFileExtensionToFileType = (extension: string) => {
   };
 
   return fileTypes[extension];
+}
+
+export const getExtensionFromBase64 = (base64String: string) => {
+  const parts = base64String.split(';');
+  const contentType = parts[0].split(':')[1];
+  return contentType.split('/')[1];
+}
+
+export const getMp3SecondsDuration = async (file: File) => {
+  const audio = new Audio();
+  audio.src = URL.createObjectURL(file);
+  await audio.load();
+  const duration = audio.duration;
+  URL.revokeObjectURL(audio.src);
+  return duration;
+};
+
+
+export async function getMP3Duration(file: File): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const audio = new Audio();
+
+    audio.addEventListener('loadedmetadata', () => {
+      const duration = audio.duration;
+      resolve(duration);
+    });
+
+    audio.addEventListener('error', (err) => {
+      reject(err);
+    });
+
+    audio.src = URL.createObjectURL(file);
+  });
 }

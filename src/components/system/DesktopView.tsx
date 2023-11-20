@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react'
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import { SimpleGrid } from '@mantine/core';
-import DefaultWindow from '../containers/DefaultWindow';
 import Console from './Console';
 import useStore from '@/hooks/useStore';
-import useCommands from '@/hooks/useCommands';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
 import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage } from '@/utils/file';
@@ -13,7 +11,6 @@ import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
 import { ClearFiles, WindowAddTab } from '@/store/actions';
-import path from 'path';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -26,7 +23,7 @@ import CodeEditor from '../programs/CodeEditor';
 import NewDirFileItem from '../molecules/NewDirFileItem';
 import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
-import Music from '../programs/Music';
+import MusicPlayer from '../programs/MusicPlayer';
 
 const DesktopView = () => {
 
@@ -295,7 +292,7 @@ const DesktopView = () => {
           }
         }
       >
-        <Music/>
+        <MusicPlayer/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
