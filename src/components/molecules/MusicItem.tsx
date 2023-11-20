@@ -42,7 +42,7 @@ const MusicItem = ({
           title,
           artist,
           cover,
-          duration,
+          duration: seconds,
           musicFile,
         })
       }}

@@ -1,5 +1,6 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
-import { AppActions, WindowsActions,FileActions,MouseActions } from './index';
+import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions } from './index';
+import { MusicProps } from '@/types/programs';
 
 
 
@@ -72,3 +73,54 @@ export const SetMousePath = (payload:string) => {
 export const SetMouseInDesktop = (payload:boolean) => {
   return MouseActions.SET_MOUSE_IN_DESKTOP(payload)
 }
+
+
+export const AddMusic = (payload:MusicProps) => {
+  return MusicsActions.ADD_MUSIC(payload)
+}
+export const SetMusics = (payload:MusicProps[]) => {
+  return MusicsActions.SET_MUSICS(payload)
+}
+export const SetCurrentMusicIndex = (payload:number) => {
+  return MusicsActions.SET_CURRENT_MUSIC_INDEX(payload)
+}
+export const SetIsPlaying = (payload:boolean) => {
+  return MusicsActions.SET_IS_PLAYING(payload)
+}
+export const SetIsShuffle = (payload:boolean) => {
+  return MusicsActions.SET_IS_SHUFFLE(payload)
+}
+export const SetIsRepeat = (payload:boolean) => {
+  return MusicsActions.SET_IS_REPEAT(payload)
+}
+export const SetIsMuted = (payload:boolean) => {
+  return MusicsActions.SET_IS_MUTED(payload)
+}
+export const SetVolume = (payload:number) => {
+  return MusicsActions.SET_VOLUME(payload)
+}
+export const SetProgress = (payload:number) => {
+  return MusicsActions.SET_PROGRESS(payload)
+}
+export const SetDuration = (payload:number) => {
+  return MusicsActions.SET_DURATION(payload)
+}
+export const SetCurrentMusic = (payload:MusicProps) => {
+  return MusicsActions.SET_CURRENT_MUSIC(payload)
+}
+export const SetIsPaused = (payload:boolean) => {
+  return MusicsActions.SET_IS_PAUSED(payload)
+}
+export const SetNextMusic = () => {
+  return MusicsActions.SET_NEXT_MUSIC()
+}
+export const SetPreviousMusic = () => {
+  return MusicsActions.SET_PREVIOUS_MUSIC()
+}
+export const AddToQueue = (payload:MusicProps) => {
+  return MusicsActions.ADD_MUSIC_TO_QUEUE(payload)
+}
+export const RemoveFromQueue = (payload:MusicProps) => {
+  return MusicsActions.REMOVE_MUSIC_FROM_QUEUE(payload)
+}
+

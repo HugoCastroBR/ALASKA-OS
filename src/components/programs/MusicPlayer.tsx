@@ -10,40 +10,29 @@ import { ApiError } from 'next/dist/server/api-utils'
 import { secondsToMinutes } from '@/utils/date'
 import { MusicItemProps, MusicProps } from '@/types/programs'
 import MusicItem from '../molecules/MusicItem'
+import useStore from '@/hooks/useStore'
+import { AddMusic, AddToQueue, SetCurrentMusic, SetIsPaused, SetIsPlaying, SetProgress } from '@/store/actions'
 
 function MusicPlayer() {
 
   const { fs } = useFS()
+  const {states, dispatch} = useStore()
 
-  const [currentSongTitle, setCurrentSongTitle] = React.useState(' Song Title')
-  const [currentArtistName, setCurrentArtistName] = React.useState('Artist Name')
-  const [currentCover, setCurrentCover] = React.useState('/assets/icons/zero.png')
-  const [musicDurationTime, setMusicDurationTime] = React.useState(213)
-  const [musicCurrentTime, setMusicCurrentTime] = React.useState(193)
-  const [currentProgress, setCurrentProgress] = React.useState(0)
+  const [musicCurrentTime, setMusicCurrentTime] = React.useState(0)
   const [currentVolume, setCurrentVolume] = React.useState(0.5)
   const [searchInputValue, setSearchInputValue] = React.useState('')
   const [queue, setQueue] = React.useState<MusicProps[]>([])
 
-  const calculateProgress = () => {
-    const progress = (musicCurrentTime / musicDurationTime) * 100
-    setCurrentProgress(progress)
-  }
+
 
   useEffect(() => {
-    calculateProgress()
     LoadMusicFiles()
   }, [fs])
 
 
-  useEffect(() => {
-    setCurrentArtistName(queue[0]?.artist || 'Artist Name')
-    setCurrentSongTitle(queue[0]?.title || 'Song Title')
-    setCurrentCover(`data:image/png;base64,${queue[0]?.cover}`|| '/assets/icons/Alaska.png')
-    setMusicDurationTime(queue[0]?.duration || 213)
-    setMusicCurrentTime(0)
 
-  }, [queue])
+
+
 
 
 
@@ -101,6 +90,7 @@ function MusicPlayer() {
 
                 }
                 console.log('Music Uploaded')
+                setIsLoading(false)
               })
             })
           })
@@ -113,7 +103,9 @@ function MusicPlayer() {
 
   
 
-  const [MusicsToRender, setMusicsToRender] = React.useState<MusicItemProps[]>([])
+
+
+
   const LoadMusicFiles = () => {
     console.log('Loading Musics')
 
@@ -147,7 +139,7 @@ function MusicPlayer() {
             MusicToRender.musicFile = musicFile
             MusicToRender.duration = 213
             setIsLoading(false)
-            setMusicsToRender([...MusicsToRender, MusicToRender])
+            dispatch(AddMusic(MusicToRender))
           }
         })
       })
@@ -155,8 +147,72 @@ function MusicPlayer() {
   }
   
 
+  
+
+  const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    if(!states.Musics.isPaused){
+      setAudioElement((audioElement) => {
+        audioElement?.play()
+        return audioElement
+      })
+    }else{
+      setAudioElement((audioElement) => {
+        audioElement?.pause()
+        return audioElement
+      })
+    }
+  }, [states.Musics.isPaused])
+  const HandlerPlayMusic = (music:MusicProps) => {
+    console.log('Play Music')
+    dispatch(SetCurrentMusic({
+      ...music,
+      cover: `data:image/png;base64,${music.cover}`|| '/assets/icons/Alaska.png',
+    }))
+    // setMusicDurationTime(music.duration)
+    setMusicCurrentTime(0)
+    
+    const audio = URL.createObjectURL(music.musicFile)
+    setAudioElement(new Audio(audio))
+    setAudioElement((audioElement) => {
+      audioElement?.play()
+      return audioElement
+    })
+    dispatch(SetIsPlaying(true))
+    dispatch(SetProgress(0))
+    dispatch(SetIsPaused(false))
+    setAudioElement((audioElement) => {
+      audioElement?.addEventListener('timeupdate', (ev) => {
+        setMusicCurrentTime(audioElement.currentTime)
+        dispatch(SetProgress((audioElement.currentTime / music.duration) * 100))
+      })
+      audioElement?.addEventListener('ended', (ev) => {
+        console.log('Music Ended')
+        dispatch(SetIsPlaying(false))
+        dispatch(SetIsPaused(true))
+      })
+      audioElement?.addEventListener('pause', (ev) => {
+        dispatch(SetIsPaused(true))
+      })
+      audioElement?.addEventListener('play', (ev) => {
+        dispatch(SetIsPaused(false))
+      })
+      return audioElement
+    })
+  }
+
+// audioElement.ontimeupdate = (ev) => {
+//       setMusicCurrentTime(audioElement.currentTime)
+//       dispatch(SetProgress((audioElement.currentTime / music.duration) * 100))
+//     }
 
 
+  // const EverySecondAddToMusicCurrentTime = () => {
+  //   setInterval(() => {
+  //     calculateMusicCurrentTime()
+  //   }, 1000)
+  // }
 
 
 
@@ -228,6 +284,8 @@ function MusicPlayer() {
       }
     })
   }
+
+
 
   const UploadMusicCoverItem = () => {
     return (
@@ -389,29 +447,18 @@ function MusicPlayer() {
               
 
               {
-                MusicsToRender.map((musicItem) => {
+                states.Musics.musics.map((musicItem,index) => {
                   return(
                     <MusicItem
+                    key={index}
                     {...musicItem}
                     onClick={(music) => {
-                      setQueue([...queue, music])
+                      dispatch(AddToQueue(music))
                     }}
                     />
                   )
                 })
               }
-              {/* {MusicsReadyToRender.map((music) => {
-                console.log(music)
-                return (
-                  <MusicItem
-                    title={music.title}
-                    artist={music.artist}
-                    cover={music.cover}
-                    duration={music.duration}
-                    currentPlaying={music.currentPlaying}
-                  />
-                )
-              })} */}
             </div>
           </div>
           <div className='w-6/12 h-full flex flex-col px-2 pt-1 '>
@@ -443,14 +490,13 @@ function MusicPlayer() {
             </div>
             <div className='w-full h-[calc(100%-40px)] overflow-x-hidden overflow-y-auto'>
               
-{/* TODOOoooo Render Musics */}
               {
-                queue.map((music) => {
+                states.Musics.queue.map((music) => {
                   return(
                     <MusicItem
                     {...music}
-                    onClick={() => {
-                      console.log('Play Music')
+                    onClick={(music) => {
+                      HandlerPlayMusic(music)
                     }}
                     />
                   )
@@ -464,7 +510,7 @@ function MusicPlayer() {
             <div className='w-1/3 h-16  flex justify-center items-center'>
               <div className='w-16 h-16 overflow-hidden rounded'>
                 <Image
-                  src={currentCover || '/assets/icons/Alaska.png'}
+                  src={states.Musics.currentMusic.cover || '/assets/icons/Alaska.png'}
                   alt='music'
                   height={64}
                   width={64}
@@ -473,11 +519,11 @@ function MusicPlayer() {
             </div>
             <div className='h-16 w-2/3 flex flex-col items-start px-px pr-1 justify-start'>
               <CustomText
-                text={truncateText(currentSongTitle, 18)}
+                text={truncateText(states.Musics.currentMusic.title , 18)}
                 className='text-sm font-semibold'
               />
               <CustomText
-                text={truncateText(currentArtistName, 16)}
+                text={truncateText(states.Musics.currentMusic.artist , 16)}
                 className='text-sm mt-0.5'
               />
 
@@ -496,9 +542,20 @@ function MusicPlayer() {
               bg-slate-800 mx-1 h-8 w-8 flex justify-center items-center rounded-full
               cursor-pointer hover:bg-slate-500 transition-all duration-300 ease-in-out
               '
-                onClick={() => { }}
+                onClick={() => {
+                  if (states.Musics.isPaused) {
+                    dispatch(SetIsPaused(false))
+                  } else {
+                    dispatch(SetIsPaused(true))
+                  }
+                }}
               >
-                <span className='i-mdi-play text-2xl text-white cursor-pointer' />
+                {!states.Musics.isPaused ?
+                  <span className='i-mdi-pause text-2xl text-white cursor-pointer' />
+                  :
+                  <span className='i-mdi-play text-2xl text-white cursor-pointer' />
+                }
+
               </div>
 
               <span
@@ -518,7 +575,7 @@ function MusicPlayer() {
               </div>
               <div className='w-10/12 px-1'>
                 <Progress
-                  value={currentProgress}
+                  value={states.Musics.progress}
                   color='blue'
                   h={6}
                   radius={6}
@@ -526,7 +583,7 @@ function MusicPlayer() {
               </div>
               <div className='w-1/12 flex justify-center'>
                 <CustomText
-                  text={secondsToMinutes(musicDurationTime)}
+                  text={secondsToMinutes(states.Musics.currentMusic.duration)}
                   className='text-xs'
                 />
               </div>

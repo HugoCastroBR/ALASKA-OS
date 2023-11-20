@@ -1,4 +1,3 @@
-import { DefaultWindowProps } from "./containers"
 import { tabStateProps, windowStateProps } from "./windows"
 
 export type programProps = {
