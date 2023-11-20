@@ -4,14 +4,14 @@ import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import Image from 'next/image'
 import { truncateText } from '@/utils/text'
-import {  base64ToFile, convertSizeToKBMBGB, getExtension, uuid } from '@/utils/file'
+import {  base64ToFile, convertSizeToKBMBGB, getExtension, getMP3Duration, uuid } from '@/utils/file'
 import useFS from '@/hooks/useFS'
 import { ApiError } from 'next/dist/server/api-utils'
 import { secondsToMinutes } from '@/utils/date'
 import { MusicItemProps, MusicProps } from '@/types/programs'
 import MusicItem from '../molecules/MusicItem'
 import useStore from '@/hooks/useStore'
-import { AddMusic, AddToQueue, SetCurrentMusic, SetIsPaused, SetIsPlaying, SetProgress } from '@/store/actions'
+import { AddMusic, AddToQueue, ClearMusic, SetCurrentMusic, SetCurrentPlayingIndex, SetIsPaused, SetIsPlaying, SetMusics, SetProgress, SetVolume } from '@/store/actions'
 
 function MusicPlayer() {
 
@@ -19,20 +19,12 @@ function MusicPlayer() {
   const {states, dispatch} = useStore()
 
   const [musicCurrentTime, setMusicCurrentTime] = React.useState(0)
-  const [currentVolume, setCurrentVolume] = React.useState(0.5)
-  const [searchInputValue, setSearchInputValue] = React.useState('')
-  const [queue, setQueue] = React.useState<MusicProps[]>([])
 
 
 
   useEffect(() => {
     LoadMusicFiles()
   }, [fs])
-
-
-
-
-
 
 
 
@@ -91,6 +83,8 @@ function MusicPlayer() {
                 }
                 console.log('Music Uploaded')
                 setIsLoading(false)
+                setUploadMusicOpen(false)
+                LoadMusicFiles()
               })
             })
           })
@@ -108,25 +102,35 @@ function MusicPlayer() {
 
   const LoadMusicFiles = () => {
     console.log('Loading Musics')
+    dispatch(SetMusics([]))
 
     
     fs?.readdir('/Musics', (err, folders) => {
       if (err) throw err
       if (folders?.length === 0) return
       folders?.map((folder) => {
-        let MusicToRender = {} as MusicItemProps
+        let MusicToRender = {
+          music:{
+            artist: 'Unknown Artist',
+            title: 'Unknown Title',
+            cover: '',
+            duration: 0,
+            musicFile: null,
+            uuid: uuid(6),
+          }
+        } as MusicItemProps
         fs?.readFile(`/Musics/${folder}/about.txt`, 'utf8', (err, data) => {
           if (err) throw err
           if (data) {
             const aboutJson = JSON.parse(data)
-            MusicToRender.artist = aboutJson.artist
-            MusicToRender.title = aboutJson.title
+            MusicToRender.music.artist = aboutJson.artist || 'Unknown Artist'
+            MusicToRender.music.title = aboutJson.title || 'Unknown Title'
           }
         })
         fs?.readFile(`/Musics/${folder}/image.png`, 'utf8', (err, data) => {
           if (err) throw err
           if (data) {
-            MusicToRender.cover = data
+            MusicToRender.music.cover = data
           }
         })
         fs?.readFile(`/Musics/${folder}/music.mp3`, 'utf8', (err, data) => {
@@ -136,10 +140,10 @@ function MusicPlayer() {
               fileName: 'music.mp3',
               fileType: 'audio/mpeg',
             })
-            MusicToRender.musicFile = musicFile
-            MusicToRender.duration = 213
+            MusicToRender.music.musicFile = musicFile
+            MusicToRender.music.duration = 0
             setIsLoading(false)
-            dispatch(AddMusic(MusicToRender))
+            dispatch(AddMusic(MusicToRender.music))
           }
         })
       })
@@ -151,21 +155,55 @@ function MusicPlayer() {
 
   const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null)
 
-  useEffect(() => {
-    if(!states.Musics.isPaused){
-      setAudioElement((audioElement) => {
-        audioElement?.play()
-        return audioElement
-      })
+
+  const HandlerChangeVolume = (value: number) => {
+    if(!audioElement) return
+    audioElement.volume = value
+    dispatch(SetVolume(value))
+  }
+  const CleanMusic = () => {
+    dispatch(ClearMusic())
+    setAudioElement((audioElement) => {
+      audioElement?.pause()
+      return audioElement
+    })
+  }
+
+  const HandlerPauseMusic = () => {
+    console.log('Pause Music')
+    setAudioElement((audioElement) => {
+      audioElement?.pause()
+      return audioElement
+    })
+    dispatch(SetIsPlaying(false))
+    dispatch(SetIsPaused(true))
+  }
+
+  const HandlerUnpauseMusic = () => {
+    console.log('Unpause Music')
+    setAudioElement((audioElement) => {
+      audioElement?.play()
+      return audioElement
+    })
+    dispatch(SetIsPlaying(true))
+    dispatch(SetIsPaused(false))
+  }
+
+  const HandlerTogglePauseMusic = () => {
+    if(states.Musics.isPaused){
+      HandlerUnpauseMusic()
     }else{
-      setAudioElement((audioElement) => {
-        audioElement?.pause()
-        return audioElement
-      })
+      HandlerPauseMusic()
     }
-  }, [states.Musics.isPaused])
+  }
+
   const HandlerPlayMusic = (music:MusicProps) => {
+    if(states.Musics.isPlaying){
+      CleanMusic()
+    }
+
     console.log('Play Music')
+    console.log(music)
     dispatch(SetCurrentMusic({
       ...music,
       cover: `data:image/png;base64,${music.cover}`|| '/assets/icons/Alaska.png',
@@ -173,6 +211,7 @@ function MusicPlayer() {
     // setMusicDurationTime(music.duration)
     setMusicCurrentTime(0)
     
+    if(!music.musicFile) return
     const audio = URL.createObjectURL(music.musicFile)
     setAudioElement(new Audio(audio))
     setAudioElement((audioElement) => {
@@ -202,17 +241,47 @@ function MusicPlayer() {
     })
   }
 
-// audioElement.ontimeupdate = (ev) => {
-//       setMusicCurrentTime(audioElement.currentTime)
-//       dispatch(SetProgress((audioElement.currentTime / music.duration) * 100))
-//     }
+  const HandlerPlayNextMusic = async () => {
+    states.Musics.musics.map(async (music,index) => {
+      console.log(music)
+      if(index === states.Musics.musics.length - 1){
+        const MusicToPlay = states.Musics.musics[0]
+        if(!MusicToPlay.musicFile) return
+        const MusicDuration = await getMP3Duration(MusicToPlay.musicFile)
+        dispatch(SetCurrentPlayingIndex(0))
+        HandlerPlayMusic({
+          ...MusicToPlay,
+          duration: MusicDuration,
+        })
+      }
+      if(index === states.Musics.currentPlayingIndex + 1){
+        const musicToPlay = music
+        if(!musicToPlay.musicFile) return
+        const MusicDuration = await getMP3Duration(musicToPlay.musicFile)
+        HandlerPlayMusic({
+          ...musicToPlay,
+          duration: MusicDuration,
+        })
+        dispatch(SetCurrentPlayingIndex(index))
+      }
+    })
+  }
 
+  const HandlerPlayPreviousMusic = async () => {
+    states.Musics.musics.map((music,index) => {
+      if(index === 0){
+        dispatch(SetCurrentPlayingIndex(states.Musics.musics.length - 1))
+        const musicToPlay = states.Musics.musics[states.Musics.musics.length - 1]
+        HandlerPlayMusic(musicToPlay)
+      }
+      if(index === states.Musics.currentPlayingIndex - 1){
+        const MusicToPlay = music
+        HandlerPlayMusic(MusicToPlay)
+        dispatch(SetCurrentPlayingIndex(index))
+      }
+    })
+  }
 
-  // const EverySecondAddToMusicCurrentTime = () => {
-  //   setInterval(() => {
-  //     calculateMusicCurrentTime()
-  //   }, 1000)
-  // }
 
 
 
@@ -432,7 +501,7 @@ function MusicPlayer() {
 
       <div className='flex flex-col w-full h-full'>
         <div className='w-full h-5/6 flex pt-1 px-1'>
-          <div className='w-3/12 h-full  flex-col items-start justify-start'>
+          <div className='w-full h-full  flex-col items-start justify-start'>
             <div className='
               w-full h-10 flex justify-center items-center
               border-b border-slate-300 -ml-0.5
@@ -450,53 +519,14 @@ function MusicPlayer() {
                 states.Musics.musics.map((musicItem,index) => {
                   return(
                     <MusicItem
+                    index={index}
+                    music={musicItem}
                     key={index}
                     {...musicItem}
                     onClick={(music) => {
-                      dispatch(AddToQueue(music))
-                    }}
-                    />
-                  )
-                })
-              }
-            </div>
-          </div>
-          <div className='w-6/12 h-full flex flex-col px-2 pt-1 '>
-            <div className='pb-1 flex h-8 w-full justify-center items-center'>
-              <input
-                type='text'
-                className='w-2/3 h-8 border border-slate-300 rounded-md px-2 outline-none'
-                placeholder='Search'
-                value={searchInputValue}
-                onChange={(e) => setSearchInputValue(e.target.value)}
-                autoFocus
-              />
-            </div>
-            <div className='w-full h-full overflow-x-hidden overflow-y-auto flex flex-wrap  pt-2'>
-              
-{/* TODOOoooo Render Musics */}
-
-            </div>
-          </div>
-          <div className='w-3/12 h-full'>
-            <div className='
-              w-full h-10 flex justify-center items-center
-              border-b border-slate-300 -ml-0.5
-            '>
-              <CustomText
-                text='Queue'
-                className='text-xl font-semibold'
-              />
-            </div>
-            <div className='w-full h-[calc(100%-40px)] overflow-x-hidden overflow-y-auto'>
-              
-              {
-                states.Musics.queue.map((music) => {
-                  return(
-                    <MusicItem
-                    {...music}
-                    onClick={(music) => {
+                      console.log(music.uuid)
                       HandlerPlayMusic(music)
+                      dispatch(SetCurrentPlayingIndex(index))
                     }}
                     />
                   )
@@ -519,11 +549,11 @@ function MusicPlayer() {
             </div>
             <div className='h-16 w-2/3 flex flex-col items-start px-px pr-1 justify-start'>
               <CustomText
-                text={truncateText(states.Musics.currentMusic.title , 18)}
+                text={truncateText(states.Musics.currentMusic.title , 64)}
                 className='text-sm font-semibold'
               />
               <CustomText
-                text={truncateText(states.Musics.currentMusic.artist , 16)}
+                text={truncateText(states.Musics.currentMusic.artist , 64)}
                 className='text-sm mt-0.5'
               />
 
@@ -535,20 +565,14 @@ function MusicPlayer() {
               <span
                 className='i-mdi-skip-previous text-4xl mx-1 cursor-pointer
               hover:bg-slate-500 transition-all duration-300 ease-in-out'
-                onClick={() => { }}
+                onClick={HandlerPlayPreviousMusic}
               />
 
               <div className='
               bg-slate-800 mx-1 h-8 w-8 flex justify-center items-center rounded-full
               cursor-pointer hover:bg-slate-500 transition-all duration-300 ease-in-out
               '
-                onClick={() => {
-                  if (states.Musics.isPaused) {
-                    dispatch(SetIsPaused(false))
-                  } else {
-                    dispatch(SetIsPaused(true))
-                  }
-                }}
+                onClick={HandlerTogglePauseMusic}
               >
                 {!states.Musics.isPaused ?
                   <span className='i-mdi-pause text-2xl text-white cursor-pointer' />
@@ -562,7 +586,7 @@ function MusicPlayer() {
                 className='i-mdi-skip-next text-4xl mx-1 cursor-pointer
               hover:bg-slate-500 transition-all duration-300 ease-in-out
               '
-                onClick={() => { }}
+                onClick={HandlerPlayNextMusic}
               />
 
             </div>
@@ -598,7 +622,11 @@ function MusicPlayer() {
                 h={6}
                 w={'100%'}
                 color='black'
-                value={currentVolume * 100}
+                value={Number((states.Musics.volume * 100).toFixed(0))}
+                onChange={(value) => {
+                  HandlerChangeVolume(value / 100)
+                
+                }}
               />
             </div>
           </div>

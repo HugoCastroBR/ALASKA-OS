@@ -123,4 +123,9 @@ export const AddToQueue = (payload:MusicProps) => {
 export const RemoveFromQueue = (payload:MusicProps) => {
   return MusicsActions.REMOVE_MUSIC_FROM_QUEUE(payload)
 }
-
+export const ClearMusic = () => {
+  return MusicsActions.CLEAR_MUSIC()
+}
+export const SetCurrentPlayingIndex = (payload:number) => {
+  return MusicsActions.SET_CURRENT_PLAYING_INDEX(payload)
+}

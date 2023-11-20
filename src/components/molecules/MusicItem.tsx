@@ -2,34 +2,34 @@ import { MusicItemProps } from "@/types/programs"
 import CustomText from "../atoms/CustomText"
 import Image from 'next/image'
 import { secondsToMinutes } from "@/utils/date"
-import { getMP3Duration, getMp3SecondsDuration } from "@/utils/file"
+import { getMP3Duration, uuid } from "@/utils/file"
 import { useEffect, useState } from "react"
+import useStore from "@/hooks/useStore"
 
 
 
 const MusicItem = ({
-  title,
-  artist,
-  cover,
-  duration,
-  currentPlaying = false,
+  music,
+  index,
   onClick,
-  musicFile,
 }: MusicItemProps) => {
 
   const [seconds, setSeconds] = useState<number>(0)
+  const [currentPlaying, setCurrentPlaying] = useState<boolean>(false)
 
+  const {states, dispatch} = useStore()
 
   const handlerLoadSeconds = async () => {
-    if(!musicFile) return
-    const seconds = await getMP3Duration(musicFile)
+    if(!music.musicFile) return
+    const seconds = await getMP3Duration(music.musicFile)
     console.log(seconds)
     setSeconds(seconds)
   }
   useEffect(() => {
     handlerLoadSeconds()
-  },[musicFile])
+  },[music.musicFile,states.Musics])
   
+
 
   return (
     <div
@@ -39,17 +39,18 @@ const MusicItem = ({
     `}
       onClick={() => {
         onClick && onClick({
-          title,
-          artist,
-          cover,
+          uuid: uuid(6),
+          title: music.title,
+          artist: music.artist,
+          cover: music.cover,
           duration: seconds,
-          musicFile,
+          musicFile: music.musicFile,
         })
       }}
     >
       <div className='w-16 h-16 overflow-hidden'>
         <Image
-          src={`data:image/png;base64,${cover}`}
+          src={`data:image/png;base64,${music.cover}`}
           alt='music'
           height={64}
           width={64}
@@ -57,11 +58,11 @@ const MusicItem = ({
       </div>
       <div className=' w-[calc(100%-96px)]   h-full flex flex-col justify-start items-start pl-1'>
         <CustomText
-          text={title}
+          text={music.title}
           className='text-sm font-semibold'
         />
         <CustomText
-          text={artist}
+          text={music.artist}
           className='text-xs'
         />
       </div>

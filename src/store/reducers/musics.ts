@@ -14,7 +14,8 @@ type MusicSliceProps = {
   volume: number;
   progress: number;
   duration: number;
-  currentMusic: MusicProps ;
+  currentPlayingIndex: number;
+  currentMusic: MusicProps;
 
 }
 
@@ -29,9 +30,10 @@ export const MusicsSlice = createSlice({
     isShuffle: false,
     isRepeat: false,
     isMuted: false,
-    volume: 0.5,
+    volume: 1,
     progress: 0,
     duration: 0,
+    currentPlayingIndex: 0,
     currentMusic: {} as MusicProps,
   } as MusicSliceProps,
   reducers: {
@@ -90,6 +92,20 @@ export const MusicsSlice = createSlice({
     },
     REMOVE_MUSIC_FROM_QUEUE(state, { payload }: { payload: MusicProps }) {
       state.queue = state.queue.filter((music) => music !== payload);
+    },
+    CLEAR_MUSIC(state) {
+      state.currentMusicIndex = 0;
+      state.isPaused = true;
+      state.isPlaying = false;
+      state.isShuffle = false;
+      state.isRepeat = false;
+      state.isMuted = false;
+      state.progress = 0;
+      state.duration = 0;
+      state.currentMusic = {} as MusicProps;
+    },
+    SET_CURRENT_PLAYING_INDEX(state, { payload }: { payload: number }) {
+      state.currentPlayingIndex = payload;
     }
   }
 });

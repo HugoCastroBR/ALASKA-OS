@@ -27,19 +27,16 @@ export type ImageReaderProps = programProps & {
 } 
 
 export type MusicProps = {
+  uuid: string
   title: string
   artist: string
   cover: string
-  musicFile: File
+  musicFile: File | null
   duration: number
 }
 
 export type MusicItemProps = {
-  title: string
-  artist: string
-  cover: string
-  musicFile: File
-  duration: number
-  currentPlaying?: boolean
+  index: number
+  music: MusicProps
   onClick?: (music:MusicProps) => void
 }
