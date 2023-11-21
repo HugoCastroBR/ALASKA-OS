@@ -14,7 +14,7 @@ import useStore from '@/hooks/useStore'
 import { AddMusic, ClearMusic, MusicClearEverything, SetCurrentMusic, SetCurrentPlayingIndex, SetIsPaused, SetIsPlaying, SetMusics, SetProgress, SetVolume } from '@/store/actions'
 import DefaultWindow from '../containers/DefaultWindow'
 
-function MusicPlayer({
+function MusicLibrary({
   tab,
   window,
 }: programProps) {
@@ -261,6 +261,7 @@ function MusicPlayer({
       audioElement?.addEventListener('ended', (ev) => {
         dispatch(SetIsPlaying(false))
         dispatch(SetIsPaused(true))
+        HandlerPlayNextMusic()
       })
       audioElement?.addEventListener('pause', (ev) => {
         dispatch(SetIsPaused(true))
@@ -473,7 +474,7 @@ function MusicPlayer({
     <DefaultWindow
       currentTab={tab}
       currentWindow={window}
-      title='Music Player'
+      title='Music Library'
       uuid={tab.uuid}
       onClose={() => {
         setMusicCurrentTime(0)
@@ -485,7 +486,7 @@ function MusicPlayer({
         setUploadedSongArtist(null)
         dispatch(MusicClearEverything())
         CleanMusic()
-        console.log('Closing Music Player')
+        console.log('Closing Music Library')
         HandlerChangeVolume(0)
         setAudioElement((audioElement) => {
           audioElement?.pause()
@@ -572,7 +573,7 @@ function MusicPlayer({
         }
 
         <div className='flex flex-col w-full h-full'>
-          <div className='w-full h-5/6 flex pt-1 px-1'>
+          <div className='w-full h-full flex pt-1 px-1'>
             <div className='w-full h-full  flex-col items-start justify-start'>
               <div className='
               w-full h-10 flex justify-center items-center
@@ -607,7 +608,7 @@ function MusicPlayer({
               </div>
             </div>
           </div>
-          <div className='w-full h-1/6 flex justify-between px-2 py-1 items-center'>
+          <div className='w-full h-20 flex justify-between px-2 py-1 items-center'>
             <div className='w-3/12  h-full flex justify-evenly items-center'>
               <div className='w-1/3 h-16  flex justify-center items-center'>
                 <div className='w-16 h-16 overflow-hidden rounded'>
@@ -685,6 +686,8 @@ function MusicPlayer({
                 <div className='w-10/12 px-1'>
                   <Progress
                     value={states.Musics.progress}
+                    animated
+                    
                     color='blue'
                     h={6}
                     radius={6}
@@ -722,4 +725,4 @@ function MusicPlayer({
   )
 }
 
-export default MusicPlayer
+export default MusicLibrary

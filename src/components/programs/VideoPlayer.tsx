@@ -1,10 +1,11 @@
 import { secondsToMinutes } from '@/utils/date'
-import { Progress, Slider } from '@mantine/core'
+import { Loader, Progress, Slider } from '@mantine/core'
 import React, { useEffect, useRef } from 'react'
 import CustomText from '../atoms/CustomText'
 import useFS from '@/hooks/useFS'
 import DefaultWindow from '../containers/DefaultWindow'
 import { programProps } from '@/types/programs'
+import { convertFileExtensionToFileType, getExtension } from '@/utils/file'
 
 const VideoPlayer = ({
   tab,
@@ -20,12 +21,20 @@ const VideoPlayer = ({
   const [videoDuration, setVideoDuration] = React.useState(0)
   const [videoCurrentTime, setVideoCurrentTime] = React.useState(0)
   const [videoVolume, setVideoVolume] = React.useState(1)
+  const [isLoading, setIsLoading] = React.useState(true)
 
   const LoadVideo = () => {
+    if(tab?.value === '/Desktop'){
+      setIsLoading(false)
+    }
     fs?.readFile(tab?.value || '', 'utf8', (err, data) => {
-      if (err) throw err
+      if (err){
+        setIsLoading(false)
+        throw err
+      }
       if (data) {
         setVideoBase64(data)
+        setIsLoading(false)
         return
       }
     })
@@ -45,7 +54,6 @@ const VideoPlayer = ({
     })
     videoRef.current?.addEventListener('ended', (e) => {
       setIsPaused(true)
-
     })
 
   }, [videoBase64])
@@ -73,6 +81,49 @@ const VideoPlayer = ({
     }
   }
 
+  const NoVideoProvided = () => {
+    return (
+      <div className='w-full h-full flex flex-col justify-center items-center'>
+        <CustomText
+          text='No video provided'
+          className='text-5xl text-slate-600'
+        />
+        <span className='i-mdi-video-off-outline text-6xl mt-2 text-slate-600' />
+      </div>
+    )
+  }
+
+  if(isLoading){
+    return (
+      <DefaultWindow
+        title={tab?.ficTitle || 'Video Player'}
+        currentTab={tab}
+        currentWindow={window}
+        resizable
+        uuid={tab?.uuid || ''}
+        onClose={() => {
+          setIsPaused(true)
+          setIsFullScreen(false)
+          setIsMenuOpen(true)
+          setVideoCurrentTime(0)
+          setVideoDuration(0)
+          videoRef.current?.pause()
+  
+        }}
+        onMaximize={() => { }}
+        onMinimize={() => { }}
+  
+      >
+        <div className='
+          h-full w-full flex flex-col bg-white'>
+          <div className='flex justify-center items-center w-full h-full bg-white'>
+            <Loader size={64} />
+          </div>
+        </div>
+      </DefaultWindow >
+    )
+  }
+
   return (
     <DefaultWindow
       title={tab?.ficTitle || 'Video Player'}
@@ -96,11 +147,17 @@ const VideoPlayer = ({
       <div className='
         h-full w-full flex flex-col bg-white'>
         <div className='flex justify-center items-center w-full h-full bg-white-100'>
+          {tab.value === '/Desktop' 
+          ?
+          <NoVideoProvided />
+          :
           <video
             className='w-full h-full bg-white'
-            src={`data:video/mp4;base64,${videoBase64}`}
+            src={`data:${convertFileExtensionToFileType(getExtension(tab.value || ''))};base64,${videoBase64}`}
             ref={videoRef}
           />
+          }
+          
         </div>
         <div
           className={`

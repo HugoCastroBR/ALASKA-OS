@@ -144,7 +144,7 @@ const StartMenu = () => {
             marginTop: '6px',
             borderRadius: '0px',
             backdropFilter: 'blur(6px)',
-            backgroundColor: 'rgba(255, 255, 255, 0.4)',
+            backgroundColor: 'rgba(200, 200, 255, 0.5)',
             border: '1px solid rgba(129, 233, 235, 0.2)',
             filter: 'drop-shadow(0px 0px 4px 1px rgba(26, 36, 35, 0.35))',
             boxShadow: '0px 0px 4px 1px rgba(26, 36, 35, 0.35)',

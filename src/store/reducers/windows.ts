@@ -33,25 +33,25 @@ export const WindowsSlice = createSlice({
         title: "Pokemon Fire Red",
         icon: "/assets/icons/pokemonFR.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: "Notepad",
         icon: "/assets/icons/txt.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'Markdown Editor',
         icon: '/assets/icons/md.png',
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'Rich Text Editor',
         icon: '/assets/icons/rtf.png',
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'PDF Reader',
@@ -72,7 +72,7 @@ export const WindowsSlice = createSlice({
         showOnDesktop: false
       },
       {
-        title: 'Music Player',
+        title: 'Music Library',
         icon: '/assets/icons/music.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
@@ -86,6 +86,12 @@ export const WindowsSlice = createSlice({
       {
         title: 'Calculator',
         icon: '/assets/icons/calculator.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'Classic Paint',
+        icon: '/assets/icons/paintClassic.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: false
       }

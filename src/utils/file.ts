@@ -106,25 +106,56 @@ export const base64ToFile = (base64String: string, options: Base64ToFileOptions)
 
 export const convertFileExtensionToFileType = (extension: string) => {
   const fileTypes: { [key: string]: string } = {
-    'jpg': 'image/jpeg',
-    'jpeg': 'image/jpeg',
-    'png': 'image/png',
-    'gif': 'image/gif',
-    'txt': 'text/plain',
-    'pdf': 'application/pdf',
-    'zip': 'application/zip',
-    'rar': 'application/x-rar-compressed',
-    '7z': 'application/x-7z-compressed',
-    'mp3': 'audio/mpeg',
-    'mp4': 'video/mp4',
-    'webm': 'video/webm',
-    'mkv': 'video/x-matroska',
-    'doc': 'application/msword',
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-    'xls': 'application/vnd.ms-excel',
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    'ppt': 'application/vnd.ms-powerpoint',
-    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'jpg': 'image/jpeg', // supported // not tested
+    'jpeg': 'image/jpeg', // supported // not tested
+    'png': 'image/png', // supported // tested
+    'gif': 'image/gif', // supported // tested
+    'txt': 'text/plain', // supported // tested
+    'pdf': 'application/pdf', // supported // tested
+    'zip': 'application/zip', // not supported // not tested
+    'rar': 'application/x-rar-compressed', // not supported // not tested
+    '7z': 'application/x-7z-compressed', // not supported // not tested
+    'mp3': 'audio/mpeg', // supported // tested
+    'wav': 'audio/wav', // not supported // not tested
+    'mp4': 'video/mp4', // supported // tested
+    'webm': 'video/webm', // supported // not tested
+    'mkv': 'video/x-matroska', // supported // not tested
+    'doc': 'application/msword', // not supported // not tested
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // not supported // not tested
+    'xls': 'application/vnd.ms-excel', // not supported // not tested
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // not supported // not tested
+    'ppt': 'application/vnd.ms-powerpoint', // not supported // not tested
+    'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // not supported // not tested
+    'exe': 'application/x-msdownload', // not supported // not tested
+    'apk': 'application/vnd.android.package-archive', // not supported // not tested
+    'iso': 'application/octet-stream', // not supported // not tested
+    'dmg': 'application/octet-stream', // not supported // not tested
+    'img': 'application/octet-stream', // not supported // not tested
+    'nrg': 'application/octet-stream', // not supported // not tested
+    'md': 'text/markdown', // supported // tested
+    'rtf': 'application/rtf', // supported // tested
+    'csv': 'text/csv', // not supported // not tested
+    'json': 'application/json', // supported // tested
+    'xml': 'application/xml', // not supported // not tested
+    'html': 'text/html', // supported // tested
+    'htm': 'text/html', // not supported // not tested
+    'js': 'text/javascript', // supported // tested
+    'jsx': 'text/javascript', // supported // not tested
+    'ts': 'text/typescript', // supported // tested
+    'tsx': 'text/typescript', // supported // not tested
+    'css': 'text/css', // supported // not tested
+    'py': 'text/x-python', // not supported // not tested
+    'vb': 'text/x-vb', // not supported // not tested
+    'yml': 'text/yaml', // not supported // not tested
+    'yaml': 'text/yaml', // not supported // not tested
+    'svg': 'image/svg+xml', // supported // not tested
+    'ico': 'image/x-icon', // supported // not tested
+    'cur': 'image/x-icon', // supported // not tested
+    'webp': 'image/webp', // supported // not tested
+    'avif': 'image/avif', // supported // not tested
+    'tiff': 'image/tiff', // supported // not tested
+    'tif': 'image/tiff', // supported // not tested
+    'bmp': 'image/bmp', // supported // not tested
   };
 
   return fileTypes[extension];

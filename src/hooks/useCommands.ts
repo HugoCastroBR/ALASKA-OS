@@ -473,7 +473,32 @@ export default function useCommands() {
     
     }
   }
-  
+  }
+
+  const Count = (args:CommandArgs,vanillaCommand?:string[]) => {
+     // count amount of lines of the path
+      if(Object.keys(args || {}).length > 0 && args !== undefined) {
+        if(args["-path"]){
+          fs?.readFile(args["-path"], (err, data) => {
+            if(err) {
+              setHistory([...history, "Error counting lines"]);
+              setHistory([...history, err.message]);
+              return;
+            }
+            setHistory([...history, data?.toString().split("\n").length.toString() || "0"]);
+          });
+        }
+      }
+      else{
+        fs?.readFile(currentDirectory + "/" + Object.keys(args || {})[0], (err, data) => {
+          if(err) {
+            setHistory([...history, "Error counting lines"]);
+            setHistory([...history, err.message]);
+            return;
+          }
+          setHistory([...history, data?.toString().split("\n").length.toString() || "0"]);
+        });
+      }
   }
 
   const commands: CommandAction = {
@@ -515,6 +540,9 @@ export default function useCommands() {
     },
     size: (args,vanillaCommand) => {
       Size(args,vanillaCommand);
+    },
+    count: (args,vanillaCommand) => {
+      Count(args,vanillaCommand);
     },
   }
 

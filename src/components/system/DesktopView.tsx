@@ -23,9 +23,10 @@ import CodeEditor from '../programs/CodeEditor';
 import NewDirFileItem from '../molecules/NewDirFileItem';
 import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
-import MusicPlayer from '../programs/MusicPlayer';
 import VideoPlayer from '../programs/VideoPlayer';
 import Calculator from '../programs/Calculator';
+import MusicLibrary from '../programs/MusicLibrary';
+import ClassicPaint from '../programs/ClassicPaint';
 
 const DesktopView = () => {
 
@@ -169,9 +170,9 @@ const DesktopView = () => {
                 window={window}
               />
             )
-          case 'Music Player':
+          case 'Music Library':
             return(
-              <MusicPlayer
+              <MusicLibrary
                 key={index}
                 tab={tab}
                 window={window}
@@ -193,12 +194,24 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Classic Paint':
+            return(
+              <ClassicPaint
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
       })
     })
   }
+
+
+
+
 
   const handlerUploadTXTToDesktop = async (file: File) => {
     const reader = new FileReader();
@@ -332,6 +345,7 @@ const DesktopView = () => {
           }
         }
       >
+
 
         {handleRenderTabs()}
         
