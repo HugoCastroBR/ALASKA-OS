@@ -40,6 +40,8 @@ export function generateIcon(extension:string){
       return '/assets/icons/state.png'
     case 'mp3':
       return '/assets/icons/mp3.png'
+    case 'mp4':
+      return '/assets/icons/mp4.png'
     default: '/assets/icons/file.png'
   }
 }

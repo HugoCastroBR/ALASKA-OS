@@ -132,6 +132,20 @@ const DesktopFile = ({
           }
         }))
       )
+    case 'mp4':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Video Player',
+          tab: {
+            title: 'Video Player',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
     }
   }
 

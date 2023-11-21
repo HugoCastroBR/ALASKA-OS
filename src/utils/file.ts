@@ -169,3 +169,28 @@ export const convertMp3Base64ToFile = async (base64String: string, filename: str
   const duration = await getMP3Duration(file);
   return { file, duration };
 };
+
+const getMP4Duration = async (file: File) => {
+  const video = document.createElement('video');
+  video.preload = 'metadata';
+
+  return new Promise((resolve, reject) => {
+    video.addEventListener('loadedmetadata', () => {
+      const duration = video.duration;
+      resolve(duration);
+    });
+
+    video.addEventListener('error', (err) => {
+      reject(err);
+    });
+
+    video.src = URL.createObjectURL(file);
+  });
+};
+
+export const convertMp4Base64ToFile = async (base64String: string, filename: string) => {
+  const fileType = getExtensionFromBase64(base64String);
+  const file = base64ToFile(base64String, { fileName: filename, fileType: convertFileExtensionToFileType(fileType) });
+  const duration = await getMP4Duration(file);
+  return { file, duration };
+};

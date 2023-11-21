@@ -24,6 +24,7 @@ import NewDirFileItem from '../molecules/NewDirFileItem';
 import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
 import MusicPlayer from '../programs/MusicPlayer';
+import VideoPlayer from '../programs/VideoPlayer';
 
 const DesktopView = () => {
 
@@ -175,6 +176,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Video Player':
+            return(
+              <VideoPlayer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -211,6 +220,17 @@ const DesktopView = () => {
   };
 
   const handlerUploadPDFToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
+  const handlerUploadMp4ToDesktop = async (file: File) => {
     const fileContent = await file.arrayBuffer()
     const fileContentBase64 = Buffer.from(fileContent).toString('base64')
     
@@ -284,6 +304,9 @@ const DesktopView = () => {
               }
               if(getExtension(file.name) === 'pdf'){
                 handlerUploadPDFToDesktop(file)
+              }
+              if(getExtension(file.name) === 'mp4'){
+                handlerUploadMp4ToDesktop(file)
               }
             })
           }
