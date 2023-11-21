@@ -1,19 +1,42 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import Image from 'next/image'
 import { Menu, Button, Accordion, Group } from '@mantine/core'
 import useStore from '@/hooks/useStore'
 import { WindowAddTab } from '@/store/actions'
 import { uuid } from '@/utils/file'
+import { windowStateProps } from '@/types/windows'
 
 const StartMenu = () => {
 
   const { states, dispatch } = useStore()
+  const [searchValue, setSearchValue] = React.useState('')
 
 
-  const renderPrograms = () => {
-    return states.Windows.windows.map((window, index) => {
+
+
+  const orderPrograms = () => {
+    const programsOrdered = [...states.Windows.windows].filter((v) => {
+      const program = v.title.toLowerCase()
+      const search = searchValue.toLowerCase()
+      return program.includes(search)
+    }).sort((a, b) => {
+      if (a.title > b.title) {
+        return 1;
+      }
+      if (a.title < b.title) {
+        return -1;
+      }
+      return 0;
+    });
+
+    return programsOrdered
+  }
+
+  const renderPrograms = (programsOrdered:windowStateProps[]) => {
+
+    return programsOrdered.map((window, index) => {
       return (
         <>
           <Menu.Item
@@ -50,6 +73,22 @@ const StartMenu = () => {
     })
   }
 
+  const NotFoundComponent = () => {
+    return (
+      <div className='flex flex-col justify-center items-center w-full h-full mt-4'>
+        <Image
+          src='/assets/icons/Alaska.png'
+          alt='Program Icon'
+          width={32}
+          height={32}
+        />
+        <CustomText
+          className='text-center mt-2 text-base font-semibold text-slate-600'
+          text='Program not found'
+        />
+      </div>
+    )
+  }
 
   return (
 
@@ -57,9 +96,9 @@ const StartMenu = () => {
       shadow="md"
       width={200}
       transitionProps={{
-        duration: 300,
+        duration: 500,
         timingFunction: 'ease',
-        transition: 'pop-bottom-left',
+        transition: 'slide-right',
       }}
     >
       <Menu.Target>
@@ -104,22 +143,34 @@ const StartMenu = () => {
             width: '240px',
             marginTop: '6px',
             borderRadius: '0px',
-            borderTopRightRadius: '8px',
             backdropFilter: 'blur(6px)',
             backgroundColor: 'rgba(255, 255, 255, 0.4)',
             border: '1px solid rgba(129, 233, 235, 0.2)',
             filter: 'drop-shadow(0px 0px 4px 1px rgba(26, 36, 35, 0.35))',
             boxShadow: '0px 0px 4px 1px rgba(26, 36, 35, 0.35)',
-            overflowY: 'scroll',
+            overflowY: 'auto',
+            overflowX: 'hidden',
           }
         }}
       >
         <Menu.Label>
-          <CustomText
-            text='Start Menu'
-          />
+          <div>
+            <input 
+            value={searchValue}
+            placeholder='Search...'
+            onChange={(e) => {
+              setSearchValue(e.target.value)
+            }}
+            className='w-full h-8 mt-1 outline-none border border-gray-300 rounded-md px-2' 
+            />
+          </div>
         </Menu.Label>
-        {renderPrograms()}
+        {renderPrograms(orderPrograms()).length > 0 
+        ?
+        renderPrograms(orderPrograms())
+        :
+        <NotFoundComponent/>
+        }
       </Menu.Dropdown>
     </Menu>
 
