@@ -162,3 +162,10 @@ export async function getMP3Duration(file: File): Promise<number> {
     audio.src = URL.createObjectURL(file);
   });
 }
+
+export const convertMp3Base64ToFile = async (base64String: string, filename: string) => {
+  const fileType = getExtensionFromBase64(base64String);
+  const file = base64ToFile(base64String, { fileName: filename, fileType: convertFileExtensionToFileType(fileType) });
+  const duration = await getMP3Duration(file);
+  return { file, duration };
+};

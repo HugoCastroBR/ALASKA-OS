@@ -22,7 +22,6 @@ const MusicItem = ({
   const handlerLoadSeconds = async () => {
     if(!music.musicFile) return
     const seconds = await getMP3Duration(music.musicFile)
-    console.log(seconds)
     setSeconds(seconds)
   }
   useEffect(() => {
@@ -38,6 +37,9 @@ const MusicItem = ({
     ${currentPlaying ? 'bg-slate-100' : ''}
     `}
       onClick={() => {
+
+        
+
         onClick && onClick({
           uuid: uuid(6),
           title: music.title,

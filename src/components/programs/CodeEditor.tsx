@@ -34,10 +34,20 @@ const CodeEditor = ({
         return 'css'
       case 'html':
         return 'html'
+      case 'json':
+        return 'json'
+      case 'tsx':
+        return 'typescript'
+      case 'jsx':
+        return 'javascript'
       default:
         return 'javascript'
     }
   }
+
+  useEffect(() => {
+    setLanguage(getLanguage(tab.value || 'js'))
+  }, [tab])
 
 
   useEffect(() => {
@@ -52,12 +62,13 @@ const CodeEditor = ({
     fs?.readFile(`${tab.value}`, 'utf8', (err, data) => {
       if (err) throw err
       if (data) {
+        console.log(data)
         setContent(data)
-        setLanguage(getLanguage(tab.value || 'js'))
+        
       }
-
     })
-  }, [monaco, fs])
+    setLoading(false)
+  }, [monaco, fs,tab])
 
   const [saveAsInputOpen, setSaveAsInputOpen] = useState(false);
   const [saveAsName, setSaveAsName] = useState<string>(`${removeExtension(tab.ficTitle || '')}_new`)

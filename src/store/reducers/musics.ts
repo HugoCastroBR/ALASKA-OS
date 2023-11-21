@@ -106,6 +106,21 @@ export const MusicsSlice = createSlice({
     },
     SET_CURRENT_PLAYING_INDEX(state, { payload }: { payload: number }) {
       state.currentPlayingIndex = payload;
-    }
+    },
+    CLEAR_EVERYTHING(state) {
+      state.musics = [];
+      state.queue = [];
+      state.currentMusicIndex = 0;
+      state.isPaused = true;
+      state.isPlaying = false;
+      state.isShuffle = false;
+      state.isRepeat = false;
+      state.isMuted = false;
+      state.volume = 1;
+      state.progress = 0;
+      state.duration = 0;
+      state.currentPlayingIndex = 0;
+      state.currentMusic = {} as MusicProps;
+    },
   }
 });

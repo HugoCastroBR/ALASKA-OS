@@ -129,3 +129,6 @@ export const ClearMusic = () => {
 export const SetCurrentPlayingIndex = (payload:number) => {
   return MusicsActions.SET_CURRENT_PLAYING_INDEX(payload)
 }
+export const MusicClearEverything = () => {
+  return MusicsActions.CLEAR_EVERYTHING()
+}

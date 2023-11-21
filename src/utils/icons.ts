@@ -38,6 +38,8 @@ export function generateIcon(extension:string){
       return '/assets/icons/smc.png'
     case 'state':
       return '/assets/icons/state.png'
+    case 'mp3':
+      return '/assets/icons/mp3.png'
     default: '/assets/icons/file.png'
   }
 }

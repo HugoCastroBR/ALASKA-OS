@@ -98,6 +98,40 @@ const DesktopFile = ({
           }
         }))
       )
+    case 'mp3':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Music Player',
+          tab: {
+            title: 'Music Player',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
+    case 'js':
+    case 'ts':
+    case 'jsx':
+    case 'tsx':
+    case 'json':
+    case 'html':
+    case 'css':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Code Editor',
+          tab: {
+            title: 'Code Editor',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
     }
   }
 

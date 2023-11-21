@@ -4,28 +4,71 @@ import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import Image from 'next/image'
 import { truncateText } from '@/utils/text'
-import {  base64ToFile, convertSizeToKBMBGB, getExtension, getMP3Duration, uuid } from '@/utils/file'
+import {  base64ToFile, convertMp3Base64ToFile, convertSizeToKBMBGB, getExtension, getMP3Duration, uuid } from '@/utils/file'
 import useFS from '@/hooks/useFS'
 import { ApiError } from 'next/dist/server/api-utils'
 import { secondsToMinutes } from '@/utils/date'
-import { MusicItemProps, MusicProps } from '@/types/programs'
+import { MusicItemProps, MusicProps, programProps } from '@/types/programs'
 import MusicItem from '../molecules/MusicItem'
 import useStore from '@/hooks/useStore'
-import { AddMusic, AddToQueue, ClearMusic, SetCurrentMusic, SetCurrentPlayingIndex, SetIsPaused, SetIsPlaying, SetMusics, SetProgress, SetVolume } from '@/store/actions'
+import { AddMusic, ClearMusic, MusicClearEverything, SetCurrentMusic, SetCurrentPlayingIndex, SetIsPaused, SetIsPlaying, SetMusics, SetProgress, SetVolume } from '@/store/actions'
+import DefaultWindow from '../containers/DefaultWindow'
 
-function MusicPlayer() {
+function MusicPlayer({
+  tab,
+  window,
+}:programProps) {
 
   const { fs } = useFS()
   const {states, dispatch} = useStore()
 
   const [musicCurrentTime, setMusicCurrentTime] = React.useState(0)
-
-
+  const [isExternalSource, setIsExternalSource] = React.useState(false)
 
   useEffect(() => {
     LoadMusicFiles()
   }, [fs])
 
+  useEffect(() => {
+    
+
+    if(tab.value !== '/Desktop'){
+      setIsExternalSource(true)
+      fs?.readFile(`${tab.value}`, 'utf8', (err, data) => {
+        if (err) throw err
+        if (data) {
+          console.log(data)
+          console.log(data)
+
+          let MusicToRender = {
+            index: 0,
+            music:{
+              artist: 'Unknown Artist',
+              title: 'Unknown Title',
+              cover: '',
+              duration: 0,
+              musicFile: base64ToFile(data,{
+                fileName: tab.ficTitle || 'music.mp3',
+                fileType: 'audio/mpeg',
+              }),
+              uuid: uuid(6),
+            }
+          } as MusicItemProps
+          HandlerPlayMusic(MusicToRender.music)
+          dispatch(SetIsPlaying(true))
+          dispatch(SetIsPaused(true))
+        }
+      })
+      // dispatch(AddMusic({
+      //   artist: 'Unknown Artist',
+      //   title: 'Unknown Title',
+      //   cover: '',
+      //   duration: 0,
+      //   musicFile: null,
+      //   uuid: uuid(6),
+      // }))
+    }
+  },[tab])
 
 
   const HandlerUploadMusic = (file: File) => {
@@ -95,12 +138,8 @@ function MusicPlayer() {
 
   }
 
-  
-
-
-
-
   const LoadMusicFiles = () => {
+    
     console.log('Loading Musics')
     dispatch(SetMusics([]))
 
@@ -109,6 +148,7 @@ function MusicPlayer() {
       if (err) throw err
       if (folders?.length === 0) return
       folders?.map((folder) => {
+        setIsLoading(true)
         let MusicToRender = {
           music:{
             artist: 'Unknown Artist',
@@ -151,10 +191,7 @@ function MusicPlayer() {
   }
   
 
-  
-
   const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null)
-
 
   const HandlerChangeVolume = (value: number) => {
     if(!audioElement) return
@@ -170,7 +207,6 @@ function MusicPlayer() {
   }
 
   const HandlerPauseMusic = () => {
-    console.log('Pause Music')
     setAudioElement((audioElement) => {
       audioElement?.pause()
       return audioElement
@@ -180,7 +216,6 @@ function MusicPlayer() {
   }
 
   const HandlerUnpauseMusic = () => {
-    console.log('Unpause Music')
     setAudioElement((audioElement) => {
       audioElement?.play()
       return audioElement
@@ -201,9 +236,6 @@ function MusicPlayer() {
     if(states.Musics.isPlaying){
       CleanMusic()
     }
-
-    console.log('Play Music')
-    console.log(music)
     dispatch(SetCurrentMusic({
       ...music,
       cover: `data:image/png;base64,${music.cover}`|| '/assets/icons/Alaska.png',
@@ -227,7 +259,6 @@ function MusicPlayer() {
         dispatch(SetProgress((audioElement.currentTime / music.duration) * 100))
       })
       audioElement?.addEventListener('ended', (ev) => {
-        console.log('Music Ended')
         dispatch(SetIsPlaying(false))
         dispatch(SetIsPaused(true))
       })
@@ -268,15 +299,25 @@ function MusicPlayer() {
   }
 
   const HandlerPlayPreviousMusic = async () => {
-    states.Musics.musics.map((music,index) => {
+    states.Musics.musics.map(async (music,index) => {
       if(index === 0){
         dispatch(SetCurrentPlayingIndex(states.Musics.musics.length - 1))
         const musicToPlay = states.Musics.musics[states.Musics.musics.length - 1]
-        HandlerPlayMusic(musicToPlay)
+        if(!musicToPlay.musicFile) return
+        const MusicDuration = await getMP3Duration(musicToPlay.musicFile)
+        HandlerPlayMusic({
+          ...musicToPlay,
+          duration: MusicDuration,
+        })
       }
       if(index === states.Musics.currentPlayingIndex - 1){
-        const MusicToPlay = music
-        HandlerPlayMusic(MusicToPlay)
+        const musicToPlay = music
+        if(!musicToPlay.musicFile) return
+        const MusicDuration = await getMP3Duration(musicToPlay.musicFile)
+        HandlerPlayMusic({
+          ...musicToPlay,
+          duration: MusicDuration,
+        })
         dispatch(SetCurrentPlayingIndex(index))
       }
     })
@@ -335,7 +376,6 @@ function MusicPlayer() {
         </Button>}
       </FileButton>
     )
-
   }
   
 
@@ -353,8 +393,6 @@ function MusicPlayer() {
       }
     })
   }
-
-
 
   const UploadMusicCoverItem = () => {
     return (
@@ -432,9 +470,43 @@ function MusicPlayer() {
   }
 
   return (
+    <DefaultWindow
+      currentTab={tab}
+      currentWindow={window}
+      title='Music Player'
+      uuid={tab.uuid}
+      onClose={() => {
+        setMusicCurrentTime(0)
+        setUploadMusicOpen(false)
+        setMusicToUpload(null)
+        setUploadedSongCover(null)
+        setUploadedSongCoverExtension(null)
+        setUploadedSongTitle(null)
+        setUploadedSongArtist(null)
+        dispatch(MusicClearEverything())
+        CleanMusic()
+        console.log('Closing Music Player')
+        HandlerChangeVolume(0)
+        setAudioElement((audioElement) => {
+          audioElement?.pause()
+          audioElement?.removeEventListener('timeupdate', (ev) => {
+            setMusicCurrentTime(audioElement.currentTime)
+            dispatch(SetProgress((audioElement.currentTime / states.Musics.currentMusic.duration) * 100))
+            
+          })
+          
+          return audioElement
+        })
+        
+        setAudioElement(null)
+      }}
+      onMaximize={() => { }}
+      onMinimize={() => { }}
+      resizable
+    >
     <div
-      className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-      flex flex-col overflow-hidden rounded-lg bg-white'
+      className='
+      flex flex-col  bg-white h-full w-full'
     >
       {UploadMusicOpen &&
         <div className='
@@ -539,21 +611,34 @@ function MusicPlayer() {
           <div className='w-3/12  h-full flex justify-evenly items-center'>
             <div className='w-1/3 h-16  flex justify-center items-center'>
               <div className='w-16 h-16 overflow-hidden rounded'>
+                {
+                isExternalSource
+                ?
+                <Image
+                  src={'/assets/icons/Alaska.png'}
+                  alt='music'
+                  height={64}
+                  width={64}
+                />
+                :
                 <Image
                   src={states.Musics.currentMusic.cover || '/assets/icons/Alaska.png'}
                   alt='music'
                   height={64}
                   width={64}
                 />
+                }
+                
+                
               </div>
             </div>
             <div className='h-16 w-2/3 flex flex-col items-start px-px pr-1 justify-start'>
               <CustomText
-                text={truncateText(states.Musics.currentMusic.title , 64)}
+                text={truncateText(states.Musics.currentMusic.title || 'Unknown Music' , 64)}
                 className='text-sm font-semibold'
               />
               <CustomText
-                text={truncateText(states.Musics.currentMusic.artist , 64)}
+                text={truncateText(states.Musics.currentMusic.artist || 'Unknown artist' , 64)}
                 className='text-sm mt-0.5'
               />
 
@@ -607,7 +692,7 @@ function MusicPlayer() {
               </div>
               <div className='w-1/12 flex justify-center'>
                 <CustomText
-                  text={secondsToMinutes(states.Musics.currentMusic.duration)}
+                  text={secondsToMinutes(states.Musics.currentMusic.duration || 0)}
                   className='text-xs'
                 />
               </div>
@@ -632,9 +717,8 @@ function MusicPlayer() {
           </div>
         </div>
       </div>
-
-
     </div>
+    </DefaultWindow>
   )
 }
 

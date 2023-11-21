@@ -167,6 +167,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Music Player':
+            return(
+              <MusicPlayer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -292,7 +300,6 @@ const DesktopView = () => {
           }
         }
       >
-        <MusicPlayer/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
