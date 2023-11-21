@@ -83,6 +83,12 @@ export const WindowsSlice = createSlice({
         tabs: [] as tabStateProps[],
         showOnDesktop: false
       },
+      {
+        title: 'Calculator',
+        icon: '/assets/icons/calculator.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      }
     ] as windowStateProps[]
   
   },    
