@@ -63,7 +63,9 @@ const CodeEditor = ({
       if (err) throw err
       if (data) {
         console.log(data)
-        setContent(data)
+        if(!content){
+          setContent(data)
+        }
         
       }
     })

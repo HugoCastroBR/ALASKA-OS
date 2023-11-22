@@ -64,7 +64,6 @@ const SpreadSheet = ({
       if (err) throw err
       if (data) {
         const res = await base64ToArray(data)
-        console.log(res)
         setDataLoaded(res)
         setLoading(false)
       }
@@ -109,7 +108,6 @@ const SpreadSheet = ({
   }
   
   function transformCelldata(celldata: Array<Array<CellData | null>>): TransformedData[] {
-    console.log(celldata)
     // Inicializa o array de resultado
     let result: TransformedData[] = [];
   
@@ -134,7 +132,6 @@ const SpreadSheet = ({
         }
       }
     }
-    console.log(result)
     return result;
   }
 
@@ -236,8 +233,6 @@ const SpreadSheet = ({
               fs?.writeFile(`${tab.value}`, sheetBase64, (err) => {
                 if (err) throw err
                 console.log('File Saved!')
-                console.log(sheetBase64)
-                console.log(base64ToArray(sheetBase64))
               })
             }}
             onSaveAs={() => {

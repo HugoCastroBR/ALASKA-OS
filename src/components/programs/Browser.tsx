@@ -1,5 +1,5 @@
 'use client'
-import React from 'react'
+import React, { useEffect } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import { Divider } from '@mantine/core'
 import { programProps } from '@/types/programs'
@@ -9,9 +9,9 @@ import { WindowSetTabFocused } from '@/store/actions'
 const Browser = ({
   tab,
   window,
-}:programProps) => {
+}: programProps) => {
 
-  const {states,dispatch} = useStore()
+  const { states, dispatch } = useStore()
 
   const [sites, setSites] = React.useState<string[]>(
     [
@@ -24,10 +24,13 @@ const Browser = ({
 
   const [history, setHistory] = React.useState<string[]>([])
   const [currentSite, setCurrentSite] = React.useState<string>('https://www.google.com/webhp?igu=1')
+  const [isLocal, setIsLocal] = React.useState<boolean>(false)
 
   React.useEffect(() => {
     setHistory([...history, currentSite])
-  },[currentSite])
+  }, [currentSite])
+
+
 
   const googleBaseURl = 'https://www.google.com/webhp?igu=1'
 
@@ -49,81 +52,85 @@ const Browser = ({
         
         '>
           <div className='w-2/12 h-full flex justify-evenly items-center  '>
-            <span 
-            onClick={() => {
-              setCurrentSite(history[history.length - 2])
-            }}
-            className='
+            <span
+              onClick={() => {
+                setCurrentSite(history[history.length - 2])
+              }}
+              className='
             i-mdi-arrow-left text-xl cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
             '></span>
             <span
-            onClick={
-              () => {
-                setCurrentSite(history[history.length - 1])
+              onClick={
+                () => {
+                  setCurrentSite(history[history.length - 1])
+                }
               }
-            }
-            className='
+              className='
             i-mdi-arrow-right text-xl cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
             '></span>
             <span
-            onClick={() => {
-              setCurrentSite(currentSite)
-            }}
-            className='
+              onClick={() => {
+                setCurrentSite(currentSite)
+              }}
+              className='
             i-mdi-refresh text-2xl cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
-            '            
+            '
             ></span>
           </div>
           <div className='w-full h-full flex items-center justify-start px-1'>
-            <input 
-            placeholder='Search or enter website name'
-            className='
+            <input
+              placeholder='Search or enter website name'
+              className='
             w-full h-2/3 bg-slate-100 border border-slate-200 border-opacity-40 p-0.5  rounded-md
             focus:outline-none 
             '
-            value={currentSite}
-            type='text'
+              value={isLocal ? currentSite : tab.ficTitle}
+              type='text'
             />
           </div>
         </div>
         <Divider className='w-full' />
         <div className='h-2/5 w-6/12 flex pl-1' >
-          <div 
-          onClick={() => {
-            setCurrentSite(sites[0])
-          }}
-          className='
+          <div
+            onClick={() => {
+              setIsLocal(true)
+              setCurrentSite(sites[0])
+            }}
+            className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
           hover:bg-blue-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out m-px
           '>
             <span className='i-mdi-google text-xl text-black'></span>
 
           </div>
-          <div 
-          onClick={() => {
-            setCurrentSite(sites[1])
-          }}
-          className='
+          <div
+            onClick={() => {
+              setIsLocal(true)
+              setCurrentSite(sites[1])
+            }}
+            className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
           hover:bg-blue-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out m-px
           '>
             <span className='i-mdi-wikipedia text-xl text-black'></span>
           </div>
-          <div 
-          onClick={() => {
-            setCurrentSite(sites[2])
-          }}
-          className='
+          <div
+            onClick={() => {
+              setIsLocal(true)
+              setCurrentSite(sites[2])
+            }}
+            className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
           hover:bg-blue-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out m-px
           '>
             <span className='i-mdi-archive-outline text-xl text-black'></span>
           </div>
-          <div 
-          onClick={() => {
-            setCurrentSite(sites[3])
-          }}
-          className='
+          <div
+            onClick={() => {
+              setIsLocal(true)
+              setCurrentSite(sites[3])
+            }}
+            className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
           hover:bg-blue-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out m-px
           '>
@@ -132,16 +139,29 @@ const Browser = ({
         </div>
       </div>
       <div className='h-full'>
-        <iframe
-          onClick={() => {
-            dispatch(WindowSetTabFocused({
-              title: window.title || '',
-              uuid: tab.uuid || '',
-            }))
-          }}
-          src={currentSite}
-          className='w-full h-full'
-        />
+        {isLocal ?
+          <iframe
+            onClick={() => {
+              dispatch(WindowSetTabFocused({
+                title: window.title || '',
+                uuid: tab.uuid || '',
+              }))
+            }}
+            src={currentSite}
+            className='w-full h-full'
+          />
+          :
+          <iframe
+            onClick={() => {
+              dispatch(WindowSetTabFocused({
+                title: window.title || '',
+                uuid: tab.uuid || '',
+              }))
+            }}
+            srcDoc={tab.value}
+            className='w-full h-full bg-white'
+          />
+        }
       </div>
     </DefaultWindow>
   )

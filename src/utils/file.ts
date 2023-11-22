@@ -123,7 +123,7 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'doc': 'application/msword', // not supported // not tested
     'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // not supported // not tested
     'xls': 'application/vnd.ms-excel', // not supported // not tested
-    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // not supported // not tested
+    'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //  supported //  tested
     'ppt': 'application/vnd.ms-powerpoint', // not supported // not tested
     'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // not supported // not tested
     'exe': 'application/x-msdownload', // not supported // not tested
