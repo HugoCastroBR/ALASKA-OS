@@ -100,6 +100,12 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/musicPlayer.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: false
+      },
+      {
+        title: 'SpreadSheet',
+        icon: '/assets/icons/spreadsheet.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
       }
     ] as windowStateProps[]
   

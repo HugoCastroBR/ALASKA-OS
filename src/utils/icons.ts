@@ -42,6 +42,9 @@ export function generateIcon(extension:string){
       return '/assets/icons/mp3.png'
     case 'mp4':
       return '/assets/icons/mp4.png'
+    case 'xlsx':
+      return '/assets/icons/xlsx.png'
+      
     default: '/assets/icons/file.png'
   }
 }

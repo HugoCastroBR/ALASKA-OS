@@ -146,6 +146,21 @@ const DesktopFile = ({
           }
         }))
       )
+      case 'xlsx':
+      return(
+        dispatch(WindowAddTab({
+          title: 'SpreadSheet',
+          tab: {
+            title: 'SpreadSheet',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
+      
     }
   }
 

@@ -28,7 +28,7 @@ import Calculator from '../programs/Calculator';
 import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
-
+import SpreadSheet  from '../programs/SpreadSheet';
 const DesktopView = () => {
 
 
@@ -211,6 +211,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'SpreadSheet':
+            return(
+              <SpreadSheet
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -369,8 +377,6 @@ const DesktopView = () => {
           }
         }
       >
-
-        
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}

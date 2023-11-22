@@ -254,3 +254,34 @@ export const convertBase64ToFile = async (base64String: string, filename: string
     } };
   }
 }
+
+
+
+export const objectToXlsx = async (data: any, filename: string) => {
+  const fileType = 'xlsx'
+  const file = base64ToFile(data, { fileName: filename, fileType: convertFileExtensionToFileType(fileType) });
+  return file;
+}
+
+export const arrayToBase64 = (array: []) => {
+  const string = JSON.stringify(array);
+  const base64 = btoa(string);
+  return base64;
+}
+
+export const base64ToXlsx = async (base64String: string, filename: string) => {
+  const fileType = 'xlsx'
+  const file = base64ToFile(base64String, { fileName: filename, fileType: convertFileExtensionToFileType(fileType) });
+  return file;
+}
+
+export const xlsxToBase64 = async (file: File) => {
+  const base64 = await toBase64(file);
+  return base64;
+}
+
+export const base64ToArray = (base64String: string) => {
+  const string = atob(base64String);
+  const array = JSON.parse(string);
+  return array;
+}
