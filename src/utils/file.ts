@@ -116,7 +116,7 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'rar': 'application/x-rar-compressed', // not supported // not tested
     '7z': 'application/x-7z-compressed', // not supported // not tested
     'mp3': 'audio/mpeg', // supported // tested
-    'wav': 'audio/wav', // not supported // not tested
+    'wav': 'audio/wav', // supported // not tested
     'mp4': 'video/mp4', // supported // tested
     'webm': 'video/webm', // supported // not tested
     'mkv': 'video/x-matroska', // supported // not tested
@@ -225,3 +225,32 @@ export const convertMp4Base64ToFile = async (base64String: string, filename: str
   const duration = await getMP4Duration(file);
   return { file, duration };
 };
+
+const getMetaDataFromAnyFile = async (file: File) => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const result = event.target?.result;
+      resolve(result);
+    };
+    reader.onerror = (error) => {
+      reject(error);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+export const convertBase64ToFile = async (base64String: string, filename: string,extension: string) => {
+  const fileType = extension
+  const file = base64ToFile(base64String, { fileName: filename, fileType: convertFileExtensionToFileType(fileType) });
+  let metadata:unknown;
+  try {
+    metadata = await getMetaDataFromAnyFile(file);
+    return { file, metadata };
+  } catch (error) {
+    console.log(error);
+    return { file, metadata:{
+      err: error
+    } };
+  }
+}

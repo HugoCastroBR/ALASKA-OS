@@ -27,6 +27,7 @@ import VideoPlayer from '../programs/VideoPlayer';
 import Calculator from '../programs/Calculator';
 import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
+import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 
 const DesktopView = () => {
 
@@ -202,6 +203,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Music Player':
+            return(
+              <NativeMusicPlayer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -262,6 +271,18 @@ const DesktopView = () => {
       reloadDesktop()
     })
   }
+
+  const handlerUploadMusicToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
 
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
   const [x, setX] = React.useState(0)
@@ -330,6 +351,9 @@ const DesktopView = () => {
               if(getExtension(file.name) === 'mp4'){
                 handlerUploadMp4ToDesktop(file)
               }
+              if(getExtension(file.name) === 'mp3' || getExtension(file.name) === 'wav'){
+                handlerUploadMusicToDesktop(file)
+              }
             })
           }
         }}
@@ -346,7 +370,7 @@ const DesktopView = () => {
         }
       >
 
-
+        
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
