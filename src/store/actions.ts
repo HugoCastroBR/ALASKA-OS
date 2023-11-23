@@ -1,11 +1,41 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
-import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions,SystemActions } from './index';
+import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions,SystemActions,SettingsActions } from './index';
 import { MusicProps } from '@/types/programs';
 
 
 export const SetGlobalVolumeMultiplier = (value: number) => {
   return SystemActions.SET_GLOBAL_VOLUME_MULTIPLIER(value)
 }
+
+
+export const SetTaskBarPosition = (value: "top" | "bottom" | "left" | "right") => {
+  return SettingsActions.SET_TASKBAR_POSITION(value)
+}
+export const SetTaskBarColor = (value: string) => {
+  return SettingsActions.SET_TASKBAR_COLOR(value)
+}
+export const SetDesktopBackground = (value: string) => {
+  return SettingsActions.SET_DESKTOP_BACKGROUND(value)
+}
+export const SetWindowTopBarColor = (value: string) => {
+  return SettingsActions.SET_WINDOW_TOP_BAR_COLOR(value)
+}
+export const SetWindowTopBarItemsColor = (value: string) => {
+  return SettingsActions.SET_WINDOW_TOP_BAR_ITEMS_COLOR(value)
+}
+export const SetWindowBackground = (value: string) => {
+  return SettingsActions.SET_WINDOW_BACKGROUND(value)
+}
+export const SetTaskBarShowOnHover = (value: boolean) => {
+  return SettingsActions.SET_TASKBAR_SHOW_ON_HOVER(value)
+}
+export const SetTaskBarClockFormat = (value: "12" | "24") => {
+  return SettingsActions.SET_TASKBAR_CLOCK_FORMAT(value)
+}
+export const SetTaskBarHideSoundController = (value: boolean) => {
+  return SettingsActions.SET_TASKBAR_HIDE_SOUND_CONTROLLER(value)
+}
+
 
 
 export const SetNotification = (value: boolean) => {

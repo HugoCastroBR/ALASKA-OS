@@ -29,6 +29,7 @@ import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
+import SystemCustomize from './SystemCustomize';
 const DesktopView = () => {
 
 
@@ -419,6 +420,8 @@ const DesktopView = () => {
           }
         }
       >
+
+        <SystemCustomize />
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

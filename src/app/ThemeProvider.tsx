@@ -2,6 +2,7 @@
 import React from 'react'
 import { MantineProvider, Button, Group, createTheme, Loader } from '@mantine/core';
 import RingLoader from '@/components/atoms/RingLoader';
+import useStore from '@/hooks/useStore';
 
 
 interface ThemeProvidersProps {
@@ -28,6 +29,9 @@ const theme = createTheme({
 const ThemeProviders = (
   { children }: ThemeProvidersProps
 ) => {
+
+  const {states, dispatch} = useStore()
+
   return (
       <MantineProvider theme={theme}>
           <div className='bg-gradient-to-tl from-slate-100 via-cyan-300 to-blue-500'> 

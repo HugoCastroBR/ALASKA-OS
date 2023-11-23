@@ -88,6 +88,8 @@ const TaskBar = () => {
     })
   }
 
+
+
   useEffect(() => {
     handlerChangeGlobalVolume(globalVolume)
   }, [globalVolume])
@@ -98,10 +100,17 @@ const TaskBar = () => {
 
   return (
     <footer
-      className='fixed bottom-0 left-0 w-full h-10 
-    bg-opacity-20 backdrop-filter backdrop-blur-sm 
-    border-t border-white border-opacity-20 flex justify-start items-center
-    '
+      className={` w-full h-10 
+      backdrop-filter backdrop-blur-sm 
+      border-t border-white border-opacity-20 flex justify-start items-center
+      `}
+      style={{
+        background: states.Settings.taskbar.color,
+        left: states.Settings.taskbar.position === 'left' ? '0' : '',
+        right: states.Settings.taskbar.position === 'right' ? '0' : '',
+        top: states.Settings.taskbar.position === 'top' ? '0' : '',
+        bottom: states.Settings.taskbar.position === 'bottom' ? '0' : '',
+      }}
     >
       <div className={`absolute w-40 h-10  bottom-10 
       bg-white flex justify-evenly items-center rounded-md
@@ -109,10 +118,10 @@ const TaskBar = () => {
       transition-all duration-300 ease-in-out
       ${isVolumeOpen ? 'right-0' : '-right-40'}
       `}>
-        <Slider 
-        value={Number(globalVolume.toFixed(0))}
-        onChange={(value) => setGlobalVolume(value)}
-        w={100}
+        <Slider
+          value={Number(globalVolume.toFixed(0))}
+          onChange={(value) => setGlobalVolume(value)}
+          w={100}
         />
       </div>
       <div className='w-10/12 flex h-full justify-start items-center flex-wrap overflow-hidden'>
