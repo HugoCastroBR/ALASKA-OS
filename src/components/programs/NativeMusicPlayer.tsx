@@ -6,6 +6,7 @@ import useFS from '@/hooks/useFS'
 import { convertBase64ToFile, getExtension, getLastPathSegment } from '@/utils/file'
 import { programProps } from '@/types/programs'
 import DefaultWindow from '../containers/DefaultWindow'
+import useStore from '@/hooks/useStore'
 
 const NativeMusicPlayer = ({
   tab,
@@ -13,12 +14,14 @@ const NativeMusicPlayer = ({
 }:programProps) => {
 
   const {fs} = useFS()
+  const {states, dispatch} = useStore()
 
   const [isPaused, setIsPaused] = React.useState(true)  
   const [MusicVolume, setMusicVolume] = React.useState(1)
   const [musicDuration, setMusicDuration] = React.useState(0)
   const [musicCurrentTime, setMusicCurrentTime] = React.useState(0)
   const [isMusicPlaying, setIsMusicPlaying] = React.useState(false)
+  const [musicProvided, setMusicProvided] = React.useState(false)
 
 
   const handlerVolume = (value: number) => {}
@@ -28,8 +31,11 @@ const NativeMusicPlayer = ({
   const loadMusic = () => {
     if(!tab?.value) return
     fs?.readFile(tab?.value, 'utf8', (err, data) => {
-      if (err) throw err
+      if (err){
+        console.log(err)
+      }
       if (data) {
+        setMusicProvided(true)
         setMusicBase64(data)
         return
       }
@@ -84,7 +90,10 @@ const NativeMusicPlayer = ({
 
 
   const MusicVisualizer = () => {
+
     return (
+
+      
       <div className='w-full h-full flex justify-center items-center'>
         <span className='i-mdi-music text-6xl text-slate-700 mb-8' />
       </div>
@@ -190,7 +199,7 @@ const NativeMusicPlayer = ({
                 h={6}
                 w={'80%'}
                 color='black'
-                value={Number((MusicVolume * 100).toFixed(0))}
+                value={Number(((MusicVolume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
                 onChange={(value) => {
                   handlerVolume(value / 100)
                   setMusicVolume(value / 100)

@@ -5,7 +5,7 @@ import Console from './Console';
 import useStore from '@/hooks/useStore';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
-import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage } from '@/utils/file';
+import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage, wait } from '@/utils/file';
 import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
@@ -312,6 +312,47 @@ const DesktopView = () => {
   //   console.log(states.Mouse.mouseInDesktop);
   // },[states.Mouse.mouseInDesktop])
 
+  // const CreateBlueRectangle = async (ev:PointerEvent) =>{
+    
+  //   ev.preventDefault();
+  //   const DivX = ev.pageX;
+  //   const DivY = ev.pageY;
+
+    
+  //   const div = document.createElement('div',{
+  //     is: 'blue-rectangle'
+  //   })
+  //   div.style.position = "absolute";
+  //   div.style.width = "0";
+  //   div.style.height = "0";
+  //   div.style.left = DivX + "px";
+  //   div.style.top = DivY + "px";
+  //   div.classList.add("blue-rectangle");
+  //   document.getElementById('desktop-view')?.appendChild(div)
+  //   const resize = (event: MouseEvent) => {
+  //     const diffX = event.pageX - DivX;
+  //     const diffY = event.pageY - DivY;
+  //     div.style.left = diffX < 0 ? DivX + diffX + "px" : DivX + "px";
+  //     div.style.top  = diffY < 0 ? DivY + diffY + "px" : DivY + "px";
+  //     div.style.height = Math.abs(diffY) + "px";
+  //     div.style.width = Math.abs(diffX) + "px";
+  //   }
+  //   addEventListener("pointermove", resize);
+  //   addEventListener("pointerup", async () => {
+  //     removeEventListener("pointermove", resize);
+  //     await wait(100);
+  //     div.remove();
+  //   });
+
+    
+    
+  // }
+
+  // addEventListener("pointerdown",(ev) => {
+  //   CreateBlueRectangle(ev)
+  // })
+
+
   return (
     <div 
     id='desktop-view'
@@ -330,6 +371,7 @@ const DesktopView = () => {
     style={{
       height: 'calc(100vh - 40px)'
     }}
+
     >
       <MouseMenuContext
           onRefresh={() => {
@@ -379,8 +421,10 @@ const DesktopView = () => {
       >
         {handleRenderTabs()}
         
-        <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} spacing={5} verticalSpacing={5}
-          className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
+        <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
+        spacing={5} verticalSpacing={5}
+        id='desktop'
+        className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
           {states.Windows.windows.map((window, index) => {
             if(window.showOnDesktop){
               return(

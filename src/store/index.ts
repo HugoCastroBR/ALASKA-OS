@@ -4,6 +4,7 @@ import { WindowsSlice } from "./reducers/windows";
 import { FileSlice } from "./reducers/files";
 import { MouseSlice } from "./reducers/mouse";
 import { MusicsSlice } from "./reducers/musics";
+import { SystemSlice } from "./reducers/system";
 
 const store = configureStore({
   reducer:{
@@ -12,6 +13,7 @@ const store = configureStore({
     File:FileSlice.reducer,
     Mouse:MouseSlice.reducer,
     Musics:MusicsSlice.reducer,
+    System:SystemSlice.reducer,
   }
 })
 
@@ -23,3 +25,4 @@ export const WindowsActions = WindowsSlice.actions
 export const FileActions = FileSlice.actions
 export const MouseActions = MouseSlice.actions
 export const MusicsActions = MusicsSlice.actions
+export const SystemActions = SystemSlice.actions

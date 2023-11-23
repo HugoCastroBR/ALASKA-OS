@@ -30,7 +30,14 @@ const Browser = ({
     setHistory([...history, currentSite])
   }, [currentSite])
 
-
+  useEffect(() => {
+    if(tab.value === '/Desktop'){
+      setIsLocal(false)
+      setCurrentSite('https://www.google.com/webhp?igu=1')
+    }else{
+      setIsLocal(true)
+    }
+  }, [tab.value])
 
   const googleBaseURl = 'https://www.google.com/webhp?igu=1'
 
@@ -93,7 +100,7 @@ const Browser = ({
         <div className='h-2/5 w-6/12 flex pl-1' >
           <div
             onClick={() => {
-              setIsLocal(true)
+              setIsLocal(false)
               setCurrentSite(sites[0])
             }}
             className='
@@ -105,7 +112,7 @@ const Browser = ({
           </div>
           <div
             onClick={() => {
-              setIsLocal(true)
+              setIsLocal(false)
               setCurrentSite(sites[1])
             }}
             className='
@@ -116,7 +123,7 @@ const Browser = ({
           </div>
           <div
             onClick={() => {
-              setIsLocal(true)
+              setIsLocal(false)
               setCurrentSite(sites[2])
             }}
             className='
@@ -127,7 +134,7 @@ const Browser = ({
           </div>
           <div
             onClick={() => {
-              setIsLocal(true)
+              setIsLocal(false)
               setCurrentSite(sites[3])
             }}
             className='
@@ -139,7 +146,7 @@ const Browser = ({
         </div>
       </div>
       <div className='h-full'>
-        {isLocal ?
+        {!isLocal ?
           <iframe
             onClick={() => {
               dispatch(WindowSetTabFocused({

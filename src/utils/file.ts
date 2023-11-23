@@ -4,6 +4,7 @@ export const verifyIfIsFile = (filename: string) => {
   return parts.length > 1;
 }
 
+export const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 export const convertSizeToKBMBGB = (size: number) => {
   const kb = 1024;
   const mb = kb * 1024;

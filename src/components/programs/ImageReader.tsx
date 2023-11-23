@@ -19,13 +19,17 @@ const ImageReader = ({
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
   const [margin, setMargin] = useState<number>(0)
+  const [imageProvided, setImageProvided] = useState(false)
   const {fs} = useFS()
 
   useEffect(() => {
     fs?.readFile(path, 'utf8', (err, data) => {
-      if (err) throw err
+      if (err) {
+        console.log(err)
+      }
       if (data) {
         setImage(data)
+        setImageProvided(true)
       }
     })
   }, [fs])
@@ -80,12 +84,27 @@ const ImageReader = ({
       <div className='flex  overflow-hidden justify-center items-center bg-slate-100 bg-opacity-60
       max-w-full max-h-full h-full w-full
       '>
-        <NextImageRender
+        {
+          !imageProvided 
+          ?
+          <div className='h-full w-full flex flex-col items-center justify-center'>
+            <span
+              className='i-mdi-image-off text-4xl text-slate-700'
+            />
+            <CustomText
+            text='No Image Provided'
+            className='text-2xl font-semibold text-slate-700'
+            />
+          </div>
+          :
+          <NextImageRender
           src={`data:image/png;base64,${image}`}
           width={width}
           height={height}
           alt='image'
-        />
+          />
+        }
+        
       </div>
     </DefaultWindow>
   )

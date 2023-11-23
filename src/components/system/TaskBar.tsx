@@ -5,7 +5,7 @@ import StartMenu from './StartMenu'
 import Image from 'next/image'
 import useStore from '@/hooks/useStore'
 import { programProps } from '@/types/programs'
-import { ClearAllFocused, WindowRemoveTab, WindowToggleMinimizeTab } from '@/store/actions'
+import { ClearAllFocused, SetGlobalVolumeMultiplier, WindowRemoveTab, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
 import CustomText from '../atoms/CustomText'
@@ -93,12 +93,7 @@ const TaskBar = () => {
   }, [globalVolume])
 
   const handlerChangeGlobalVolume = (value: number) => {
-    document.querySelectorAll('audio').forEach((audio) => {
-      audio.volume = value / 100
-    })
-    document.querySelectorAll('video').forEach((audio) => {
-      audio.volume = value / 100
-    })
+    dispatch(SetGlobalVolumeMultiplier(value / 100))
   }
 
   return (

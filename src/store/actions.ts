@@ -1,7 +1,11 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
-import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions } from './index';
+import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions,SystemActions } from './index';
 import { MusicProps } from '@/types/programs';
 
+
+export const SetGlobalVolumeMultiplier = (value: number) => {
+  return SystemActions.SET_GLOBAL_VOLUME_MULTIPLIER(value)
+}
 
 
 export const SetNotification = (value: boolean) => {
