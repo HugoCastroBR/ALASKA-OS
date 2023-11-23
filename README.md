@@ -1,5 +1,3 @@
-
-
 # Alaska OS
 
 Alaska OS is a web-based operating system designed for a seamless user experience. It combines the power of Next.js, BrowserFS, EmulatorJS, Tailwind CSS, and Mantine UI to deliver a modern and intuitive interface. The aesthetic draws inspiration from the serene landscapes of Alaska, featuring a clean white color scheme with glass effects and accents in shades of blue and black.
@@ -34,31 +32,92 @@ Alaska OS comes with EmulatorJS, allowing for the emulation of various systems d
 
 Explore the capabilities of Alaska OS through these mouse options integrated into the graphical user interface:
 
-* **Copy:** Copy selected files or text.
-* **Paste:** Paste copied content.
-* **New File:** Create a new file in the current directory.
-* **New Folder:** Create a new folder in the current directory.
-* **Rename:** Rename a selected file or folder.
-* **Download:** Download the selected file.
-* **Delete:** Permanently delete the selected file or folder.
-* **Refresh:** Refresh the current view.
+-**Copy:** Copy selected files or text.
+-**Paste:** Paste copied content.
+-**New File:** Create a new file in the current directory.
+-**New Folder:** Create a new folder in the current directory.
+-**Rename:** Rename a selected file or folder.
+-**Download:** Download the selected file.
+-**Delete:** Permanently delete the selected file or folder.
+-**Refresh:** Refresh the current view.
 
 ## Native Softwares
 
 Alaska OS includes a variety of pre-configured software for different applications:
 
-1. **Console**
-2. **Explorer**
-3. **Browser**
-4. **Image Reader**
-5. **Pokemon Fire Red**
-6. **Notepad**
-7. **Markdown Editor**
-8. **Rich Text Editor**
-9. **PDF Reader**
-10. **Code Editor**
+1.**Console**
+2.**Explorer**
+3.**Browser**
+4.**Image Reader**
+5.**Pokemon Fire Red**
+6.**Calendar** (New)
+7.**Music Library** (New)
+8.**Video Player** (New)
+9.**Calculator** (New)
+10.**Classic Paint** (New)
+11.**Music Player** (New)
+12.**SpreadSheet** (New)
+13.**Notepad**
+14.**Markdown Editor**
+15.**Rich Text Editor**
+16.**PDF Reader**
+17.**Code Editor**
 
-## Installation
+### Update 0.2.1
+
+Alaska OS has been updated to version 0.2.1 with the addition of the following console commands:
+
+-`count`
+-`cat`
+-`time`
+-`date`
+-`head`
+-`tail`
+-`close`
+-`exit`
+-`code`
+
+Additionally, the console now supports the following programs:
+
+- Calendar (New)
+- Music Library (New)
+- Video Player (New)
+- Calculator (New)
+- Classic Paint (New)
+- Music Player (New)
+- SpreadSheet (New)
+
+Alaska OS now supports a variety of file types, including:
+
+- Image: JPG, JPEG, PNG, GIF
+- Text: TXT, MD, RTF
+- Document: PDF
+- Audio: MP3
+- Video: MP4
+- Spreadsheet: XLSX
+- Code: JS, JSX, TS, TSX, HTML, CSS
+- Markup: MD, XML
+- Data: JSON, YAML
+- Vector Image: SVG
+- Others: ICO, WEBP, AVIF, TIFF, BMP
+
+Note: Some file types are supported but may not have been tested extensively.
+
+Unsupported File Types:
+
+Archive: RAR, 7Z
+
+Audio: WAV
+
+Document: DOC, DOCX, PPT, PPTX
+
+Executable: EXE, APK, ISO, DMG, IMG, NRG
+
+Spreadsheet: XLS
+
+Text: CSV, PY, VB
+
+## **Installation**
 
 To set up Alaska OS locally:
 
