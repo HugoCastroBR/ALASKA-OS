@@ -33,25 +33,25 @@ export const WindowsSlice = createSlice({
         title: "Pokemon Fire Red",
         icon: "/assets/icons/pokemonFR.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: "Notepad",
         icon: "/assets/icons/txt.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'Markdown Editor',
         icon: '/assets/icons/md.png',
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'Rich Text Editor',
         icon: '/assets/icons/rtf.png',
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       {
         title: 'PDF Reader',
@@ -64,8 +64,49 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/vscode.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: 'Calendar',
+        icon: '/assets/icons/calendar.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'Music Library',
+        icon: '/assets/icons/music.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'Video Player',
+        icon: '/assets/icons/video.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'Calculator',
+        icon: '/assets/icons/calculator.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'Classic Paint',
+        icon: '/assets/icons/paintClassic.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'Music Player',
+        icon: '/assets/icons/musicPlayer.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
+      },
+      {
+        title: 'SpreadSheet',
+        icon: '/assets/icons/spreadsheet.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
       }
-
     ] as windowStateProps[]
   
   },    

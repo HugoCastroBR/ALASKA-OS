@@ -3,7 +3,9 @@ import { useEffect, useState } from "react";
 import useFS from "./useFS";
 import { basePath } from "@/utils/constants";
 import { ApiError } from "browserfs/dist/node/core/api_error";
-import { convertSizeToKBMBGB, verifyIfIsFile } from "@/utils/file";
+import { convertSizeToKBMBGB, uuid, verifyIfIsFile } from "@/utils/file";
+import useStore from "./useStore";
+import { WindowAddTab, WindowRemoveTab, WindowRemoveWindow } from "@/store/actions";
 export default function useCommands() {
   
   const [history, setHistory] = useState<string[]>([])
@@ -13,6 +15,7 @@ export default function useCommands() {
 
 
   const {fs} = useFS();
+  const {states, dispatch} = useStore();
 
   useEffect(() => {
     if(fs){      
@@ -473,8 +476,98 @@ export default function useCommands() {
     
     }
   }
-  
   }
+
+  const Count = (args:CommandArgs,vanillaCommand?:string[]) => {
+     // count amount of lines of the path
+    fs?.readFile(currentDirectory + "/" + Object.keys(args || {})[0],'utf8', (err, data) => {
+      console.log(data)
+      if(err) {
+        setHistory([...history, "Error counting lines"]);
+        setHistory([...history, err.message]);
+        return;
+      }
+      if(data === undefined) return;
+      const lines = data.split('\n');
+      setHistory([...history, lines.length.toString()]);
+    });
+  }
+
+  const Cat = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const itemToRead = (currentDirectory + "/" + Object.keys(args || {})[0]).replaceAll("//", "/")
+    fs?.readFile(itemToRead,'utf8', (err, data) => {
+      if(err) {
+        setHistory([...history, "Error reading file"]);
+        setHistory([...history, err.message]);
+        return;
+      }
+      if(data === undefined) return;
+      setHistory([...history, data]);
+    });
+  }
+
+  const Time = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const currentTime = new Date();
+    setHistory([...history, currentTime.toLocaleTimeString()]);
+  }
+
+  const GetDate = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const currentDate = new Date();
+    setHistory([...history, currentDate.toString()]);
+  }
+
+  const Head = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const itemToRead = (currentDirectory + "/" + Object.keys(args || {})[0]).replaceAll("//", "/")
+    fs?.readFile(itemToRead,'utf8', (err, data) => {
+      if(err) {
+        setHistory([...history, "Error reading file"]);
+        setHistory([...history, err.message]);
+        return;
+      }
+      if(data === undefined) return;
+      const lines = data.split('\n');
+      setHistory([...history, lines[0]]);
+    });
+  }
+
+  const Tail = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const itemToRead = (currentDirectory + "/" + Object.keys(args || {})[0]).replaceAll("//", "/")
+    fs?.readFile(itemToRead,'utf8', (err, data) => {
+      if(err) {
+        setHistory([...history, "Error reading file"]);
+        setHistory([...history, err.message]);
+        return;
+      }
+      if(data === undefined) return;
+      const lines = data.split('\n');
+      setHistory([...history, lines[lines.length - 1]]);
+    });
+  }
+
+  const Close = (args:CommandArgs,vanillaCommand?:string[]) => {
+    dispatch(WindowRemoveWindow('Console'))
+  }
+
+  const Exit = (args:CommandArgs,vanillaCommand?:string[]) => {
+    dispatch(WindowRemoveWindow('Console'))
+  }
+
+  const Code = (args:CommandArgs,vanillaCommand?:string[]) => {
+    const itemToOpen = (currentDirectory + "/" + Object.keys(args || {})[0]).replaceAll("//", "/")
+    dispatch(WindowAddTab({
+      title: 'Code Editor',
+      tab:{
+        maximized: false,
+        minimized: false,
+        focused: true,
+        title: 'Code Editor',
+        ficTitle: Object.keys(args || {})[0],
+        uuid: uuid(6),
+        value: itemToOpen,
+      }
+    }))
+  }
+
 
   const commands: CommandAction = {
     clear: (args) => {
@@ -516,7 +609,36 @@ export default function useCommands() {
     size: (args,vanillaCommand) => {
       Size(args,vanillaCommand);
     },
+    count: (args,vanillaCommand) => {
+      Count(args,vanillaCommand);
+    },
+    cat: (args,vanillaCommand) => {
+      Cat(args,vanillaCommand);
+    },
+    time: (args,vanillaCommand) => {
+      Time(args,vanillaCommand);
+    },
+    date: (args,vanillaCommand) => {
+      GetDate(args,vanillaCommand);
+    },
+    head: (args,vanillaCommand) => {
+      Head(args,vanillaCommand);
+    },
+    tail: (args,vanillaCommand) => {
+      Tail(args,vanillaCommand);
+    },
+    close: (args,vanillaCommand) => {
+      Close(args,vanillaCommand);
+    },
+    exit: (args,vanillaCommand) => {
+      Exit(args,vanillaCommand);
+    },
+    code: (args,vanillaCommand) => {
+      Code(args,vanillaCommand);
+    },
+
   }
+
 
 
   return {

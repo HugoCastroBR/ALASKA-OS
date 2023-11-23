@@ -111,8 +111,6 @@ const Notepad = ({
         onMaximize={() => { }}
         onMinimize={() => { }}
         resizable
-        className='!w-1/4 !h-2/5 flex flex-col '
-
       >
         <AppTaskMenu
 
@@ -135,7 +133,7 @@ const Notepad = ({
             setText(e.target.value)
           }}
           className='
-          w-full h-full bg-white flex flex-col resize
+          w-full h-full bg-white flex flex-col
           outline-none mt-6
           '
         />

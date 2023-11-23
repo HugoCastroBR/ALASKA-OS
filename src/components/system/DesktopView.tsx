@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react'
-import { Dropzone, DropzoneProps, IMAGE_MIME_TYPE } from '@mantine/dropzone';
+import { Dropzone } from '@mantine/dropzone';
 import { SimpleGrid } from '@mantine/core';
-import DefaultWindow from '../containers/DefaultWindow';
 import Console from './Console';
 import useStore from '@/hooks/useStore';
-import useCommands from '@/hooks/useCommands';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
 import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage } from '@/utils/file';
@@ -13,7 +11,6 @@ import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
 import { ClearFiles, WindowAddTab } from '@/store/actions';
-import path from 'path';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -25,7 +22,13 @@ import PdfReader from '../programs/PdfReader';
 import CodeEditor from '../programs/CodeEditor';
 import NewDirFileItem from '../molecules/NewDirFileItem';
 import NewDirFolderItem from '../molecules/NewDirFolderItem';
-
+import CalendarProgram from '../programs/Calendar';
+import VideoPlayer from '../programs/VideoPlayer';
+import Calculator from '../programs/Calculator';
+import MusicLibrary from '../programs/MusicLibrary';
+import ClassicPaint from '../programs/ClassicPaint';
+import NativeMusicPlayer from '../programs/NativeMusicPlayer';
+import SpreadSheet  from '../programs/SpreadSheet';
 const DesktopView = () => {
 
 
@@ -160,12 +163,72 @@ const DesktopView = () => {
               window={window}
             />
             )
+          case 'Calendar':
+            return(
+              <CalendarProgram
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Music Library':
+            return(
+              <MusicLibrary
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Video Player':
+            return(
+              <VideoPlayer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Calculator':
+            return(
+              <Calculator
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Classic Paint':
+            return(
+              <ClassicPaint
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Music Player':
+            return(
+              <NativeMusicPlayer
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'SpreadSheet':
+            return(
+              <SpreadSheet
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
       })
     })
   }
+
+
+
+
 
   const handlerUploadTXTToDesktop = async (file: File) => {
     const reader = new FileReader();
@@ -205,6 +268,29 @@ const DesktopView = () => {
       reloadDesktop()
     })
   }
+
+  const handlerUploadMp4ToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
+  const handlerUploadMusicToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
 
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
   const [x, setX] = React.useState(0)
@@ -269,6 +355,12 @@ const DesktopView = () => {
               }
               if(getExtension(file.name) === 'pdf'){
                 handlerUploadPDFToDesktop(file)
+              }
+              if(getExtension(file.name) === 'mp4'){
+                handlerUploadMp4ToDesktop(file)
+              }
+              if(getExtension(file.name) === 'mp3' || getExtension(file.name) === 'wav'){
+                handlerUploadMusicToDesktop(file)
               }
             })
           }

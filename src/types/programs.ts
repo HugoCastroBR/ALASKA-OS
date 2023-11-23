@@ -1,4 +1,3 @@
-import { DefaultWindowProps } from "./containers"
 import { tabStateProps, windowStateProps } from "./windows"
 
 export type programProps = {
@@ -26,3 +25,18 @@ export type explorerActionBarProps = {
 export type ImageReaderProps = programProps & {
   path: string
 } 
+
+export type MusicProps = {
+  uuid: string
+  title: string
+  artist: string
+  cover: string
+  musicFile: File | null
+  duration: number
+}
+
+export type MusicItemProps = {
+  index: number
+  music: MusicProps
+  onClick?: (music:MusicProps) => void
+}

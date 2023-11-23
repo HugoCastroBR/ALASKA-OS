@@ -3,11 +3,11 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, verifyIfIsFile } from '@/utils/file'
+import { base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, uuid, verifyIfIsFile } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
-import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename } from '@/store/actions'
+import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename, WindowAddTab } from '@/store/actions'
 import { ApiError } from 'next/dist/server/api-utils'
 const MouseMenuContext = ({
   x,
@@ -209,7 +209,7 @@ const MouseMenuContext = ({
     return (
       <MouseOption
         title='Download'
-        disabled={states.File.selectedFiles.length < 1}
+        disabled={states.File.selectedFiles.length < 1 }
         onClick={() => {
           states.File.selectedFiles.forEach((file) => {
             if (!verifyIfIsFile(file)) return;
@@ -243,6 +243,33 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenInBrowser = () => {
+    return (
+      <MouseOption
+        title='Open in Browser'
+        disabled={states.File.selectedFiles.length !== 1}
+        className='i-mdi-web'
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Browser',
+                tab: {
+                  title: 'Browser',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: data,
+                  maximized: false,
+                  minimized: false,
+                }
+              }))
+            })
+          })
+        }}
+      />
+    )
+  }
+
   return (
     <div
       className={`
@@ -264,6 +291,7 @@ const MouseMenuContext = ({
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
+      <MouseOptionOpenInBrowser />
       <MouseOptionDownload />
       <MouseOptionDelete />
       <MouseOptionRefresh />
