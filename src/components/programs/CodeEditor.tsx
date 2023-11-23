@@ -3,13 +3,14 @@ import { programProps } from '@/types/programs'
 import React, { useEffect, useState } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import Editor, { useMonaco } from '@monaco-editor/react';
-import { Button, Divider, Loader } from '@mantine/core';
-import { get } from 'http';
+import { Button, Loader } from '@mantine/core';
 import { extractParentPath, getExtension, removeExtension } from '@/utils/file';
 import useFS from '@/hooks/useFS';
 import AppTaskMenu from '../molecules/AppTaskMenu';
 import CustomText from '../atoms/CustomText';
 import Console from '../system/Console';
+import useCommands from '@/hooks/useCommands';
+import useStore from '@/hooks/useStore';
 
 const CodeEditor = ({
   tab,
@@ -18,6 +19,8 @@ const CodeEditor = ({
 
   const monaco = useMonaco()
   const { fs } = useFS()
+  const { states, dispatch } = useStore()
+  const { setHistory } = useCommands()
 
   const [language, setLanguage] = React.useState('javascript')
   const [loading, setLoading] = React.useState(true);
@@ -195,7 +198,7 @@ const CodeEditor = ({
             setSaveAsInputOpen(true)
           }}
           onRun={() => {
-            console.log(content)
+            setHistory([])
             eval(content)
           }}
           closeConsole={() => {

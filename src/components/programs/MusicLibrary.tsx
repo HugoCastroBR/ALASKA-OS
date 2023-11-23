@@ -710,7 +710,7 @@ function MusicLibrary({
                   h={6}
                   w={'100%'}
                   color='black'
-                  value={Number((states.Musics.volume * 100).toFixed(0))}
+                  value={Number(((states.Musics.volume * 100)* states.System.globalVolumeMultiplier).toFixed(0))}
                   onChange={(value) => {
                     HandlerChangeVolume(value / 100)
 

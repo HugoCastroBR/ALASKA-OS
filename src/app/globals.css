@@ -27,3 +27,8 @@ body {
     )
     rgb(var(--background-start-rgb));
 }
+
+.blue-rectangle {
+  background-color: rgba(65, 185, 236, 0.2);
+  border: 1px dashed rgba(200, 200, 255, 0.6)
+}

@@ -6,6 +6,7 @@ import useFS from '@/hooks/useFS'
 import DefaultWindow from '../containers/DefaultWindow'
 import { programProps } from '@/types/programs'
 import { convertFileExtensionToFileType, getExtension } from '@/utils/file'
+import useStore from '@/hooks/useStore'
 
 const VideoPlayer = ({
   tab,
@@ -13,6 +14,7 @@ const VideoPlayer = ({
 }:programProps) => {
 
   const { fs } = useFS()
+  const {states, dispatch} = useStore()
 
   const [isPaused, setIsPaused] = React.useState(true)
   const [isFullScreen, setIsFullScreen] = React.useState(false)
@@ -30,7 +32,7 @@ const VideoPlayer = ({
     fs?.readFile(tab?.value || '', 'utf8', (err, data) => {
       if (err){
         setIsLoading(false)
-        throw err
+        console.log(err)
       }
       if (data) {
         setVideoBase64(data)
@@ -84,11 +86,11 @@ const VideoPlayer = ({
   const NoVideoProvided = () => {
     return (
       <div className='w-full h-full flex flex-col justify-center items-center'>
+        <span className='i-mdi-video-off-outline text-6xl  text-slate-600' />
         <CustomText
           text='No video provided'
-          className='text-5xl text-slate-600'
+          className='text-6xl text-slate-600 mt-2'
         />
-        <span className='i-mdi-video-off-outline text-6xl mt-2 text-slate-600' />
       </div>
     )
   }
@@ -210,7 +212,7 @@ const VideoPlayer = ({
                 h={6}
                 w={'80%'}
                 color='black'
-                value={Number((videoVolume * 100).toFixed(0))}
+                value={Number(((videoVolume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
                 onChange={(value) => {
                   handlerVolume(value / 100)
                   setVideoVolume(value / 100)
