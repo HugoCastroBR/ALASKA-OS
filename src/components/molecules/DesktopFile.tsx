@@ -214,10 +214,17 @@ const DesktopFile = ({
     }
   }
 
+  
   const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = useState(settings?.system?.systemHighlightColor)
+  
   useEffect(() => {
     setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
   }, [settings?.desktop.desktopIcon.textColor])
+
+  useEffect(() => {
+    setDefaultSystemHighlightColor(settings?.system?.systemHighlightColor)
+  }, [settings?.system?.systemHighlightColor])
 
   return (
     <>
@@ -259,8 +266,11 @@ const DesktopFile = ({
         flex flex-col justify-evenly items-center cursor-pointer
         hover:bg-cyan-200 transition-all duration-300 ease-in-out
         hover:bg-opacity-60 rounded-md
-        ${isItemSelected ? 'bg-white bg-opacity-30 ' : ''}
+        
         `}
+        style={{
+          backgroundColor: isItemSelected ? defaultSystemHighlightColor : 'transparent'
+        }}
       >
         {
           

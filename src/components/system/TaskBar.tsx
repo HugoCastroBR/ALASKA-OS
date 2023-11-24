@@ -130,11 +130,17 @@ const TaskBar = () => {
 
   const [footerBackgroundColor, setFooterBackgroundColor] = useState('')
   const [footerPosition, setFooterPosition] = useState('')
+  const [audioIconColor, setAudioIconColor] = useState(settings?.taskbar.items.color || '')
+  const [audioIconEnabled, setAudioIconEnabled] = useState(settings?.taskbar.hideSoundController)
 
   useEffect(() => {
     setFooterBackgroundColor(settings?.taskbar.backgroundColor || '')
     setFooterPosition(settings?.taskbar.position || '')
+    setAudioIconColor(settings?.taskbar.items.color || '')
+    setAudioIconEnabled(settings?.taskbar.hideSoundController)
   }, [settings?.taskbar])
+
+
 
   
   const FooterBottom = () => {
@@ -170,6 +176,10 @@ const TaskBar = () => {
             <span
               className='i-mdi-volume-high text-lg cursor-pointer'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+              style={{
+                color: audioIconColor,
+                display: audioIconEnabled ? 'none' : 'block',
+              }}
             />
           </div>
           <div className='flex w-1/2 items-center justify-end -mr-5'>
@@ -213,6 +223,10 @@ const TaskBar = () => {
             <span
               className='i-mdi-volume-high text-lg cursor-pointer'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
+              style={{
+                color: audioIconColor,
+                display: audioIconEnabled ? 'none' : 'block',
+              }}
             />
           </div>
           <div className='flex w-1/2 items-center justify-end -mr-5'>

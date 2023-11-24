@@ -45,6 +45,9 @@ export const SettingsSlice = createSlice({
         }
       },
       system: {
+        systemBackgroundColor: "white",
+        systemHighlightColor: "white",
+        systemTextColor: "black",
         clock: {
           disabled: false,
           format: "12",

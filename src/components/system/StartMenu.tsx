@@ -208,7 +208,7 @@ const StartMenu = () => {
             margin: '0px',
             height: '400px',
             width: '240px',
-            marginTop: '6px',
+            marginTop: '7px',
             borderRadius: '0px',
             backdropFilter: 'blur(6px)',
             backgroundColor: `${startMenuBackground || 'rgba(200, 200, 255, 0.5)'}`,

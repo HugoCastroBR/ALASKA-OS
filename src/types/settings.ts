@@ -36,6 +36,9 @@ export type SettingsProps = {
     }
   }
   system: {
+    systemBackgroundColor: string;
+    systemHighlightColor: string;
+    systemTextColor: string;
     clock: {
       disabled: boolean;
       format: "12" | "24";

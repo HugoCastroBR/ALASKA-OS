@@ -42,7 +42,6 @@ const Desktop = () => {
   useEffect(() => {
     setWallpaper64(settings?.desktop.wallpaper.image64 || '')
     setIsWallpaperEnabled(settings?.desktop.wallpaper.enabled || false)
-    console.log(settings?.desktop.wallpaper.enabled);
   }, [settings?.desktop.wallpaper])
 
 
@@ -50,10 +49,11 @@ const Desktop = () => {
     <main
       className='
       min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-between
+      bg-cover bg-center bg-no-repeat
       '
       style={
         {
-          background: isWallpaperEnabled ? `url(${wallpaper64})` : 'transparent',
+          background: isWallpaperEnabled ? `url(${wallpaper64}) ` : 'transparent',
         }
       }
     >

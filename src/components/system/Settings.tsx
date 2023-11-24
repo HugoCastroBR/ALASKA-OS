@@ -14,7 +14,7 @@ import {
 } from '@tabler/icons-react'
 import { SettingsProps } from '@/types/settings';
 import useStore from '@/hooks/useStore';
-import {  SettingsSetSettings } from '@/store/actions';
+import { SettingsSetSettings } from '@/store/actions';
 import useFS from '@/hooks/useFS';
 import CustomText from '../atoms/CustomText';
 import { programProps } from '@/types/programs';
@@ -22,7 +22,7 @@ import DefaultWindow from '../containers/DefaultWindow';
 const Settings = ({
   tab,
   window,
-}:programProps) => {
+}: programProps) => {
 
   const { states, dispatch } = useStore()
 
@@ -54,17 +54,31 @@ const Settings = ({
     }
   }, [fs])
 
+  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system.systemTextColor || '')
+  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = React.useState(settings?.system.systemHighlightColor || '')
 
-  const iconStyle = { width: rem(18), height: rem(18) };
+  useEffect(() => {
+    setDefaultSystemTextColor(settings?.system.systemTextColor || '')
+  }, [settings?.system.systemTextColor])
+
+  useEffect(() => {
+    setDefaultSystemHighlightColor(settings?.system.systemHighlightColor || '')
+  }, [settings?.system.systemHighlightColor])
+
+
+  const iconStyle = { width: rem(18), height: rem(18), color: defaultSystemTextColor };
   const tabStyle = {
     borderBottom: '1px solid #e0e0e0',
     fontSize: '1rem',
     fontWeight: 500,
+    color: defaultSystemTextColor,
     padding: '0.75rem 1rem',
+    backgroundColor: 'transparent',
   }
   const tabPanelStyle = {
     padding: '0.75rem 1rem',
     with: '100%',
+    color: defaultSystemTextColor,
     height: '100%',
   }
 
@@ -99,21 +113,22 @@ const Settings = ({
       currentTab={tab}
       currentWindow={window}
       resizable
-      onClose={() => {}}
-      onMaximize={() => {}}
-      onMinimize={() => {}}
+      onClose={() => { }}
+      onMaximize={() => { }}
+      onMinimize={() => { }}
       uuid={tab.uuid}
       title='Settings'
     >
       <div className='flex justify-between items-center w-full h-full'>
         <Tabs
-          defaultValue="Window"
+          defaultValue="System"
           orientation="vertical"
           w={"100%"}
           h={"100%"}
         >
           <Tabs.List>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="Window"
               leftSection={<IconAppWindow style={iconStyle} />}
               style={tabStyle}
@@ -121,6 +136,7 @@ const Settings = ({
               Window
             </Tabs.Tab>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="Desktop"
               leftSection={<IconDeviceDesktop style={iconStyle} />}
               style={tabStyle}
@@ -128,6 +144,7 @@ const Settings = ({
               Desktop
             </Tabs.Tab>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="Taskbar"
               leftSection={<IconArrowBarDown style={iconStyle} />}
               style={tabStyle}
@@ -135,6 +152,7 @@ const Settings = ({
               Taskbar
             </Tabs.Tab>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="StartMenu"
               leftSection={<IconMenu2 style={iconStyle} />}
               style={tabStyle}
@@ -142,6 +160,7 @@ const Settings = ({
               Start Menu
             </Tabs.Tab>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="Clock"
               leftSection={<IconClock style={iconStyle} />}
               style={tabStyle}
@@ -149,6 +168,7 @@ const Settings = ({
               Clock
             </Tabs.Tab>
             <Tabs.Tab
+              color={defaultSystemHighlightColor}
               value="System"
               leftSection={<IconSettings style={iconStyle} />}
               style={tabStyle}
@@ -159,18 +179,22 @@ const Settings = ({
               className='mx-2 mt-2'
               placeholder='Save'
               onClick={handleSave}
+              color={defaultSystemTextColor}
             >
               Save
             </Button>
           </Tabs.List>
 
-          <Tabs.Panel className='overflow-y-scroll'  value="Taskbar" style={tabPanelStyle}>
+          <Tabs.Panel className='overflow-y-scroll' value="Taskbar" style={tabPanelStyle}>
             <SimpleGrid cols={2} spacing="md" verticalSpacing="md" >
 
               <Checkbox
                 checked={settings.taskbar.showOnHover}
                 label="Show Taskbar on Hover"
                 disabled
+                style={{
+                  color: defaultSystemTextColor
+                }}
                 onChange={(event) => {
                   setSettings({ ...settings, taskbar: { ...settings.taskbar, showOnHover: event.currentTarget.checked } })
                 }}
@@ -178,7 +202,6 @@ const Settings = ({
               <Checkbox
                 checked={settings.taskbar.hideSoundController}
                 label="Hide Sound Controller"
-                disabled
                 onChange={(event) => {
                   setSettings({ ...settings, taskbar: { ...settings.taskbar, hideSoundController: event.currentTarget.checked } })
                 }}
@@ -187,6 +210,9 @@ const Settings = ({
                 label='Taskbar Location'
                 placeholder='Taskbar Location'
                 data={['Top', 'Bottom']}
+                style={{
+                  color: defaultSystemTextColor
+                }}
                 defaultValue={settings.taskbar.position.charAt(0).toUpperCase() + settings.taskbar.position.slice(1)}
                 onChange={(value) => {
                   if (!value) return
@@ -196,11 +222,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Taskbar background color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.taskbar.backgroundColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.taskbar.backgroundColor}
                 </label>
@@ -215,11 +247,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Taskbar item background color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings?.taskbar.items.backgroundColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.taskbar.items.backgroundColor}
                 </label>
@@ -234,11 +272,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Taskbar item text color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings?.taskbar.items.color === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.taskbar.items.color}
                 </label>
@@ -253,11 +297,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Taskbar background color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.taskbar.items.backgroundColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.taskbar.backgroundColor}
                 </label>
@@ -271,16 +321,22 @@ const Settings = ({
               </div>
             </SimpleGrid>
           </Tabs.Panel >
-          <Tabs.Panel className='overflow-y-scroll'  value="Window" style={tabPanelStyle}>
+          <Tabs.Panel className='overflow-y-scroll' value="Window" style={tabPanelStyle}>
             <SimpleGrid cols={2} spacing="md" verticalSpacing="md" >
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Window top bar color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.windowTopBar.color === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.windowTopBar.color}
                 </label>
@@ -295,11 +351,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Window buttons color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.windowTopBar.items.color === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.windowTopBar.items.color}
                 </label>
@@ -313,11 +375,14 @@ const Settings = ({
               </div>
             </SimpleGrid>
           </Tabs.Panel >
-          <Tabs.Panel className='overflow-y-scroll'  value="Desktop" style={tabPanelStyle}>
+          <Tabs.Panel className='overflow-y-scroll' value="Desktop" style={tabPanelStyle}>
             <SimpleGrid cols={1} spacing="md" verticalSpacing="md" >
               <Checkbox
                 label="Use wallpaper"
                 defaultChecked={settings.desktop.wallpaper.enabled}
+                style={{
+                  color: defaultSystemTextColor
+                }}
                 onChange={(event) => {
                   setSettings({ ...settings, desktop: { ...settings.desktop, wallpaper: { ...settings.desktop.wallpaper, enabled: event.currentTarget.checked } } })
                 }}
@@ -326,6 +391,9 @@ const Settings = ({
                 <CustomText
                   text='Drop your wallpaper here or click to select a file'
                   className='text-lg text-gray-500 font-semibold -mb-12'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 />
                 <Dropzone
                   onDrop={(files) => {
@@ -336,13 +404,18 @@ const Settings = ({
                       reader.onloadend = () => {
                         const base64data = reader.result
                         setWallpaper(base64data as string)
-                        setSettings({ ...settings, desktop: { ...settings.desktop,
-                          wallpaper: {...settings.desktop.wallpaper, image64: base64data as string
-                          }}})
+                        setSettings({
+                          ...settings, desktop: {
+                            ...settings.desktop,
+                            wallpaper: {
+                              ...settings.desktop.wallpaper, image64: base64data as string
+                            }
+                          }
+                        })
                       }
                       reader.readAsDataURL(file)
                     }
-                  
+
                   }}
                   onReject={(files) => console.log('rejected files', files)}
                   accept={IMAGE_MIME_TYPE}
@@ -374,35 +447,44 @@ const Settings = ({
                 </Dropzone>
               </div>
               <SimpleGrid cols={2} spacing="md" verticalSpacing="md"  >
-              <div className='flex flex-col'>
-                <label
-                  className='text-sm font-medium'
-                >
-                  Desktop Icons text color
-                </label>
-                <label
-                  className='text-sm font-medium mb-1'
-                >
-                  {settings.desktop.desktopIcon.textColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.desktop.desktopIcon.textColor}
-                </label>
-                <ColorPicker
-                  format='rgba'
-                  defaultValue={settings.desktop.desktopIcon.textColor}
-                  onChange={(value) => {
-                    setSettings({ ...settings, desktop: { ...settings.desktop, desktopIcon: { ...settings.desktop.desktopIcon, textColor: value } } })
-                  }}
-                />
-              </div>
+                <div className='flex flex-col'>
+                  <label
+                    className='text-sm font-medium'
+                    style={{
+                      color: defaultSystemTextColor
+                    }}
+                  >
+                    Desktop Icons text color
+                  </label>
+                  <label
+                    className='text-sm font-medium mb-1'
+                    style={{
+                      color: defaultSystemTextColor
+                    }}
+                  >
+                    {settings.desktop.desktopIcon.textColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.desktop.desktopIcon.textColor}
+                  </label>
+                  <ColorPicker
+                    format='rgba'
+                    defaultValue={settings.desktop.desktopIcon.textColor}
+                    onChange={(value) => {
+                      setSettings({ ...settings, desktop: { ...settings.desktop, desktopIcon: { ...settings.desktop.desktopIcon, textColor: value } } })
+                    }}
+                  />
+                </div>
               </SimpleGrid>
             </SimpleGrid>
           </Tabs.Panel >
-          <Tabs.Panel className='overflow-y-scroll'  value="StartMenu" style={tabPanelStyle} >
+          <Tabs.Panel className='overflow-y-scroll' value="StartMenu" style={tabPanelStyle} >
             <SimpleGrid cols={2} spacing="md" verticalSpacing="md" >
               <Checkbox
                 label="Order by name"
                 checked={settings.startMenu.ordered}
                 onChange={(event) => {
                   setSettings({ ...settings, startMenu: { ...settings.startMenu, ordered: event.currentTarget.checked } })
+                }}
+                style={{
+                  color: defaultSystemTextColor
                 }}
               />
               <Checkbox
@@ -412,15 +494,24 @@ const Settings = ({
                 onChange={(event) => {
                   setSettings({ ...settings, startMenu: { ...settings.startMenu, searchInput: { ...settings.startMenu.searchInput, disabled: event.currentTarget.checked } } })
                 }}
+                style={{
+                  color: defaultSystemTextColor
+                }}
               />
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Start Menu background
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.startMenu.background === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.startMenu.background}
                 </label>
@@ -435,11 +526,17 @@ const Settings = ({
               <div className='flex flex-col mt-1'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Start menu text color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.startMenu.textColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.startMenu.textColor}
                 </label>
@@ -454,11 +551,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Input background color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.startMenu.searchInput.background === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.startMenu.searchInput.background}
                 </label>
@@ -473,11 +576,17 @@ const Settings = ({
               <div className='flex flex-col'>
                 <label
                   className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   Start menu search text color
                 </label>
                 <label
                   className='text-sm font-medium mb-1'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 >
                   {settings.startMenu.searchInput.textColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.startMenu.searchInput.textColor}
                 </label>
@@ -491,7 +600,7 @@ const Settings = ({
               </div>
             </SimpleGrid>
           </Tabs.Panel >
-          <Tabs.Panel className='overflow-y-scroll'  value="Clock" style={tabPanelStyle}>
+          <Tabs.Panel className='overflow-y-scroll' value="Clock" style={tabPanelStyle}>
             <SimpleGrid cols={2} spacing="md" verticalSpacing="md" >
               <Checkbox
                 label="Enabled"
@@ -520,8 +629,76 @@ const Settings = ({
               />
             </SimpleGrid>
           </Tabs.Panel >
-          <Tabs.Panel className='overflow-y-scroll'  value="System" style={tabPanelStyle}>
-            System
+          <Tabs.Panel className='overflow-y-scroll' value="System" style={tabPanelStyle}>
+            <SimpleGrid cols={3} spacing="md" verticalSpacing="md" >
+              <div className='flex flex-col'>
+                <label
+                  className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
+                >
+                  System default background color
+                </label>
+                <label
+                  className='text-sm font-medium mb-1'
+                >
+                  {settings.system.systemBackgroundColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.system.systemBackgroundColor}
+                </label>
+                <ColorPicker
+                  format='rgba'
+                  defaultValue={settings.system.systemBackgroundColor}
+                  onChange={(value) => {
+                    setSettings({ ...settings, system: { ...settings.system, systemBackgroundColor: value } })
+                  }}
+                />
+              </div>
+              <div className='flex flex-col'>
+                <label
+                  className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
+                >
+                  System default highlight color
+                </label>
+                <label
+                  className='text-sm font-medium mb-1'
+                >
+                  {settings.system.systemHighlightColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.system.systemHighlightColor}
+                </label>
+                <ColorPicker
+                  format='rgba'
+                  defaultValue={settings.system.systemHighlightColor}
+                  onChange={(value) => {
+                    setSettings({ ...settings, system: { ...settings.system, systemHighlightColor: value } })
+                  }}
+                />
+              </div>
+              <div className='flex flex-col'>
+                <label
+                  className='text-sm font-medium'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
+                >
+                  System default text color
+                </label>
+                <label
+                  className='text-sm font-medium mb-1'
+                >
+                  {settings.system.systemTextColor === 'transparent' ? 'rgba(255,255,255,0.0)' : settings.system.systemTextColor}
+                </label>
+                <ColorPicker
+                  format='rgba'
+                  defaultValue={settings.system.systemTextColor}
+                  onChange={(value) => {
+                    setSettings({ ...settings, system: { ...settings.system, systemTextColor: value } })
+                  }}
+                />
+              </div>
+
+            </SimpleGrid>
           </Tabs.Panel >
         </Tabs>
       </div>
