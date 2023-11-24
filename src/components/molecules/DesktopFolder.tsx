@@ -9,7 +9,7 @@ import useFS from "@/hooks/useFS"
 import { desktopFolderProps } from "@/types/DesktopFolder"
 import { Dropzone } from "@mantine/dropzone"
 import { AddSelectedFile, ClearFiles, RemoveSelectedFile, SetIsRename, WindowAddTab } from "@/store/actions"
-
+import useSettings from "@/hooks/useSettings"
 const DesktopFolder = ({
   title,
   icon,
@@ -24,6 +24,7 @@ const DesktopFolder = ({
   const [isRename, setIsRename] = useState(false)
 
   const { fs } = useFS()
+  const {settings} = useSettings()
 
   useEffect(() => {
     if(states.File.selectedFiles.includes(path)){
@@ -40,6 +41,11 @@ const DesktopFolder = ({
       setIsRename(true)
     }
   },[states.File.selectedFiles, states.File.setIsRename])
+
+  const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  useEffect(() => {
+    setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  }, [settings?.desktop.desktopIcon.textColor])
 
   return (
     <Dropzone
@@ -124,6 +130,11 @@ const DesktopFolder = ({
           <CustomText
             text={title}
             className="break-words w-20 text-xs text-center"
+            style={
+              {
+                color: `${fileTextColor || 'rgba(0, 0, 0, 1)'}`
+              }
+            }
           />
         }
       </div>

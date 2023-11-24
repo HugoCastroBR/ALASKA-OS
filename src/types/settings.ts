@@ -1,13 +1,33 @@
 export type SettingsProps = {
   taskbar: {
     position: "top" | "bottom" | "left" | "right";
-    color: string;
+    backgroundColor: string;
     showOnHover: boolean;
     hideSoundController: boolean;
-    clockFormat: "12" | "24";
+    items: {
+      color: string;
+      backgroundColor: string;
+    }
   }
   desktop: {
+    backgroundColor: string;
+    desktopIcon:{
+      textColor: string;
+    }
+    wallpaper: {
+      enabled: boolean,
+      image64: string,
+    }
+  }
+  startMenu: {
     background: string;
+    ordered: boolean;
+    textColor: string;
+    searchInput : {
+      disabled: boolean;
+      background: string;
+      textColor: string;
+    }
   }
   windowTopBar: {
     color: string;
@@ -15,7 +35,11 @@ export type SettingsProps = {
       color: string;
     }
   }
-  window: {
-    background: string;
+  system: {
+    clock: {
+      disabled: boolean;
+      format: "12" | "24";
+      showSeconds: boolean;
+    }
   }
 }

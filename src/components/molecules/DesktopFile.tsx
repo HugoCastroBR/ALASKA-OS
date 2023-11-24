@@ -8,6 +8,7 @@ import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
 import { Loader } from "@mantine/core"
+import useSettings from "@/hooks/useSettings"
 
 const DesktopFile = ({
   title,
@@ -25,6 +26,7 @@ const DesktopFile = ({
   const [isRename, setIsRename] = useState(false)
 
   const { fs } = useFS()
+  const {settings} = useSettings()
 
   useEffect(() => {
     if(states.File.selectedFiles.includes(path)){
@@ -212,6 +214,11 @@ const DesktopFile = ({
     }
   }
 
+  const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  useEffect(() => {
+    setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  }, [settings?.desktop.desktopIcon.textColor])
+
   return (
     <>
       <div
@@ -285,6 +292,11 @@ const DesktopFile = ({
           <CustomText
             text={title}
             className="break-words w-20 text-xs text-center"
+            style={
+              {
+                color: `${fileTextColor || 'rgba(0, 0, 0, 1)'}`
+              }
+            }
           />
         }
       </div>

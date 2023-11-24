@@ -1,21 +1,18 @@
 import { windowStateProps, tabStateProps } from '@/types/windows';
 import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions,SystemActions,SettingsActions } from './index';
 import { MusicProps } from '@/types/programs';
+import { SettingsProps } from '@/types/settings';
 
 
 export const SetGlobalVolumeMultiplier = (value: number) => {
   return SystemActions.SET_GLOBAL_VOLUME_MULTIPLIER(value)
 }
 
-
+export const SettingsSetSettings = (value: SettingsProps) => {
+  return SettingsActions.SET_SETTINGS(value)
+}
 export const SetTaskBarPosition = (value: "top" | "bottom" | "left" | "right") => {
   return SettingsActions.SET_TASKBAR_POSITION(value)
-}
-export const SetTaskBarColor = (value: string) => {
-  return SettingsActions.SET_TASKBAR_COLOR(value)
-}
-export const SetDesktopBackground = (value: string) => {
-  return SettingsActions.SET_DESKTOP_BACKGROUND(value)
 }
 export const SetWindowTopBarColor = (value: string) => {
   return SettingsActions.SET_WINDOW_TOP_BAR_COLOR(value)
@@ -23,18 +20,38 @@ export const SetWindowTopBarColor = (value: string) => {
 export const SetWindowTopBarItemsColor = (value: string) => {
   return SettingsActions.SET_WINDOW_TOP_BAR_ITEMS_COLOR(value)
 }
-export const SetWindowBackground = (value: string) => {
-  return SettingsActions.SET_WINDOW_BACKGROUND(value)
-}
 export const SetTaskBarShowOnHover = (value: boolean) => {
   return SettingsActions.SET_TASKBAR_SHOW_ON_HOVER(value)
-}
-export const SetTaskBarClockFormat = (value: "12" | "24") => {
-  return SettingsActions.SET_TASKBAR_CLOCK_FORMAT(value)
 }
 export const SetTaskBarHideSoundController = (value: boolean) => {
   return SettingsActions.SET_TASKBAR_HIDE_SOUND_CONTROLLER(value)
 }
+export const SetStartMenuBackground = (value: string) => {
+  return SettingsActions.SET_START_MENU_BACKGROUND(value)
+}
+export const SetStartMenuOrdered = (value: boolean) => {
+  return SettingsActions.SET_START_MENU_ORDERED(value)
+}
+export const SetStartMenuSearchInputDisabled = (value: boolean) => {
+  return SettingsActions.SET_START_MENU_SEARCH_INPUT_DISABLED(value)
+}
+export const SetStartMenuSearchInputBackground = (value: string) => {
+  return SettingsActions.SET_START_MENU_SEARCH_INPUT_BACKGROUND(value)
+}
+export const SetStartMenuSearchInputTextColor = (value: string) => {
+  return SettingsActions.SET_START_MENU_SEARCH_INPUT_TEXT_COLOR(value)
+}
+export const SetSystemClockDisabled = (value: boolean) => {
+  return SettingsActions.SET_SYSTEM_CLOCK_DISABLED(value)
+}
+export const SetSystemClockFormat = (value: "12" | "24") => {
+  return SettingsActions.SET_SYSTEM_CLOCK_FORMAT(value)
+}
+
+export const SetSystemClockShowSeconds = (value: boolean) => {
+  return SettingsActions.SET_SYSTEM_CLOCK_SHOW_SECONDS(value)
+}
+
 
 
 

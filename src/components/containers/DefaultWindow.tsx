@@ -73,7 +73,7 @@ const DefaultWindow = ({
         className={`
         absolute w-1/2 h-1/2 top-1/4 left-1/4
         flex flex-col  overflow-hidden
-        rounded-lg
+        rounded-lg bg-white bg-opacity-80
         ${currentTab?.minimized ? 'hidden' : ''}
         ${currentTab?.maximized ? '!w-full !h-[calc(96%)] rounded-none ' : ''}
         ${currentTab?.maximized ? '' : 'backdrop-filter backdrop-blur-sm shadow-2xl'}
