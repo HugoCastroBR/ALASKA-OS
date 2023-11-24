@@ -24,15 +24,22 @@ const TaskBarItem = ({
   const {settings} = useSettings()
   const [taskBarItemBackgroundColor, setTaskBarItemBackgroundColor] = useState(settings?.taskbar.items.backgroundColor)
   const [taskBarItemTextColor, setTaskBarItemTextColor] = useState(settings?.taskbar.items.color)
-
+  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = useState(settings?.system.systemHighlightColor)
 
   useEffect(() => {
+    if(settings?.taskbar.items.color === taskBarItemTextColor) return
     setTaskBarItemTextColor(settings?.taskbar.items.color)
-  },[settings?.taskbar.items.color])
+  },[settings?.taskbar.items.color, taskBarItemTextColor])
 
   useEffect(() => {
+    if(settings?.taskbar.items.backgroundColor === taskBarItemBackgroundColor) return 
     setTaskBarItemBackgroundColor(settings?.taskbar.items.backgroundColor)
-  },[settings?.taskbar.items.backgroundColor])
+  },[settings?.taskbar.items.backgroundColor, taskBarItemBackgroundColor])
+
+  useEffect(() => {
+    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
+    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
+  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
 
   return (
     <div
@@ -50,12 +57,12 @@ const TaskBarItem = ({
       backdrop-filter backdrop-blur-sm
       justify-between px-2 mx-px cursor-pointer
       transition-all duration-100 ease-in-out
-      ${tab.focused ? 'border-b-4 border-cyan-400  ' : ''}
+      ${tab.focused ? 'border-b-4 ' : ''}
       `}
       style={{
         backgroundColor: taskBarItemBackgroundColor,
         color: taskBarItemTextColor,
-      
+        borderColor: SystemDefaultHighlightColor,
       }}
     >
 
@@ -83,7 +90,7 @@ const TaskBarItem = ({
 
         }}
         className='h-4 w-4 bg-transparent flex justify-center items-center
-      rounded-sm hover:bg-cyan-400 hover:bg-opacity-30 transition-all
+      rounded-sm hover:bg-slate-200 hover:bg-opacity-30 transition-all
       duration-200 ease-in-out
       '>
         <span className='i-mdi-close text-lg' ></span>

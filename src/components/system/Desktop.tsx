@@ -54,6 +54,9 @@ const Desktop = () => {
       style={
         {
           background: isWallpaperEnabled ? `url(${wallpaper64}) ` : 'transparent',
+          backgroundSize: 'cover',
+          backgroundPosition: 'center',
+          backgroundRepeat: 'no-repeat',
         }
       }
     >

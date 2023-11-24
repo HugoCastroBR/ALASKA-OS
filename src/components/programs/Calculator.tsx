@@ -1,10 +1,33 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CustomText from '../atoms/CustomText';
 import DefaultWindow from '../containers/DefaultWindow';
 import { programProps } from '@/types/programs';
+import useSettings from '@/hooks/useSettings';
 
 const Calculator = ({ tab, window }: programProps) => {
   const [expression, setExpression] = useState<string>('');
+
+  const {settings} = useSettings()
+
+  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = React.useState(settings?.system.systemHighlightColor)
+  const [SystemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system.systemBackgroundColor)
+  const [SystemDefaultTextColor, setSystemDefaultTextColor] = React.useState(settings?.system.systemTextColor)
+
+  useEffect(() => {
+    if(settings?.system.systemTextColor === SystemDefaultTextColor) return 
+    setSystemDefaultTextColor(settings?.system.systemTextColor)
+  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor, settings?.system.systemTextColor, SystemDefaultTextColor])
+
+  useEffect(() => {
+    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
+    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
+  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
+
+  useEffect(() => {
+    if(settings?.system.systemBackgroundColor === SystemDefaultBackgroundColor) return 
+    setSystemDefaultBackgroundColor(settings?.system.systemBackgroundColor)
+  },[settings?.system.systemBackgroundColor, SystemDefaultBackgroundColor])
+
 
   const handleButtonClick = (value: string) => {
     if (value === '=') {
@@ -46,7 +69,7 @@ const Calculator = ({ tab, window }: programProps) => {
         return <span className='i-mdi-math-cos' />;
       default:
         return (
-          <CustomText text={name} className='text-sm font-semibold' />
+          <CustomText text={name} className='text-sm font-semibold text-black' />
         );
     }
   };

@@ -91,7 +91,7 @@ const StartMenu = () => {
       return (
         <>
           <Menu.Item
-          className='hover:bg-cyan-400 hover:bg-opacity-40 transition-all duration-300 ease-in-out'
+          className='hover:bg-gray-200 hover:bg-opacity-40 transition-all duration-300 ease-in-out'
           key={index}
             onClick={() => {
               dispatch(WindowAddTab({

@@ -13,13 +13,20 @@ const Clock = () => {
   const [hour, setHour] = React.useState(0)
   const [minute, setMinute] = React.useState(0)
   const [second, setSecond] = React.useState(0)
-  const [getTimeInterval, setGetTimeInterval] = React.useState(1000)
-
-
-  const [clockTextColor, setClockTextColor] = React.useState(settings?.taskbar.items.color || '')
+  const [timeFormat, setTimeFormat] = React.useState<string | undefined>(settings?.system.clock.format)
 
   useEffect(() => {
-    setClockTextColor(settings?.taskbar.items.color || '')
+    if(timeFormat !== settings?.system.clock.format){
+      setTimeFormat(settings?.system.clock.format)
+    }
+  }, [settings?.system.clock.format])
+
+  const [clockTextColor, setClockTextColor] = React.useState(settings?.taskbar.items.color)
+
+  useEffect(() => {
+    if(clockTextColor !== settings?.taskbar.items.color){
+      setClockTextColor(settings?.taskbar.items.color)
+    } 
   }, [settings?.taskbar.items.color])
 
   const getTime = () => {
@@ -73,7 +80,7 @@ const Clock = () => {
         getTime()
       }, 1000)
     }
-  }, [])
+  }, [settings?.system.clock.showSeconds])
   
 
   return (
@@ -99,7 +106,7 @@ const Clock = () => {
         className='w-24 cursor-pointer '>
         <CustomText
           className='w-full '
-          text={formatTime(settings?.system.clock.format || "12")}
+          text={formatTime(timeFormat as "12" | "24")}
           style={{
             color: clockTextColor
           }}
