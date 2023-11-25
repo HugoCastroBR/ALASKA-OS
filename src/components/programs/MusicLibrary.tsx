@@ -356,8 +356,9 @@ function MusicLibrary({
   const UploadMusicItem = () => {
     return (
       <FileButton
-        accept='audio/mpeg  '
-        onChange={async (e) => {
+        accept='audio/*'
+        onChange={(e) => {
+          console.log(e)
           if (e) {
             setUploadMusicOpen(true)
             setMusicToUpload(e)
@@ -385,7 +386,8 @@ function MusicLibrary({
             }
           }}
         >
-          <div className='h-full w-full flex justify-center items-center'>
+          <div className='h-full w-full flex justify-center items-center'
+          >
             <span className='i-mdi-upload text-xl mr-2 '
               style={{
                 color: defaultSystemTextColor
@@ -399,6 +401,7 @@ function MusicLibrary({
               }}
               text='Upload Music'
               className='text-lg font-semibold'
+              
             />
           </div>
         </Button>}
@@ -501,6 +504,10 @@ function MusicLibrary({
   //     </div>
   //   )
   // }
+
+  useEffect(() => {
+    console.log(UploadMusicOpen)
+  }, [UploadMusicOpen])
 
   return (
     <DefaultWindow

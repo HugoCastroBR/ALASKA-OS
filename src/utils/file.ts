@@ -286,3 +286,37 @@ export const base64ToArray = (base64String: string) => {
   const array = JSON.parse(string);
   return array;
 }
+
+
+export const audioToBase64 = async (file: File) => {
+  const base64 = await toBase64(file);
+  return base64;
+}
+
+export const imageToBase64 = async (file: File) => {
+  const base64 = await toBase64(file);
+  return base64;
+}
+
+export const removeTypeFromBase64 = (base64String: string) => {
+  const parts = base64String.split(';');
+  const base64 = parts[1].split(',')[1];
+  return base64;
+}
+
+export const verifyIfExtensionIsAudio = (extension: string) => {
+  const audioExtensions = ['mp3', 'wav'];
+  return audioExtensions.includes(extension);
+}
+
+export const addTypeToBase64 = (extension: string,base64String: string) => {
+  const type = convertFileExtensionToFileType(extension);
+  console.log(type);
+  const base64 = `data:${type};base64,${base64String}`;
+  return base64;
+}
+
+export const getTypeFromExtension = (extension: string) => {
+  const type = convertFileExtensionToFileType(extension);
+  return type;
+}

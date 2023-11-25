@@ -12,6 +12,7 @@ export default function useSettings(){
   const [loadedSuccessfullySettings, setLoadedSuccessfullySettings] = useState<boolean | undefined>(undefined)
 
   useEffect(() => {
+    console.log('Settings changed')
     setSettings(states.Settings.settings)
   }, [states.Settings])
   
