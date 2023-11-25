@@ -4,10 +4,13 @@ import { useEffect, useState } from "react";
 
 type useFileSystemProps = {
   fs: FSModule | null;
+  isLoadingFS: boolean;
 }
 
 const useFS = ():useFileSystemProps => {
   const [fs, setFs] = useState<FSModule | null>(null);
+  const [isLoadingFS, setIsLoadingFS] = useState(false);
+
 
   useEffect(() => {
     if (!('BrowserFS' in window)) {
@@ -20,16 +23,16 @@ const useFS = ():useFileSystemProps => {
           // An error occurred.
           throw e;
         }
-
         const rootFS = BrowserFS.BFSRequire("fs");
         setFs(rootFS);
-
+        
       });
     }
+    setIsLoadingFS(false);
   }, [setFs]);
 
   
-  return { fs };
+  return { fs, isLoadingFS };
 }
 
 export default useFS;

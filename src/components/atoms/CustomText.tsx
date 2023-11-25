@@ -1,19 +1,45 @@
-import React from 'react'
+import useSettings from '@/hooks/useSettings'
+import React, { useEffect } from 'react'
 
 
 interface CustomTextProps {
   text: string
-  className?: string
+  className?: string,
+  style?: React.CSSProperties
 }
 const CustomText = ({
   text,
-  className
+  className,
+  style
 }:CustomTextProps) => {
+
+  const {settings} = useSettings()
+  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor)
+  useEffect(() => {
+    setDefaultSystemTextColor(settings?.system?.systemTextColor)
+  },[settings?.system?.systemTextColor])
+
+  if(!style){
+    return (
+      <span className={`
+        text-gray-900 font-medium text-sm
+      ${className}
+      `}
+      style={{
+        color: defaultSystemTextColor
+      }}
+      >
+        {text}
+      </span>
+    )
+  }
   return (
     <span className={`
       text-gray-900 font-medium text-sm
     ${className}
-    `}>
+    `}
+    style={style}
+    >
       {text}
     </span>
   )

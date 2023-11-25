@@ -145,7 +145,7 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'ts': 'text/typescript', // supported // tested
     'tsx': 'text/typescript', // supported // not tested
     'css': 'text/css', // supported // not tested
-    'py': 'text/x-python', // not supported // not tested
+    'py': 'text/x-python', //  supported //  tested
     'vb': 'text/x-vb', // not supported // not tested
     'yml': 'text/yaml', // not supported // not tested
     'yaml': 'text/yaml', // not supported // not tested

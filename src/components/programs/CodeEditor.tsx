@@ -1,5 +1,5 @@
+
 import { programProps } from '@/types/programs'
-'use client'
 import React, { useEffect, useState } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import Editor, { useMonaco } from '@monaco-editor/react';
@@ -11,7 +11,8 @@ import CustomText from '../atoms/CustomText';
 import Console from '../system/Console';
 import useCommands from '@/hooks/useCommands';
 import useStore from '@/hooks/useStore';
-
+import { usePython } from 'react-py';
+import useProcess from '@/hooks/useProcess';
 const CodeEditor = ({
   tab,
   window
@@ -19,12 +20,16 @@ const CodeEditor = ({
 
   const monaco = useMonaco()
   const { fs } = useFS()
+  const { stdout } = usePython()
+  const { runPythonScript } = useProcess()
   const { states, dispatch } = useStore()
   const { setHistory } = useCommands()
 
   const [language, setLanguage] = React.useState('javascript')
   const [loading, setLoading] = React.useState(true);
   const [content, setContent] = React.useState(tab.content || '')
+
+
 
   const getLanguage = (path: string) => {
     const extension = getExtension(path)
@@ -43,10 +48,13 @@ const CodeEditor = ({
         return 'typescript'
       case 'jsx':
         return 'javascript'
+      case 'py':
+        return 'python'
       default:
         return 'javascript'
     }
   }
+
 
   useEffect(() => {
     setLanguage(getLanguage(tab.value || 'js'))
@@ -65,15 +73,15 @@ const CodeEditor = ({
     fs?.readFile(`${tab.value}`, 'utf8', (err, data) => {
       if (err) throw err
       if (data) {
-        console.log(data)
-        if(!content){
+        // console.log(data)
+        if (!content) {
           setContent(data)
         }
-        
+
       }
     })
     setLoading(false)
-  }, [monaco, fs,tab])
+  }, [monaco, fs, tab])
 
   const [saveAsInputOpen, setSaveAsInputOpen] = useState(false);
   const [saveAsName, setSaveAsName] = useState<string>(`${removeExtension(tab.ficTitle || '')}_new`)
@@ -121,6 +129,7 @@ const CodeEditor = ({
       </DefaultWindow>
     )
   }
+
 
   return (
     <>
@@ -183,7 +192,6 @@ const CodeEditor = ({
         onMaximize={() => { }}
         onMinimize={() => { }}
       >
-
         <AppTaskMenu
           codeMode
           onSave={() => {
@@ -197,8 +205,14 @@ const CodeEditor = ({
           onSaveAs={() => {
             setSaveAsInputOpen(true)
           }}
-          onRun={() => {
+          onRun={ () => {
             setHistory([])
+            // console.log(content)
+            if (language === 'python') {
+              runPythonScript(content)
+              return
+            }
+            
             eval(content)
           }}
           closeConsole={() => {

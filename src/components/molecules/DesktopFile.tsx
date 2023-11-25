@@ -8,6 +8,7 @@ import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
 import { Loader } from "@mantine/core"
+import useSettings from "@/hooks/useSettings"
 
 const DesktopFile = ({
   title,
@@ -25,6 +26,7 @@ const DesktopFile = ({
   const [isRename, setIsRename] = useState(false)
 
   const { fs } = useFS()
+  const {settings} = useSettings()
 
   useEffect(() => {
     if(states.File.selectedFiles.includes(path)){
@@ -119,6 +121,7 @@ const DesktopFile = ({
     case 'json':
     case 'html':
     case 'css':
+    case 'py':
       return(
         dispatch(WindowAddTab({
           title: 'Code Editor',
@@ -212,6 +215,18 @@ const DesktopFile = ({
     }
   }
 
+  
+  const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = useState(settings?.system?.systemHighlightColor)
+  
+  useEffect(() => {
+    setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
+  }, [settings?.desktop.desktopIcon.textColor])
+
+  useEffect(() => {
+    setDefaultSystemHighlightColor(settings?.system?.systemHighlightColor)
+  }, [settings?.system?.systemHighlightColor])
+
   return (
     <>
       <div
@@ -252,8 +267,11 @@ const DesktopFile = ({
         flex flex-col justify-evenly items-center cursor-pointer
         hover:bg-cyan-200 transition-all duration-300 ease-in-out
         hover:bg-opacity-60 rounded-md
-        ${isItemSelected ? 'bg-white bg-opacity-30 ' : ''}
+        
         `}
+        style={{
+          backgroundColor: isItemSelected ? defaultSystemHighlightColor : 'transparent'
+        }}
       >
         {
           
@@ -285,6 +303,11 @@ const DesktopFile = ({
           <CustomText
             text={title}
             className="break-words w-20 text-xs text-center"
+            style={
+              {
+                color: `${fileTextColor || 'rgba(0, 0, 0, 1)'}`
+              }
+            }
           />
         }
       </div>

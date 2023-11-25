@@ -18,6 +18,8 @@ export function generateIcon(extension:string){
       return '/assets/icons/ts.png'
     case 'jsx':
       return '/assets/icons/js.png'
+    case 'py':
+      return '/assets/icons/python.png'
     case 'css':
       return '/assets/icons/css.png'
     case 'scss':

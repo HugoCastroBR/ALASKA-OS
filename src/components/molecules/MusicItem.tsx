@@ -16,6 +16,7 @@ const MusicItem = ({
 
   const [seconds, setSeconds] = useState<number>(0)
   const [currentPlaying, setCurrentPlaying] = useState<boolean>(false)
+  
 
   const {states, dispatch} = useStore()
 

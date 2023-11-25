@@ -10,7 +10,7 @@ import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
-import { ClearFiles, WindowAddTab } from '@/store/actions';
+import { ClearFiles, SetIsSystemLoaded, WindowAddTab } from '@/store/actions';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -29,9 +29,12 @@ import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
+import useSettings from '@/hooks/useSettings';
+import Settings from './Settings';
 const DesktopView = () => {
 
 
+  const {settings} = useSettings()
   const {states, dispatch} = useStore()
   const { fs } = useFS()
 
@@ -49,7 +52,7 @@ const DesktopView = () => {
 
   useEffect(() => {
     if(fs){
-      fs.readdir(desktopPath, (err, files) => {
+      fs.readdir(desktopPath, async (err, files) => {
         if(err){
           console.log(err);
         }else{
@@ -219,6 +222,15 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Settings':
+            return(
+              <Settings
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+            
           default:
             return (<></>)
         }
@@ -308,50 +320,6 @@ const DesktopView = () => {
     })
   }
 
-  // useEffect(() => {
-  //   console.log(states.Mouse.mouseInDesktop);
-  // },[states.Mouse.mouseInDesktop])
-
-  // const CreateBlueRectangle = async (ev:PointerEvent) =>{
-    
-  //   ev.preventDefault();
-  //   const DivX = ev.pageX;
-  //   const DivY = ev.pageY;
-
-    
-  //   const div = document.createElement('div',{
-  //     is: 'blue-rectangle'
-  //   })
-  //   div.style.position = "absolute";
-  //   div.style.width = "0";
-  //   div.style.height = "0";
-  //   div.style.left = DivX + "px";
-  //   div.style.top = DivY + "px";
-  //   div.classList.add("blue-rectangle");
-  //   document.getElementById('desktop-view')?.appendChild(div)
-  //   const resize = (event: MouseEvent) => {
-  //     const diffX = event.pageX - DivX;
-  //     const diffY = event.pageY - DivY;
-  //     div.style.left = diffX < 0 ? DivX + diffX + "px" : DivX + "px";
-  //     div.style.top  = diffY < 0 ? DivY + diffY + "px" : DivY + "px";
-  //     div.style.height = Math.abs(diffY) + "px";
-  //     div.style.width = Math.abs(diffX) + "px";
-  //   }
-  //   addEventListener("pointermove", resize);
-  //   addEventListener("pointerup", async () => {
-  //     removeEventListener("pointermove", resize);
-  //     await wait(100);
-  //     div.remove();
-  //   });
-
-    
-    
-  // }
-
-  // addEventListener("pointerdown",(ev) => {
-  //   CreateBlueRectangle(ev)
-  // })
-
 
   return (
     <div 
@@ -369,7 +337,8 @@ const DesktopView = () => {
       setIsRightMenuOpen(false)
     }}
     style={{
-      height: 'calc(100vh - 40px)'
+      height: 'calc(100vh - 40px)',
+      
     }}
 
     >
@@ -419,12 +388,17 @@ const DesktopView = () => {
           }
         }
       >
+
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
         spacing={5} verticalSpacing={5}
         id='desktop'
-        className='flex flex-col  flex-wrap w-full h-full px-2 py-2'>
+        className='flex flex-col  flex-wrap w-full h-full px-2 py-2'
+        style={{
+          
+        }}
+        >
           {states.Windows.windows.map((window, index) => {
             if(window.showOnDesktop){
               return(

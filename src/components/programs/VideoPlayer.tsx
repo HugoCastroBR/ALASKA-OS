@@ -7,7 +7,7 @@ import DefaultWindow from '../containers/DefaultWindow'
 import { programProps } from '@/types/programs'
 import { convertFileExtensionToFileType, getExtension } from '@/utils/file'
 import useStore from '@/hooks/useStore'
-
+import useSettings from '@/hooks/useSettings'
 const VideoPlayer = ({
   tab,
   window
@@ -15,6 +15,7 @@ const VideoPlayer = ({
 
   const { fs } = useFS()
   const {states, dispatch} = useStore()
+  const {settings} = useSettings()
 
   const [isPaused, setIsPaused] = React.useState(true)
   const [isFullScreen, setIsFullScreen] = React.useState(false)
@@ -24,6 +25,27 @@ const VideoPlayer = ({
   const [videoCurrentTime, setVideoCurrentTime] = React.useState(0)
   const [videoVolume, setVideoVolume] = React.useState(1)
   const [isLoading, setIsLoading] = React.useState(true)
+
+  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = React.useState(settings?.system.systemHighlightColor)
+  const [SystemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system.systemBackgroundColor)
+  const [SystemDefaultTextColor, setSystemDefaultTextColor] = React.useState(settings?.system.systemTextColor)
+
+  useEffect(() => {
+    if(settings?.system.systemTextColor === SystemDefaultTextColor) return 
+    setSystemDefaultTextColor(settings?.system.systemTextColor)
+  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor, settings?.system.systemTextColor, SystemDefaultTextColor])
+
+  useEffect(() => {
+    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
+    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
+  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
+
+  useEffect(() => {
+    if(settings?.system.systemBackgroundColor === SystemDefaultBackgroundColor) return 
+    setSystemDefaultBackgroundColor(settings?.system.systemBackgroundColor)
+  },[settings?.system.systemBackgroundColor, SystemDefaultBackgroundColor])
+
+
 
   const LoadVideo = () => {
     if(tab?.value === '/Desktop'){
@@ -86,10 +108,17 @@ const VideoPlayer = ({
   const NoVideoProvided = () => {
     return (
       <div className='w-full h-full flex flex-col justify-center items-center'>
-        <span className='i-mdi-video-off-outline text-6xl  text-slate-600' />
+        <span className='i-mdi-video-off-outline text-6xl ' 
+        style={{
+          color: SystemDefaultTextColor
+        }}
+        />
         <CustomText
           text='No video provided'
-          className='text-6xl text-slate-600 mt-2'
+          className='text-6xl  mt-2'
+          style={{
+            color: SystemDefaultTextColor
+          }}
         />
       </div>
     )
@@ -147,16 +176,23 @@ const VideoPlayer = ({
 
     >
       <div className='
-        h-full w-full flex flex-col bg-white'>
-        <div className='flex justify-center items-center w-full h-full bg-white-100'>
+        h-full w-full flex flex-col '
+        style={{
+          backgroundColor: SystemDefaultBackgroundColor
+        }}
+        >
+        <div className='flex justify-center items-center w-full h-full'>
           {tab.value === '/Desktop' 
           ?
           <NoVideoProvided />
           :
           <video
-            className='w-full h-full bg-white'
+            className='w-full h-full'
             src={`data:${convertFileExtensionToFileType(getExtension(tab.value || ''))};base64,${videoBase64}`}
             ref={videoRef}
+            style={{
+              backgroundColor: SystemDefaultBackgroundColor
+            }}
           />
           }
           
@@ -164,9 +200,10 @@ const VideoPlayer = ({
         <div
           className={`
           absolute bottom-0 w-full h-20  
-          ${!isMenuOpen ? `opacity-100 bg-white` : `opacity-0 hover:opacity-90 backdrop-filter bg-opacity-0`} 
+          ${!isMenuOpen ? `${SystemDefaultBackgroundColor}` : `opacity-0 hover:opacity-90 backdrop-filter bg-opacity-0`} 
           flex-col transition-all duration-600 ease-in-out 
-        `}>
+        `}
+        >
           <div className='w-full h-3/5 flex justify-center items-center'>
 
             <span
@@ -183,13 +220,19 @@ const VideoPlayer = ({
             >
               {!isPaused ?
                 <span
-                  className='i-mdi-pause text-2xl text-white cursor-pointer'
+                  className='i-mdi-pause text-2xl  cursor-pointer'
                   onClick={() => handlerPlayVideo()}
+                  style={{
+                    color: SystemDefaultTextColor
+                  }}
                 />
                 :
                 <span
-                  className='i-mdi-play text-2xl text-white cursor-pointer'
+                  className='i-mdi-play text-2xl  cursor-pointer'
                   onClick={() => handlerPlayVideo()}
+                  style={{
+                    color: SystemDefaultTextColor
+                  }}
                 />
               }
 
@@ -211,7 +254,7 @@ const VideoPlayer = ({
               <Slider
                 h={6}
                 w={'80%'}
-                color='black'
+                color={SystemDefaultTextColor}
                 value={Number(((videoVolume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
                 onChange={(value) => {
                   handlerVolume(value / 100)
@@ -228,7 +271,7 @@ const VideoPlayer = ({
             <div className='w-6/12'>
               <Progress
                 value={(videoCurrentTime * 100) / videoDuration}
-                color='blue'
+                color={SystemDefaultHighlightColor}
                 h={6}
                 radius={6}
               />
@@ -247,9 +290,17 @@ const VideoPlayer = ({
               }}
             >
               {isFullScreen ?
-                <span className='i-mdi-fullscreen-exit text-2xl' />
+                <span className='i-mdi-fullscreen-exit text-2xl' 
+                style={{
+                  color: SystemDefaultTextColor
+                }}
+                />
                 :
-                <span className='i-mdi-fullscreen text-2xl' />
+                <span className='i-mdi-fullscreen text-2xl' 
+                style={{
+                  color: SystemDefaultTextColor
+                }}
+                />
               }
 
             </div>

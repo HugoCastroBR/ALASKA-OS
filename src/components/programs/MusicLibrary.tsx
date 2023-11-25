@@ -4,7 +4,7 @@ import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import Image from 'next/image'
 import { truncateText } from '@/utils/text'
-import { base64ToFile, convertMp3Base64ToFile, convertSizeToKBMBGB, getExtension, getMP3Duration, uuid } from '@/utils/file'
+import { base64ToFile, convertSizeToKBMBGB, getExtension, getMP3Duration, uuid } from '@/utils/file'
 import useFS from '@/hooks/useFS'
 import { ApiError } from 'next/dist/server/api-utils'
 import { secondsToMinutes } from '@/utils/date'
@@ -13,6 +13,7 @@ import MusicItem from '../molecules/MusicItem'
 import useStore from '@/hooks/useStore'
 import { AddMusic, ClearMusic, MusicClearEverything, SetCurrentMusic, SetCurrentPlayingIndex, SetIsPaused, SetIsPlaying, SetMusics, SetProgress, SetVolume } from '@/store/actions'
 import DefaultWindow from '../containers/DefaultWindow'
+import useSettings from '@/hooks/useSettings'
 
 function MusicLibrary({
   tab,
@@ -21,6 +22,27 @@ function MusicLibrary({
 
   const { fs } = useFS()
   const { states, dispatch } = useStore()
+  const { settings } = useSettings()
+
+  const [defaultSystemBackgroundColor, setDefaultSystemBackgroundColor] = React.useState(settings?.system?.systemBackgroundColor)
+  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = React.useState(settings?.system?.systemHighlightColor)
+  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor)
+
+  useEffect(() => {
+    if (settings?.system.systemHighlightColor === defaultSystemHighlightColor) return
+    setDefaultSystemHighlightColor(settings?.system.systemHighlightColor)
+  }, [settings?.system.systemBackgroundColor, defaultSystemBackgroundColor, settings?.system.systemHighlightColor, defaultSystemHighlightColor])
+
+  useEffect(() => {
+    if (settings?.system.systemBackgroundColor === defaultSystemBackgroundColor) return
+    setDefaultSystemBackgroundColor(settings?.system.systemBackgroundColor)
+  }, [settings?.system.systemBackgroundColor, defaultSystemBackgroundColor])
+
+  useEffect(() => {
+    if (settings?.system.systemTextColor === defaultSystemTextColor) return
+    setDefaultSystemTextColor(settings?.system.systemTextColor)
+  }, [settings?.system.systemTextColor, defaultSystemTextColor])
+
 
   const [musicCurrentTime, setMusicCurrentTime] = React.useState(0)
   const [isExternalSource, setIsExternalSource] = React.useState(false)
@@ -72,7 +94,6 @@ function MusicLibrary({
 
 
   const HandlerUploadMusic = (file: File) => {
-    setIsLoading(true)
     const folder = `/Musics/${uuid(8)}}`
     const fileName = file.name.replaceAll(' ', '_')
     const fileReader = new FileReader()
@@ -85,7 +106,7 @@ function MusicLibrary({
           if (err) {
             console.log(err)
             setUploadMusicOpen(false)
-            setIsLoading(false)
+            
             throw err
 
           }
@@ -101,7 +122,7 @@ function MusicLibrary({
             if (err) {
               console.log(err)
               setUploadMusicOpen(false)
-              setIsLoading(false)
+              
               throw err
 
             }
@@ -110,7 +131,7 @@ function MusicLibrary({
               if (err) {
                 console.log(err)
                 setUploadMusicOpen(false)
-                setIsLoading(false)
+                
                 throw err
 
               }
@@ -120,12 +141,12 @@ function MusicLibrary({
                 if (err) {
                   console.log(err)
                   setUploadMusicOpen(false)
-                  setIsLoading(false)
+                  
                   throw err
 
                 }
                 console.log('Music Uploaded')
-                setIsLoading(false)
+                
                 setUploadMusicOpen(false)
                 LoadMusicFiles()
               })
@@ -148,7 +169,6 @@ function MusicLibrary({
       if (err) throw err
       if (folders?.length === 0) return
       folders?.map((folder) => {
-        setIsLoading(true)
         let MusicToRender = {
           music: {
             artist: 'Unknown Artist',
@@ -182,7 +202,6 @@ function MusicLibrary({
             })
             MusicToRender.music.musicFile = musicFile
             MusicToRender.music.duration = 0
-            setIsLoading(false)
             dispatch(AddMusic(MusicToRender.music))
           }
         })
@@ -327,7 +346,6 @@ function MusicLibrary({
 
 
 
-  const [isLoading, setIsLoading] = React.useState(true)
   const [UploadMusicOpen, setUploadMusicOpen] = React.useState(false)
   const [MusicToUpload, setMusicToUpload] = React.useState<File | null>(null)
   const [UploadedSongCover, setUploadedSongCover] = React.useState<string | null>(null)
@@ -368,10 +386,19 @@ function MusicLibrary({
           }}
         >
           <div className='h-full w-full flex justify-center items-center'>
-            <span className='i-mdi-upload text-xl mr-2 text-slate-400' />
+            <span className='i-mdi-upload text-xl mr-2 '
+              style={{
+                color: defaultSystemTextColor
+
+              }}
+
+            />
             <CustomText
+              style={{
+                color: defaultSystemTextColor
+              }}
               text='Upload Music'
-              className='text-lg font-semibold text-slate-400'
+              className='text-lg font-semibold'
             />
           </div>
         </Button>}
@@ -443,6 +470,10 @@ function MusicLibrary({
                 <CustomText
                   text='Upload Music Cover'
                   className='text-lg font-semibold text-slate-400 '
+                  style={{
+                    color: defaultSystemTextColor
+                  
+                  }}
                 />
               </>
             }
@@ -452,23 +483,24 @@ function MusicLibrary({
     )
   }
 
-  if (isLoading) {
-    return (
-      <div
-        className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-      flex flex-col overflow-hidden rounded-lg bg-white
-      justify-center items-center'
-      >
-        <Loader
-          size={128}
-        />
-        <CustomText
-          text='Loading Musics...'
-          className='text-xl font-semibold mt-2'
-        />
-      </div>
-    )
-  }
+  // if (isLoading) {
+  //   return (
+  //     <div
+  //       className='absolute w-1/2 h-1/2 top-1/4 left-1/4
+  //     flex flex-col overflow-hidden rounded-lg bg-white
+  //     justify-center items-center'
+  //     >
+  //       <Loader
+  //         size={128}
+  //       />
+  //       <CustomText
+  //         text='Loading Musics...'
+  //         className='text-xl font-semibold mt-2'
+
+  //       />
+  //     </div>
+  //   )
+  // }
 
   return (
     <DefaultWindow
@@ -507,7 +539,10 @@ function MusicLibrary({
     >
       <div
         className='
-      flex flex-col  bg-white h-full w-full'
+      flex flex-col h-full w-full'
+        style={{
+          backgroundColor: defaultSystemBackgroundColor
+        }}
       >
         {UploadMusicOpen &&
           <div className='
@@ -527,6 +562,7 @@ function MusicLibrary({
                 }}
                 value={UploadedSongTitle || ''}
                 autoFocus
+
               />
               <input
                 type='text'
@@ -637,10 +673,19 @@ function MusicLibrary({
                 <CustomText
                   text={truncateText(states.Musics.currentMusic.title || 'Unknown Music', 64)}
                   className='text-sm font-semibold'
+                  style={{
+                    color: defaultSystemTextColor
+
+                  }}
                 />
                 <CustomText
                   text={truncateText(states.Musics.currentMusic.artist || 'Unknown artist', 64)}
                   className='text-sm mt-0.5'
+                  style={{
+                    color: defaultSystemTextColor
+
+
+                  }}
                 />
 
               </div>
@@ -652,10 +697,13 @@ function MusicLibrary({
                   className='i-mdi-skip-previous text-4xl mx-1 cursor-pointer
               hover:bg-slate-500 transition-all duration-300 ease-in-out'
                   onClick={HandlerPlayPreviousMusic}
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 />
 
                 <div className='
-              bg-slate-800 mx-1 h-8 w-8 flex justify-center items-center rounded-full
+              bg-black mx-1 h-8 w-8 flex justify-center items-center rounded-full
               cursor-pointer hover:bg-slate-500 transition-all duration-300 ease-in-out
               '
                   onClick={HandlerTogglePauseMusic}
@@ -673,6 +721,9 @@ function MusicLibrary({
               hover:bg-slate-500 transition-all duration-300 ease-in-out
               '
                   onClick={HandlerPlayNextMusic}
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
                 />
 
               </div>
@@ -681,13 +732,16 @@ function MusicLibrary({
                   <CustomText
                     text={secondsToMinutes(musicCurrentTime)}
                     className='text-xs'
+                    style={{
+                      color: defaultSystemTextColor
+                    }}
                   />
                 </div>
                 <div className='w-10/12 px-1'>
                   <Progress
                     value={states.Musics.progress}
                     animated
-                    
+
                     color='blue'
                     h={6}
                     radius={6}
@@ -697,20 +751,27 @@ function MusicLibrary({
                   <CustomText
                     text={secondsToMinutes(states.Musics.currentMusic.duration || 0)}
                     className='text-xs'
+                    style={{
+                      color: defaultSystemTextColor
+                    }}
                   />
                 </div>
               </div>
             </div>
             <div className='w-3/12  flex h-full px-1 pl-4'>
               <div className='w-1/6 h-full flex justify-center items-center'>
-                <span className='i-mdi-volume-high text-2xl cursor-pointer' />
+                <span className='i-mdi-volume-high text-2xl cursor-pointer'
+                  style={{
+                    color: defaultSystemTextColor
+                  }}
+                />
               </div>
               <div className='w-5/6 h-full flex justify-center items-center pl-1'>
                 <Slider
                   h={6}
                   w={'100%'}
-                  color='black'
-                  value={Number(((states.Musics.volume * 100)* states.System.globalVolumeMultiplier).toFixed(0))}
+                  color={defaultSystemTextColor}
+                  value={Number(((states.Musics.volume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
                   onChange={(value) => {
                     HandlerChangeVolume(value / 100)
 

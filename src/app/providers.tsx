@@ -3,6 +3,8 @@ import React from 'react'
 import { Provider } from 'react-redux';
 import store from '@/store';
 import ThemeProviders from './ThemeProvider';
+import { PythonProvider } from 'react-py'
+
 
 interface ProvidersProps {
   children: React.ReactNode
@@ -13,9 +15,11 @@ const Providers = (
 ) => {
   return (
     <Provider store={store}>
-        <ThemeProviders>
-          {children}
-        </ThemeProviders>
+        <PythonProvider>
+          <ThemeProviders>
+            {children}
+          </ThemeProviders>
+        </PythonProvider>
     </Provider>
 
 
