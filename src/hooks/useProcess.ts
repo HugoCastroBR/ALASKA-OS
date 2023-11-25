@@ -5,6 +5,7 @@ import useStore from './useStore';
 import useFS from './useFS';
 import { wait } from '@/utils/file';
 import { SetIsSystemLoaded } from '@/store/actions';
+import { ApiError } from 'next/dist/server/api-utils';
 
 
 export default function useProcess(){
@@ -20,6 +21,7 @@ export default function useProcess(){
 
 
     const startLoading = async () => {
+      createDesktop()
       runPythonScript('print("Python Loading")')
       setCurrentLoadingProcess(0)
       startLoadingSettings()
@@ -87,6 +89,35 @@ export default function useProcess(){
       if(isReady && countPythonExecution === 0){
         handlerRunFirstExecution(script)
       }
+    }
+
+    const createDesktop = () =>{
+      fs?.readdir('/', async (err, data) => {
+        if(err){
+          console.log(err)
+        }
+        if(data?.includes('Desktop')){
+          setLoadingMessages('Welcome back, I am loading your Desktop folder')
+          await wait(500)
+        }else{
+          setLoadingMessages('So it seems to be your first time here, I am creating your Desktop folder')
+          await wait(1000)
+          fs?.mkdir('/', (err:ApiError) => {
+            fs?.mkdir('/Desktop', (err:ApiError) => {
+              if(err){
+                console.log(err)
+              }
+              fs?.mkdir('/Musics', (err:ApiError) => {
+                if(err){
+                  console.log(err)
+                }
+              })
+            })
+          })
+          
+        }
+      })
+      
     }
 
 

@@ -94,7 +94,6 @@ function MusicLibrary({
 
 
   const HandlerUploadMusic = (file: File) => {
-    setIsLoading(true)
     const folder = `/Musics/${uuid(8)}}`
     const fileName = file.name.replaceAll(' ', '_')
     const fileReader = new FileReader()
@@ -107,7 +106,7 @@ function MusicLibrary({
           if (err) {
             console.log(err)
             setUploadMusicOpen(false)
-            setIsLoading(false)
+            
             throw err
 
           }
@@ -123,7 +122,7 @@ function MusicLibrary({
             if (err) {
               console.log(err)
               setUploadMusicOpen(false)
-              setIsLoading(false)
+              
               throw err
 
             }
@@ -132,7 +131,7 @@ function MusicLibrary({
               if (err) {
                 console.log(err)
                 setUploadMusicOpen(false)
-                setIsLoading(false)
+                
                 throw err
 
               }
@@ -142,12 +141,12 @@ function MusicLibrary({
                 if (err) {
                   console.log(err)
                   setUploadMusicOpen(false)
-                  setIsLoading(false)
+                  
                   throw err
 
                 }
                 console.log('Music Uploaded')
-                setIsLoading(false)
+                
                 setUploadMusicOpen(false)
                 LoadMusicFiles()
               })
@@ -170,7 +169,6 @@ function MusicLibrary({
       if (err) throw err
       if (folders?.length === 0) return
       folders?.map((folder) => {
-        setIsLoading(true)
         let MusicToRender = {
           music: {
             artist: 'Unknown Artist',
@@ -204,7 +202,6 @@ function MusicLibrary({
             })
             MusicToRender.music.musicFile = musicFile
             MusicToRender.music.duration = 0
-            setIsLoading(false)
             dispatch(AddMusic(MusicToRender.music))
           }
         })
@@ -349,7 +346,6 @@ function MusicLibrary({
 
 
 
-  const [isLoading, setIsLoading] = React.useState(true)
   const [UploadMusicOpen, setUploadMusicOpen] = React.useState(false)
   const [MusicToUpload, setMusicToUpload] = React.useState<File | null>(null)
   const [UploadedSongCover, setUploadedSongCover] = React.useState<string | null>(null)
@@ -487,24 +483,24 @@ function MusicLibrary({
     )
   }
 
-  if (isLoading) {
-    return (
-      <div
-        className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-      flex flex-col overflow-hidden rounded-lg bg-white
-      justify-center items-center'
-      >
-        <Loader
-          size={128}
-        />
-        <CustomText
-          text='Loading Musics...'
-          className='text-xl font-semibold mt-2'
+  // if (isLoading) {
+  //   return (
+  //     <div
+  //       className='absolute w-1/2 h-1/2 top-1/4 left-1/4
+  //     flex flex-col overflow-hidden rounded-lg bg-white
+  //     justify-center items-center'
+  //     >
+  //       <Loader
+  //         size={128}
+  //       />
+  //       <CustomText
+  //         text='Loading Musics...'
+  //         className='text-xl font-semibold mt-2'
 
-        />
-      </div>
-    )
-  }
+  //       />
+  //     </div>
+  //   )
+  // }
 
   return (
     <DefaultWindow
