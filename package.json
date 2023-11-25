@@ -37,9 +37,11 @@
     "i": "^0.3.7",
     "next": "14.0.3",
     "npm": "^10.2.4",
+    "python-js": "^0.9.8",
     "react": "^18",
     "react-dom": "^18",
     "react-draggable": "^4.4.6",
+    "react-py": "^1.10.6",
     "react-redux": "^8.1.3"
   },
   "devDependencies": {

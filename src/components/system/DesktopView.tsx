@@ -10,7 +10,7 @@ import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
-import { ClearFiles, WindowAddTab } from '@/store/actions';
+import { ClearFiles, SetIsSystemLoaded, WindowAddTab } from '@/store/actions';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -52,7 +52,7 @@ const DesktopView = () => {
 
   useEffect(() => {
     if(fs){
-      fs.readdir(desktopPath, (err, files) => {
+      fs.readdir(desktopPath, async (err, files) => {
         if(err){
           console.log(err);
         }else{

@@ -121,6 +121,7 @@ const DesktopFile = ({
     case 'json':
     case 'html':
     case 'css':
+    case 'py':
       return(
         dispatch(WindowAddTab({
           title: 'Code Editor',

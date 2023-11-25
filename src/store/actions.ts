@@ -7,6 +7,9 @@ import { SettingsProps } from '@/types/settings';
 export const SetGlobalVolumeMultiplier = (value: number) => {
   return SystemActions.SET_GLOBAL_VOLUME_MULTIPLIER(value)
 }
+export const SetIsSystemLoaded = (value: boolean) => {
+  return SystemActions.SET_IS_SYSTEM_LOADED(value)
+}
 
 export const SettingsSetSettings = (value: SettingsProps) => {
   return SettingsActions.SET_SETTINGS(value)

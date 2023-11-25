@@ -7,10 +7,15 @@ import useSettings from '@/hooks/useSettings'
 import useStore from '@/hooks/useStore'
 import { SettingsSetSettings } from '@/store/actions'
 import useFS from '@/hooks/useFS'
+import useProcess from '@/hooks/useProcess'
+import { Loader } from '@mantine/core'
+import CustomText from '../atoms/CustomText'
 const Desktop = () => {
 
   const { settings } = useSettings()
   const { states, dispatch } = useStore()
+  const {loadingMessages} = useProcess()
+
 
   const { fs } = useFS()
 
@@ -36,6 +41,8 @@ const Desktop = () => {
     }
   }, [fs])
 
+
+
   const [wallpaper64, setWallpaper64] = React.useState(settings?.desktop.wallpaper.image64 || '')
   const [isWallpaperEnabled, setIsWallpaperEnabled] = React.useState(settings?.desktop.wallpaper.enabled || false)
 
@@ -44,6 +51,25 @@ const Desktop = () => {
     setIsWallpaperEnabled(settings?.desktop.wallpaper.enabled || false)
   }, [settings?.desktop.wallpaper])
 
+  if(!states.System.isSystemLoaded){
+    return (
+      <main
+        className='
+        min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
+        bg-cover bg-center bg-no-repeat bg-slate-50
+        '
+      >
+        <Loader size={128} />
+        <CustomText
+          text={loadingMessages}
+          className='text-slate-500 font-medium text-lg mt-4'
+          style={{
+            color: 'rgba(0,0,0,1)'
+          }}
+        />
+      </main>
+    )
+  }
 
   return (
     <main

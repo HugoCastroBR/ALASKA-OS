@@ -19,7 +19,7 @@ const Console = ({
   const [historyIndex, setHistoryIndex] = useState<number>(0)
 
   const ProcessInput = (input: string) => {
-    setCommandHistory([...commandHistory, input])
+    setCommandHistory([])
     runCommand(input)
     setInputValue('')
   }
@@ -129,7 +129,7 @@ const Console = ({
       bg-slate-200 bg-opacity-40 
       flex flex-col justify-start items-start overflow-y-auto p-2
       '>
-        {history.length > 1 && 
+        {history.length && 
           history.map((item, index) => (
             <p
               key={index}
