@@ -12,6 +12,7 @@ export const SetIsSystemLoaded = (value: boolean) => {
 }
 
 export const SettingsSetSettings = (value: SettingsProps) => {
+  console.log('SettingsSetSettingsDispatch')
   return SettingsActions.SET_SETTINGS(value)
 }
 export const SetTaskBarPosition = (value: "top" | "bottom" | "left" | "right") => {

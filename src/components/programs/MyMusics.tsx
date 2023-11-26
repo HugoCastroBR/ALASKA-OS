@@ -10,8 +10,13 @@ import { addTypeToBase64, audioToBase64, getExtension, getExtensionFromBase64, i
 import { ApiError } from 'next/dist/server/api-utils'
 import Image from 'next/image'
 import { secondsToMinutes } from '@/utils/date'
+import { programProps } from '@/types/programs'
+import DefaultWindow from '../containers/DefaultWindow'
 
-const MyMusics = () => {
+const MyMusics = ({
+  tab,
+  window
+}:programProps) => {
 
   const { settings } = useSettings()
   const {fs} = useFS()
@@ -30,7 +35,7 @@ const MyMusics = () => {
     
   }, [settings?.system?.systemTextColor])
 
-  const [isUploadOpen, setIsUploadOpen] = React.useState(true)
+  const [isUploadOpen, setIsUploadOpen] = React.useState(false)
   const [uploadMusicText, setUploadMusicText] = React.useState('Music')
   const [uploadImageText, setUploadImageText] = React.useState('Image')
   const [inputMusicTitle, setInputMusicTitle] = React.useState('')
@@ -46,6 +51,8 @@ const MyMusics = () => {
   const [musicProgress, setMusicProgress] = React.useState(0)
   const [musicVolume, setMusicVolume] = React.useState(1)
   const [currentMusicIndex, setCurrentMusicIndex] = React.useState(0)
+
+  const [searchText, setSearchText] = React.useState('')
 
   const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null)
   
@@ -85,11 +92,11 @@ const MyMusics = () => {
         </div>
         <div className='w-[calc(100%-80px)] flex flex-col h-16 ml-1'>
           <CustomText
-            text={name}
+            text={truncateText(name, 42)}
             className='text-sm'
           />
           <CustomText
-            text={artist}
+            text={truncateText(artist,48)}
             className='text-xs'
           />
         </div>
@@ -139,7 +146,21 @@ const MyMusics = () => {
         setIsMusicPaused(true)
         setMusicDuration(0)
         setMusicCurrentTime(0)
-        handleNextMusic()
+        setAudioElement(null)
+        setAudioElement((audio) => {
+          if(audio){
+            audio.pause()
+          }
+          return audio
+        })
+    
+        if(currentMusicIndex === musics.length - 1){
+          setCurrentMusicIndex(0)
+          handlerPlayMusic(musics[0])
+        }else{
+          setCurrentMusicIndex(currentMusicIndex + 1)
+          handlerPlayMusic(musics[currentMusicIndex + 1])
+        }
       })
       audio?.addEventListener('error', (e) => {
         console.log(e)
@@ -150,15 +171,11 @@ const MyMusics = () => {
 
   const AppendToMusics = (music: MusicItemProps) => {
     setMusics((prevMusics) => {
-      // Verificar se a música já existe na lista
       if (prevMusics.some((existingMusic) => existingMusic.name === music.name)) {
-        console.log("A música já existe na lista. Não será adicionada novamente.");
         return prevMusics;
       }
   
-      // Se a música não existe, adicioná-la à lista
       const newMusics = [...prevMusics, music];
-      console.log(newMusics);
       return newMusics;
     });
   };
@@ -318,7 +335,7 @@ const MyMusics = () => {
             if(err){
               console.log(err)
             }else{
-              console.log('Music Uploaded')
+              console.log('Success!')
             }
           }
         )}
@@ -477,6 +494,18 @@ const MyMusics = () => {
           <TextInput
             label='Search: '
             placeholder='Search'
+            defaultValue={searchText}
+            capture='user'
+            autoFocus
+            onBlur={(event) => {
+              setSearchText(event.currentTarget.value)
+            }}
+            onKeyDown={(event) => {
+              if(event.key === 'Enter'){
+                setSearchText(event.currentTarget.value)
+              }
+            
+            }}
             className='w-4/12 mx-1 mb-1 ml-6'
             style={{
               color: defaultSystemTextColor,
@@ -490,13 +519,16 @@ const MyMusics = () => {
   }
 
   return (
-    <div
-      className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-      flex flex-col  overflow-hidden
-      rounded-lg '
-      style={{
-        backgroundColor: systemDefaultBackgroundColor
-      }}
+    <DefaultWindow
+      currentTab={tab}
+      currentWindow={window}
+      title='My Musics'
+      uuid={tab?.uuid || ''}
+      onClose={() => { }}
+      onMinimize={() => { }}
+      onMaximize={() => { }}
+      resizable
+
     >
       <div className='flex flex-col w-full h-full'>
         <ListHeader />
@@ -505,8 +537,17 @@ const MyMusics = () => {
             cols={2}
             verticalSpacing={6}
             spacing={6}
-          >
-            {musics.map((music,index) => <MusicItem index={index} key={index} {...music}/>)}
+          > {!searchText
+            ?
+            musics.map((music,index) => <MusicItem index={index} key={index} {...music}/>)
+            :
+            musics.filter((music) => {
+              if(music.name.toLowerCase().includes(searchText.toLowerCase()) || music.artist.toLowerCase().includes(searchText.toLowerCase())){
+                return music
+              }
+              
+            }).map((music,index) => <MusicItem index={index} key={index} {...music}/>)
+            }
           </SimpleGrid>
         </div>
         <div className='sticky  w-full h-32 flex justify-center items-center'
@@ -621,7 +662,7 @@ const MyMusics = () => {
           </div>
         </div>
       </div>
-    </div>
+    </DefaultWindow>
   )
 }
 

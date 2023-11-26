@@ -13,13 +13,11 @@ export default function useSettings(){
 
   const settings = states.Settings.settings
 
-  useEffect(() => {
-    console.log("Settings Changed")
-  }, [states.Settings.settings])
+  // useEffect(() => {
+  // }, [states.Settings.settings])
 
 
   const setSettings = (value: SettingsProps) => {
-    console.log("Settings Changed")
     dispatch(SettingsSetSettings(value))
   }
 
