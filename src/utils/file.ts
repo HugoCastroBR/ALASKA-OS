@@ -311,7 +311,6 @@ export const verifyIfExtensionIsAudio = (extension: string) => {
 
 export const addTypeToBase64 = (extension: string,base64String: string) => {
   const type = convertFileExtensionToFileType(extension);
-  console.log(type);
   const base64 = `data:${type};base64,${base64String}`;
   return base64;
 }
@@ -319,4 +318,10 @@ export const addTypeToBase64 = (extension: string,base64String: string) => {
 export const getTypeFromExtension = (extension: string) => {
   const type = convertFileExtensionToFileType(extension);
   return type;
+}
+
+export const getSizeFromBase64 = (base64String: string) => {
+  const string = atob(base64String);
+  const size = string.length;
+  return size;
 }
