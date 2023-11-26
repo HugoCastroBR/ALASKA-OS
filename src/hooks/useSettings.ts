@@ -7,15 +7,23 @@ export default function useSettings(){
 
   const {fs} = useFS()
   const { states , dispatch } = useStore()
-  const [settings, setSettings] = useState<SettingsProps>()
   const [isLoadingSettings, setIsLoadingSettings] = useState(false)
   const [loadedSuccessfullySettings, setLoadedSuccessfullySettings] = useState<boolean | undefined>(undefined)
 
+
+  const settings = states.Settings.settings
+
   useEffect(() => {
-    console.log('Settings changed')
-    setSettings(states.Settings.settings)
-  }, [states.Settings])
-  
+    console.log("Settings Changed")
+  }, [states.Settings.settings])
+
+
+  const setSettings = (value: SettingsProps) => {
+    console.log("Settings Changed")
+    dispatch(SettingsSetSettings(value))
+  }
+
+
 
   const startLoadingSettings = () => {
     setIsLoadingSettings(true)

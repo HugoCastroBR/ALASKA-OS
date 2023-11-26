@@ -7,34 +7,34 @@ export type SettingsProps = {
     items: {
       color: string;
       backgroundColor: string;
-    }
-  }
+    };
+  };
   desktop: {
     backgroundColor: string;
-    desktopIcon:{
+    desktopIcon: {
       textColor: string;
-    }
+    };
     wallpaper: {
-      enabled: boolean,
-      image64: string,
-    }
-  }
+      enabled: boolean;
+      image64: string;
+    };
+  };
   startMenu: {
     background: string;
     ordered: boolean;
     textColor: string;
-    searchInput : {
+    searchInput: {
       disabled: boolean;
       background: string;
       textColor: string;
-    }
-  }
+    };
+  };
   windowTopBar: {
     color: string;
-    items:{
+    items: {
       color: string;
-    }
-  }
+    };
+  };
   system: {
     systemBackgroundColor: string;
     systemHighlightColor: string;
@@ -43,6 +43,6 @@ export type SettingsProps = {
       disabled: boolean;
       format: "12" | "24";
       showSeconds: boolean;
-    }
-  }
-}
+    };
+  };
+} & { [key: string]: any }; // Adicionando uma assinatura de índice

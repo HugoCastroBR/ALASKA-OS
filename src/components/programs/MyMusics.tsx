@@ -27,6 +27,7 @@ const MyMusics = () => {
   useEffect(() => {
     if(settings?.system?.systemTextColor === defaultSystemTextColor) return
     setDefaultSystemTextColor(settings?.system?.systemTextColor || 'rgba(0, 0, 0, 1)')
+    
   }, [settings?.system?.systemTextColor])
 
   const [isUploadOpen, setIsUploadOpen] = React.useState(true)

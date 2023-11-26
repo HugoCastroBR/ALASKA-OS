@@ -2,32 +2,19 @@ import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import { Indicator } from '@mantine/core'
 import { Calendar } from '@mantine/dates'
-import useSettings from '@/hooks/useSettings'
+import useStore from '@/hooks/useStore'
 
 const Clock = () => {
 
-  const { settings } = useSettings()
-
+  // const { states.Settings.settings } = usestates.Settings.settings()
+  const {states} = useStore()
   // const [time, setTime] = React.useState(0)
   const [isCalendarOpen, setIsCalendarOpen] = React.useState(false)
   const [hour, setHour] = React.useState(0)
   const [minute, setMinute] = React.useState(0)
   const [second, setSecond] = React.useState(0)
-  const [timeFormat, setTimeFormat] = React.useState<string | undefined>(settings?.system.clock.format)
 
-  useEffect(() => {
-    if(timeFormat !== settings?.system.clock.format){
-      setTimeFormat(settings?.system.clock.format)
-    }
-  }, [settings?.system.clock.format])
 
-  const [clockTextColor, setClockTextColor] = React.useState(settings?.taskbar.items.color)
-
-  useEffect(() => {
-    if(clockTextColor !== settings?.taskbar.items.color){
-      setClockTextColor(settings?.taskbar.items.color)
-    } 
-  }, [settings?.taskbar.items.color])
 
   const getTime = () => {
     const date = new Date()
@@ -49,7 +36,7 @@ const Clock = () => {
       }
       const ampm = hour >= 12 ? 'PM' : 'AM'
       const hour12 = hour % 12
-      if(settings?.system.clock.showSeconds){
+      if(states.Settings.settings?.system.clock.showSeconds){
         if(second < 10){
           _second = `0${second}`
         }
@@ -60,7 +47,7 @@ const Clock = () => {
       if (minute < 10) {
         _minute = `0${minute}`
       }
-      if(settings?.system.clock.showSeconds){
+      if(states.Settings.settings?.system.clock.showSeconds){
         if(second < 10){
           _second = `0${second}`
         }
@@ -71,7 +58,7 @@ const Clock = () => {
   }
 
   useEffect(() => {
-    if(settings?.system.clock.showSeconds){
+    if(states.Settings.settings?.system.clock.showSeconds){
       setInterval(() => {
         getTime()
       }, 100)
@@ -80,7 +67,7 @@ const Clock = () => {
         getTime()
       }, 1000)
     }
-  }, [settings?.system.clock.showSeconds])
+  }, [states.Settings.settings?.system.clock.showSeconds])
   
 
   return (
@@ -106,9 +93,9 @@ const Clock = () => {
         className='w-24 cursor-pointer '>
         <CustomText
           className='w-full '
-          text={formatTime(timeFormat as "12" | "24")}
+          text={formatTime(states.Settings.settings.system.clock.format as "12" | "24")}
           style={{
-            color: clockTextColor
+            color: states.Settings.settings.system.systemTextColor
           }}
         />
       </div>
