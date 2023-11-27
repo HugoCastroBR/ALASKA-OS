@@ -325,3 +325,4 @@ export const getSizeFromBase64 = (base64String: string) => {
   const size = string.length;
   return size;
 }
+

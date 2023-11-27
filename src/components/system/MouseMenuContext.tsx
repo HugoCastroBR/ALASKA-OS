@@ -3,7 +3,7 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, uuid, verifyIfIsFile } from '@/utils/file'
+import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
@@ -14,7 +14,7 @@ const MouseMenuContext = ({
   y,
   visible,
   onRefresh,
-}:MouseMenuContext) => {
+}: MouseMenuContext) => {
   if (!visible) return null
 
 
@@ -25,6 +25,9 @@ const MouseMenuContext = ({
     title,
     onClick,
     disabled,
+    onMouseEnter,
+    onMouseLeave,
+    left,
   }: mouseContextMenuOptionsProps) => {
     return (
       <div
@@ -33,6 +36,12 @@ const MouseMenuContext = ({
           e.preventDefault()
           onClick && onClick()
         }}
+        onMouseEnter={() => {
+          onMouseEnter && onMouseEnter()
+        }}
+        onMouseLeave={() => {
+          onMouseLeave && onMouseLeave()
+        }}
         className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}
         text-white text-sm flex items-center hover:bg-blue-500 
         transition-all duration-300 ease-in-out cursor-pointer 
@@ -40,14 +49,17 @@ const MouseMenuContext = ({
         `}
       >
         <span className={`${className} text-lg`}></span>
-        <CustomText
-          text={title}
-          className='ml-1'
-        />
+        <div className='ml-1 w-full h-full flex items-center justify-between'>
+          <CustomText
+            text={title}
+          />
+          {left && left}
+        </div>
+
       </div>
     )
   }
-  
+
   const MouseOptionDelete = () => {
     return (
       <MouseOption
@@ -90,7 +102,7 @@ const MouseMenuContext = ({
   }
 
   const MouseOptionRename = () => {
-    return(
+    return (
       <MouseOption
         title='Rename'
         disabled={states.File.selectedFiles.length !== 1}
@@ -113,7 +125,7 @@ const MouseMenuContext = ({
       />
     )
   }
-  
+
   const MouseOptionNewFolder = () => {
     return (
       <MouseOption
@@ -159,40 +171,40 @@ const MouseMenuContext = ({
         disabled={states.File.copiedFiles.length < 1}
         onClick={() => {
           const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
-          if(states.Mouse.mouseInDesktop){
+          if (states.Mouse.mouseInDesktop) {
             states.File.copiedFiles.forEach((file) => {
-              if(verifyIfIsFile(file)){
+              if (verifyIfIsFile(file)) {
                 fs?.readFile(file, 'utf-8', (err, data) => {
-                  if(err) console.log(err)
+                  if (err) console.log(err)
                   console.log(`${"/Desktop"}/${getLastPathSegment(file)}`)
                   fs?.writeFile(`${"/Desktop"}/${getLastPathSegment(file)}`, data, (err) => {
-                    if(err) console.log(err)
+                    if (err) console.log(err)
                     console.log('copied');
                   })
                 })
               }
-              else{
-                fs?.mkdir(`${"/Desktop"}/${getLastPathSegment(file)}`, (err:ApiError) => {
-                  if(err) console.log(err)
+              else {
+                fs?.mkdir(`${"/Desktop"}/${getLastPathSegment(file)}`, (err: ApiError) => {
+                  if (err) console.log(err)
                   console.log('copied');
                 })
               }
             })
           }
           states.File.copiedFiles.forEach((file) => {
-            if(verifyIfIsFile(file)){
+            if (verifyIfIsFile(file)) {
               fs?.readFile(file, 'utf-8', (err, data) => {
-                if(err) console.log(err)
+                if (err) console.log(err)
                 console.log(`${pasteTo}/${getLastPathSegment(file)}`)
                 fs?.writeFile(`${pasteTo}/${getLastPathSegment(file)}`, data, (err) => {
-                  if(err) console.log(err)
+                  if (err) console.log(err)
                   console.log('copied');
                 })
               })
             }
-            else{
-              fs?.mkdir(`${pasteTo}/${getLastPathSegment(file)}`, (err:ApiError) => {
-                if(err) console.log(err)
+            else {
+              fs?.mkdir(`${pasteTo}/${getLastPathSegment(file)}`, (err: ApiError) => {
+                if (err) console.log(err)
                 console.log('copied');
               })
             }
@@ -202,36 +214,38 @@ const MouseMenuContext = ({
       />
     )
   }
-  
+
 
 
   const MouseOptionDownload = () => {
     return (
       <MouseOption
         title='Download'
-        disabled={states.File.selectedFiles.length < 1 }
+        disabled={states.File.selectedFiles.length < 1}
         onClick={() => {
+          console.log('download')
           states.File.selectedFiles.forEach((file) => {
             if (!verifyIfIsFile(file)) return;
-            
-            fs?.readFile(file, 'utf8', (err, data) => {
+
+            fs?.readFile(file, 'utf-8', (err, data) => {
               if (err) console.error(err);
-              
+              if (!data) return;
+
               const fileType = convertFileExtensionToFileType(getExtension(file));
               const fileSolved = base64ToFile(data || '', {
                 fileType,
                 fileName: getLastPathSegment(file),
               });
-        
-              const blob = new Blob([fileSolved], { type: fileType });
+
+              const blob = new Blob([fileSolved]);
               const objectUrl = URL.createObjectURL(blob);
-        
+
               const element = document.createElement('a');
               element.href = objectUrl;
               element.download = getLastPathSegment(file);
               document.body.appendChild(element);
               element.click();
-        
+
               // Limpar o objectUrl para evitar memory leaks
               URL.revokeObjectURL(objectUrl);
               document.body.removeChild(element);
@@ -270,13 +284,120 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenWIthCodeEditor = () => {
+    return (
+      <MouseOption
+        title='Open with Code Editor'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Code Editor',
+                tab: {
+                  title: 'Code Editor',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-vs-code'
+      />
+    )
+  }
+
+  const MouseOptionOpenWithNotePad = () => {
+    return (
+      <MouseOption
+        title='Open with Notepad'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Notepad',
+                tab: {
+                  title: 'Notepad',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-note-text'
+      />
+    )
+  }
+
+  const MouseOptionOpenWith = () => {
+    const [isOptionsOpen, setIsOptionsOpen] = React.useState(false)
+
+    return (
+      <>
+        <MouseOption
+          title='Open with'
+          disabled={states.File.selectedFiles.length !== 1 || verifyIfIsFile(states.File.selectedFiles[0]) === false}
+          onMouseEnter={() => {
+            if(states.File.selectedFiles.length !== 1 || verifyIfIsFile(states.File.selectedFiles[0]) === false) return
+            setIsOptionsOpen(true)
+          }}
+          onMouseLeave={() => {
+            if(states.File.selectedFiles.length !== 1 || verifyIfIsFile(states.File.selectedFiles[0]) === false) return
+            setIsOptionsOpen(false)
+
+          }}
+          className='i-mdi-open-in-app'
+          left={<span className='i-mdi-chevron-right text-lg'></span>}
+        />
+        {
+          isOptionsOpen && (
+            <div
+              onMouseOver={() => {
+                setIsOptionsOpen(true)
+              }}
+              onMouseLeave={() => {
+                setIsOptionsOpen(false)
+              }}
+              className={`
+              bg-gray-300 
+                backdrop-filter backdrop-blur-sm shadow-md
+                flex flex-col w-44 z-40  
+                bg-opacity-30 rounded-r-md
+                p-1
+            `}
+              style={{
+                position: 'absolute',
+                left: 176,
+                top: 48,
+                zIndex: 100,
+              }}
+            >
+              <MouseOptionOpenInBrowser />
+              <MouseOptionOpenWIthCodeEditor />
+              <MouseOptionOpenWithNotePad />
+            </div>
+          )
+        }
+      </>
+    )
+  }
+
   return (
     <div
       className={`
       bg-gray-300 
         backdrop-filter backdrop-blur-sm shadow-md
         flex flex-col w-44 z-40  
-        bg-opacity-20 
+        bg-opacity-30 rounded-md
         p-1
     `}
       style={{
@@ -285,13 +406,14 @@ const MouseMenuContext = ({
         left: x,
         zIndex: 100,
       }}
-    > 
+    >
+      
       <MouseOptionCopy />
       <MouseOptionPaste />
+      <MouseOptionOpenWith />
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
-      <MouseOptionOpenInBrowser />
       <MouseOptionDownload />
       <MouseOptionDelete />
       <MouseOptionRefresh />

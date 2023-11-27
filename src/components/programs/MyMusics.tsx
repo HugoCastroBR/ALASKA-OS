@@ -147,20 +147,21 @@ const MyMusics = ({
         setMusicDuration(0)
         setMusicCurrentTime(0)
         setAudioElement(null)
-        setAudioElement((audio) => {
-          if (audio) {
-            audio.pause()
-          }
-          return audio
-        })
+        // setAudioElement((audio) => {
+        //   if (audio) {
+        //     audio.pause()
+        //   }
+        //   return audio
+        // })
 
-        if (currentMusicIndex === musics.length - 1) {
-          setCurrentMusicIndex(0)
-          handlerPlayMusic(musics[0])
-        } else {
-          setCurrentMusicIndex(currentMusicIndex + 1)
-          handlerPlayMusic(musics[currentMusicIndex + 1])
-        }
+        // if (currentMusicIndex === musics.length - 1) {
+        //   setCurrentMusicIndex(0)
+        //   handlerPlayMusic(musics[0])
+        // } else {
+        //   setCurrentMusicIndex(currentMusicIndex + 1)
+        //   handlerPlayMusic(musics[currentMusicIndex + 1])
+        // }
+        handleNextMusic()
       })
       audio?.addEventListener('error', (e) => {
         console.log(e)

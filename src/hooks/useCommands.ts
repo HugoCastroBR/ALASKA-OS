@@ -64,15 +64,23 @@ export default function useCommands() {
 
   const processCommand = (command: string) => {
     const parsedCommand = parseCommand(command);
+    
     if (parsedCommand) {
-      const { command, args,vanillaCommand } = parsedCommand;
+      const { command, args, vanillaCommand } = parsedCommand;
+  
       if (commands[command]) {
-        commands[command](args,vanillaCommand);
+        commands[command].execute(args, vanillaCommand);
       } else {
-        setHistory([...history, `${command} is not a valid command`]);
+        const errorMessage = `${command} is not a valid command`;
+        setHistory([...history, errorMessage]);
+  
+        // Display the description if available
+        if (commands[command] && commands[command].description) {
+          setHistory([...history, `Description: ${commands[command].description}`]);
+        }
       }
     }
-  }
+  };
 
   const runCommand = (command: string) => {
     setCommandQueue([...commandQueue, command]);
@@ -568,76 +576,160 @@ export default function useCommands() {
     }))
   }
 
+  const Help = (args: CommandArgs, vanillaCommand?: string[]) => {
+    const newHistory: string[] = ["Available commands:"];
+  
+    Object.entries(commands).forEach(([key, value]) => {
+      setHistory([...history, `${key} - ${value.description}`]);
+      newHistory.push(`${key} - ${value.description}`);
+    });
+  
+    // Use join to create a single string with line breaks
+    const formattedOutput = newHistory.join('\n');
+  
+    setHistory([...history, formattedOutput]);
+  };
 
   const commands: CommandAction = {
-    clear: (args) => {
-      ClearConsole(args);
+    clear: {
+      execute: (args) => {
+        ClearConsole(args);
+      },
+      description: "Clears the console",
     },
-    cls: (args) => {
-      ClearConsole(args);
+    cls: {
+      execute: (args) => {
+        ClearConsole(args);
+      },
+      description: "Clears the console (similar to 'clear')",
     },
-    cd: (args) => {
-      ChangeDirectory(args);
+    cd: {
+      execute: (args) => {
+        ChangeDirectory(args);
+      },
+      description: "Changes the current directory",
     },
-    ls: (args) => {
-      ListDirectory(args);
+    ls: {
+      execute: (args) => {
+        ListDirectory(args);
+      },
+      description: "Lists the contents of the directory",
     },
-    pwd: (args) => {
-      PrintWorkingDirectory(args);
+    pwd: {
+      execute: (args) => {
+        PrintWorkingDirectory(args);
+      },
+      description: "Prints the current working directory",
     },
-    mkdir: (args) => {
-      MakeDirectory(args);
+    mkdir: {
+      execute: (args) => {
+        MakeDirectory(args);
+      },
+      description: "Creates a new directory",
     },
-    rm: (args) => {
-      RemoveDirectory(args);
+    rm: {
+      execute: (args) => {
+        RemoveDirectory(args);
+      },
+      description: "Removes a directory",
     },
-    touch: (args) => {
-      Touch(args);
+    touch: {
+      execute: (args) => {
+        Touch(args);
+      },
+      description: "Creates a new empty file",
     },
-    mv: (args,vanillaCommand) => {
-      Move(args,vanillaCommand);
+    mv: {
+      execute: (args, vanillaCommand) => {
+        Move(args, vanillaCommand);
+      },
+      description: "Moves a file or directory",
     },
-    cp: (args,vanillaCommand) => {
-      Copy(args,vanillaCommand);
+    cp: {
+      execute: (args, vanillaCommand) => {
+        Copy(args, vanillaCommand);
+      },
+      description: "Copies a file or directory",
     },
-    rename: (args,vanillaCommand) => {
-      Rename(args,vanillaCommand);
+    rename: {
+      execute: (args, vanillaCommand) => {
+        Rename(args, vanillaCommand);
+      },
+      description: "Renames a file or directory",
     },
-    dp: (args,vanillaCommand) => {
-      Duplicate(args,vanillaCommand);
+    dp: {
+      execute: (args, vanillaCommand) => {
+        Duplicate(args, vanillaCommand);
+      },
+      description: "Duplicates a file or directory",
     },
-    size: (args,vanillaCommand) => {
-      Size(args,vanillaCommand);
+    size: {
+      execute: (args, vanillaCommand) => {
+        Size(args, vanillaCommand);
+      },
+      description: "Displays the size of a file or directory",
     },
-    count: (args,vanillaCommand) => {
-      Count(args,vanillaCommand);
+    count: {
+      execute: (args, vanillaCommand) => {
+        Count(args, vanillaCommand);
+      },
+      description: "Counts the number of files in a directory",
     },
-    cat: (args,vanillaCommand) => {
-      Cat(args,vanillaCommand);
+    cat: {
+      execute: (args, vanillaCommand) => {
+        Cat(args, vanillaCommand);
+      },
+      description: "Displays the contents of a file",
     },
-    time: (args,vanillaCommand) => {
-      Time(args,vanillaCommand);
+    time: {
+      execute: (args, vanillaCommand) => {
+        Time(args, vanillaCommand);
+      },
+      description: "Displays the current time",
     },
-    date: (args,vanillaCommand) => {
-      GetDate(args,vanillaCommand);
+    date: {
+      execute: (args, vanillaCommand) => {
+        GetDate(args, vanillaCommand);
+      },
+      description: "Displays the current date",
     },
-    head: (args,vanillaCommand) => {
-      Head(args,vanillaCommand);
+    head: {
+      execute: (args, vanillaCommand) => {
+        Head(args, vanillaCommand);
+      },
+      description: "Displays the first lines of a file",
     },
-    tail: (args,vanillaCommand) => {
-      Tail(args,vanillaCommand);
+    tail: {
+      execute: (args, vanillaCommand) => {
+        Tail(args, vanillaCommand);
+      },
+      description: "Displays the last lines of a file",
     },
-    close: (args,vanillaCommand) => {
-      Close(args,vanillaCommand);
+    close: {
+      execute: (args, vanillaCommand) => {
+        Close(args, vanillaCommand);
+      },
+      description: "Closes the application",
     },
-    exit: (args,vanillaCommand) => {
-      Exit(args,vanillaCommand);
+    exit: {
+      execute: (args, vanillaCommand) => {
+        Exit(args, vanillaCommand);
+      },
+      description: "Exits the command environment",
     },
-    code: (args,vanillaCommand) => {
-      Code(args,vanillaCommand);
+    code: {
+      execute: (args, vanillaCommand) => {
+        Code(args, vanillaCommand);
+      },
+      description: "Opens a code editor",
     },
-
-  }
+    help: {
+      execute: (args, vanillaCommand) => {
+        Help(args, vanillaCommand);
+      },
+      description: "Displays the available commands",
+    },
+  };
 
 
 
