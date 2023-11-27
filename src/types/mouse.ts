@@ -2,7 +2,11 @@ export type mouseContextMenuOptionsProps = {
   title: string
   disabled?: boolean
   className?: string
+  left?: React.ReactNode
   onClick?: () => void
+  onHover?: () => void
+  onMouseEnter?: () => void
+  onMouseLeave?: () => void
 }
 
 export type MouseProps = {

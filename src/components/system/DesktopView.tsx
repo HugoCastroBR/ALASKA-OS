@@ -31,6 +31,8 @@ import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
 import useSettings from '@/hooks/useSettings';
 import Settings from './Settings';
+import MyMusics from '../programs/MyMusics';
+import Gallery from '../programs/Gallery';
 const DesktopView = () => {
 
 
@@ -174,9 +176,9 @@ const DesktopView = () => {
                 window={window}
               />
             )
-          case 'Music Library':
+          case 'My Musics':
             return(
-              <MusicLibrary
+              <MyMusics
                 key={index}
                 tab={tab}
                 window={window}
@@ -230,7 +232,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
-            
+          case 'Gallery':
+            return(
+              <Gallery
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -388,7 +397,6 @@ const DesktopView = () => {
           }
         }
       >
-
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

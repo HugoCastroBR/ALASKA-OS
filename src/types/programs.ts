@@ -41,3 +41,15 @@ export type MusicItemProps = {
   music: MusicProps
   onClick?: (music:MusicProps) => void
 }
+
+export type PictureProps = {
+  image64: string
+  name: string
+}
+
+export type GalleryItemProps = {
+  image64: string
+  name: string
+  index: number
+}
+

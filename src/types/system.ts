@@ -13,8 +13,11 @@ export type Command = {
 }
 
 export type CommandAction = {
-  [key:string]: (args?:{ [key: string]: string },vanillaCommand?:string[]) => void;
-}
+  [key: string]: {
+    execute: (args?: { [key: string]: string }, vanillaCommand?: string[]) => void;
+    description: string;
+  };
+};
 
 
 

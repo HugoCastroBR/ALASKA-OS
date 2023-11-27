@@ -121,9 +121,9 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'mp4': 'video/mp4', // supported // tested
     'webm': 'video/webm', // supported // not tested
     'mkv': 'video/x-matroska', // supported // not tested
-    'doc': 'application/msword', // not supported // not tested
-    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // not supported // not tested
-    'xls': 'application/vnd.ms-excel', // not supported // not tested
+    'doc': 'application/msword', //  supported // not tested
+    'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', //  supported // not tested
+    'xls': 'application/vnd.ms-excel', //  supported // not tested
     'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', //  supported //  tested
     'ppt': 'application/vnd.ms-powerpoint', // not supported // not tested
     'pptx': 'application/vnd.openxmlformats-officedocument.presentationml.presentation', // not supported // not tested
@@ -135,11 +135,11 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'nrg': 'application/octet-stream', // not supported // not tested
     'md': 'text/markdown', // supported // tested
     'rtf': 'application/rtf', // supported // tested
-    'csv': 'text/csv', // not supported // not tested
+    'csv': 'text/csv', //  supported // not tested
     'json': 'application/json', // supported // tested
     'xml': 'application/xml', // not supported // not tested
     'html': 'text/html', // supported // tested
-    'htm': 'text/html', // not supported // not tested
+    'htm': 'text/html', //  supported // not tested
     'js': 'text/javascript', // supported // tested
     'jsx': 'text/javascript', // supported // not tested
     'ts': 'text/typescript', // supported // tested
@@ -152,7 +152,7 @@ export const convertFileExtensionToFileType = (extension: string) => {
     'svg': 'image/svg+xml', // supported // not tested
     'ico': 'image/x-icon', // supported // not tested
     'cur': 'image/x-icon', // supported // not tested
-    'webp': 'image/webp', // supported // not tested
+    'webp': 'image/webp', // supported //  tested
     'avif': 'image/avif', // supported // not tested
     'tiff': 'image/tiff', // supported // not tested
     'tif': 'image/tiff', // supported // not tested
@@ -286,3 +286,43 @@ export const base64ToArray = (base64String: string) => {
   const array = JSON.parse(string);
   return array;
 }
+
+
+export const audioToBase64 = async (file: File) => {
+  const base64 = await toBase64(file);
+  return base64;
+}
+
+export const imageToBase64 = async (file: File) => {
+  const base64 = await toBase64(file);
+  return base64;
+}
+
+export const removeTypeFromBase64 = (base64String: string) => {
+  const parts = base64String.split(';');
+  const base64 = parts[1].split(',')[1];
+  return base64;
+}
+
+export const verifyIfExtensionIsAudio = (extension: string) => {
+  const audioExtensions = ['mp3', 'wav'];
+  return audioExtensions.includes(extension);
+}
+
+export const addTypeToBase64 = (extension: string,base64String: string) => {
+  const type = convertFileExtensionToFileType(extension);
+  const base64 = `data:${type};base64,${base64String}`;
+  return base64;
+}
+
+export const getTypeFromExtension = (extension: string) => {
+  const type = convertFileExtensionToFileType(extension);
+  return type;
+}
+
+export const getSizeFromBase64 = (base64String: string) => {
+  const string = atob(base64String);
+  const size = string.length;
+  return size;
+}
+
