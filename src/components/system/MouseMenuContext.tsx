@@ -3,12 +3,13 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
+import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
 import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename, WindowAddTab } from '@/store/actions'
 import { ApiError } from 'next/dist/server/api-utils'
+import jszip from 'jszip'
 const MouseMenuContext = ({
   x,
   y,
@@ -228,6 +229,7 @@ const MouseMenuContext = ({
             if (!verifyIfIsFile(file)) return;
 
             fs?.readFile(file, 'utf-8', (err, data) => {
+              console.log(file,data)
               if (err) console.error(err);
               if (!data) return;
 
@@ -236,6 +238,8 @@ const MouseMenuContext = ({
                 fileType,
                 fileName: getLastPathSegment(file),
               });
+
+              console.log(fileSolved)
 
               const blob = new Blob([fileSolved]);
               const objectUrl = URL.createObjectURL(blob);
@@ -419,6 +423,39 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionCompressFile = () => {
+
+    const zip = new jszip()
+    const [ended, setEnded] = React.useState(false)
+
+    return (
+      <MouseOption
+        title='Zip Files'
+        disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path) === false)}
+        onClick={() => {
+          states.File.selectedFiles.forEach((path,index) => {
+            if(verifyIfIsFile(path) === false) return;
+            fs?.readFile(path, 'utf-8', (err, data) => {
+              if(err) console.log(err)
+              if(!data) return;
+              zip.file(getLastPathSegment(path), data)
+              if(index === states.File.selectedFiles.length - 1){
+                zip.generateAsync({type: 'blob'}).then((content) => {
+                  console.log(content)
+                  fs?.writeFile(`${removeExtension(states.File.selectedFiles[0])}.zip`,content, (err) => {
+                    if(err) console.log(err)
+                  })
+                })
+              }
+            })
+          })
+          
+        }}
+        className='i-mdi-folder-zip'
+      />
+    )
+  }
+
   return (
     <div
       className={`
@@ -442,6 +479,7 @@ const MouseMenuContext = ({
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
+      <MouseOptionCompressFile />
       <MouseOptionDownload />
       <MouseOptionDelete />
       <MouseOptionRefresh />

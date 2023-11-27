@@ -50,6 +50,8 @@ export function generateIcon(extension:string){
       return '/assets/icons/doc.png'
     case 'docx':
       return '/assets/icons/docx.png'
+    case 'zip':
+      return '/assets/icons/zip.png'
       
     default: '/assets/icons/file.png'
   }
