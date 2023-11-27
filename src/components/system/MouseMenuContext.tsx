@@ -431,7 +431,7 @@ const MouseMenuContext = ({
     return (
       <MouseOption
         title='Zip Files'
-        disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path) === false)}
+        disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path) === false) || states.File.selectedFiles.length < 1}
         onClick={() => {
           states.File.selectedFiles.forEach((path,index) => {
             if(verifyIfIsFile(path) === false) return;
@@ -454,6 +454,40 @@ const MouseMenuContext = ({
         className='i-mdi-folder-zip'
       />
     )
+  }
+
+  const MouseOptionCompressFolder = () => {
+      
+      const zip = new jszip()
+      const [ended, setEnded] = React.useState(false)
+  
+      return (
+        <MouseOption
+          title='Zip Folder'
+          disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path)) || states.File.selectedFiles.length !== 1}
+          onClick={
+            () => {
+              fs?.readdir(states.File.selectedFiles[0], (err, paths) => {
+                paths?.forEach((path,index) => {
+                  const fullPath = `${states.File.selectedFiles[0]}/${path}`
+                  fs?.readFile(fullPath, 'utf-8', (err, data) => {
+                    if(err) console.log(err)
+                    if(!data) return;
+                    zip.file(path, data, {base64: true})
+                    zip.generateAsync({type: 'base64'}).then((content) => {
+                      fs?.writeFile(`${states.File.selectedFiles[0]}.zip`,content, (err) => {
+                        if(err) console.log(err)
+                        console.log('compressed')
+                      })
+                    })
+                  })
+                })
+              })
+            }
+          }
+          className='i-mdi-folder-zip-outline'
+        />
+      )
   }
 
   return (
@@ -480,6 +514,7 @@ const MouseMenuContext = ({
       <MouseOptionNewFolder />
       <MouseOptionRename />
       <MouseOptionCompressFile />
+      <MouseOptionCompressFolder />
       <MouseOptionDownload />
       <MouseOptionDelete />
       <MouseOptionRefresh />
