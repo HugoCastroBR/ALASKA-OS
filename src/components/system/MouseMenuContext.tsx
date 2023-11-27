@@ -338,6 +338,33 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenWithRichTextEditor = () => {
+    return (
+      <MouseOption
+        title='Open as Document'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Rich Text Editor',
+                tab: {
+                  title: 'Rich Text Editor',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-format-color-text'
+      />
+    )
+  }
+
   const MouseOptionOpenWith = () => {
     const [isOptionsOpen, setIsOptionsOpen] = React.useState(false)
 
@@ -383,6 +410,7 @@ const MouseMenuContext = ({
             >
               <MouseOptionOpenInBrowser />
               <MouseOptionOpenWIthCodeEditor />
+              <MouseOptionOpenWithRichTextEditor />
               <MouseOptionOpenWithNotePad />
             </div>
           )

@@ -25,7 +25,6 @@ import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
 import VideoPlayer from '../programs/VideoPlayer';
 import Calculator from '../programs/Calculator';
-import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
@@ -312,6 +311,17 @@ const DesktopView = () => {
     })
   }
 
+  const handleGeneralUploadToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
 
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
   const [x, setX] = React.useState(0)
@@ -329,6 +339,7 @@ const DesktopView = () => {
     })
   }
 
+  
 
   return (
     <div 
@@ -381,6 +392,8 @@ const DesktopView = () => {
               }
               if(getExtension(file.name) === 'mp3' || getExtension(file.name) === 'wav'){
                 handlerUploadMusicToDesktop(file)
+              }else{
+                handleGeneralUploadToDesktop(file)
               }
             })
           }

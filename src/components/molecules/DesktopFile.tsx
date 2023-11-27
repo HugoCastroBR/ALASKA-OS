@@ -163,7 +163,21 @@ const DesktopFile = ({
           }
         }))
       )
-      
+      case 'docx':
+      case 'doc':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Rich Text Editor',
+          tab: {
+            title: 'Rich Text Editor',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+          }
+        }))
+      )
     }
   }
 
