@@ -1,4 +1,3 @@
-
 # Alaska OS
 
 Alaska OS is a web-based operating system that offers a seamless user experience. It combines the power of Next.js, BrowserFS, EmulatorJS, Tailwind CSS, and Mantine UI to deliver a modern and intuitive interface. The aesthetic is inspired by the serene landscapes of Alaska, featuring a clean white color scheme with glass effects and accents in shades of blue and black.
