@@ -25,6 +25,7 @@ const Browser = ({
   const [history, setHistory] = React.useState<string[]>([])
   const [currentSite, setCurrentSite] = React.useState<string>('https://www.google.com/webhp?igu=1')
   const [isLocal, setIsLocal] = React.useState<boolean>(false)
+  const [url, setUrl] = React.useState<string>('https://www.google.com/webhp?igu=1')
 
   React.useEffect(() => {
     setHistory([...history, currentSite])
@@ -33,13 +34,13 @@ const Browser = ({
   useEffect(() => {
     if(tab.value === '/Desktop'){
       setIsLocal(false)
+      setUrl('https://www.google.com/webhp?igu=1')
       setCurrentSite('https://www.google.com/webhp?igu=1')
     }else{
       setIsLocal(true)
     }
   }, [tab.value])
 
-  const googleBaseURl = 'https://www.google.com/webhp?igu=1'
 
   return (
     <DefaultWindow
@@ -62,6 +63,7 @@ const Browser = ({
             <span
               onClick={() => {
                 setCurrentSite(history[history.length - 2])
+                setUrl(history[history.length - 2])
               }}
               className='
             i-mdi-arrow-left text-xl cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
@@ -70,6 +72,7 @@ const Browser = ({
               onClick={
                 () => {
                   setCurrentSite(history[history.length - 1])
+                  setUrl(history[history.length - 1])
                 }
               }
               className='
@@ -78,6 +81,7 @@ const Browser = ({
             <span
               onClick={() => {
                 setCurrentSite(currentSite)
+                
               }}
               className='
             i-mdi-refresh text-2xl cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
@@ -91,8 +95,21 @@ const Browser = ({
             w-full h-2/3 bg-slate-100 border border-slate-200 border-opacity-40 p-0.5  rounded-md
             focus:outline-none 
             '
-              value={isLocal ? currentSite : tab.ficTitle}
+              onChange={(e) => {
+                // setCurrentSite(e.target.value)
+                setUrl(e.target.value)
+              
+              }}
+              value={!isLocal ? url : tab.ficTitle}
+              
               type='text'
+              onKeyPress={(e) => {
+                if (e.key === 'Enter') {
+                  setIsLocal(false)
+                  setCurrentSite(url)
+                }
+              
+              }}
             />
           </div>
         </div>
@@ -102,6 +119,7 @@ const Browser = ({
             onClick={() => {
               setIsLocal(false)
               setCurrentSite(sites[0])
+              setUrl(sites[0])
             }}
             className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
@@ -114,6 +132,7 @@ const Browser = ({
             onClick={() => {
               setIsLocal(false)
               setCurrentSite(sites[1])
+              setUrl(sites[1])
             }}
             className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
@@ -125,6 +144,7 @@ const Browser = ({
             onClick={() => {
               setIsLocal(false)
               setCurrentSite(sites[2])
+              setUrl(sites[2])
             }}
             className='
           w-1/12 h-full flex justify-center items-center cursor-pointer
@@ -136,6 +156,7 @@ const Browser = ({
             onClick={() => {
               setIsLocal(false)
               setCurrentSite(sites[3])
+              setUrl(sites[3])
             }}
             className='
           w-1/12 h-full flex justify-center items-center cursor-pointer

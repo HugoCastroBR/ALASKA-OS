@@ -578,7 +578,7 @@ const MyMusics = ({
         >
           <div className='h-20 w-3/12 flex justify-center items-start py-2 mx-1 '
           >
-            <div className='w-16 h-16 flex justify-center items-center bg-blue-200' >
+            <div className='w-16 h-16 flex justify-center items-center ' >
               {
                 musicSelected?.image ?
                   <Image
