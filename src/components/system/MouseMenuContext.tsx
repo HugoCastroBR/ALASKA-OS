@@ -438,12 +438,12 @@ const MouseMenuContext = ({
             fs?.readFile(path, 'utf-8', (err, data) => {
               if(err) console.log(err)
               if(!data) return;
-              zip.file(getLastPathSegment(path), data)
+              zip.file(getLastPathSegment(path), data, {base64: true})
               if(index === states.File.selectedFiles.length - 1){
-                zip.generateAsync({type: 'blob'}).then((content) => {
-                  console.log(content)
+                zip.generateAsync({type: 'base64'}).then((content) => {
                   fs?.writeFile(`${removeExtension(states.File.selectedFiles[0])}.zip`,content, (err) => {
                     if(err) console.log(err)
+                    console.log('compressed')
                   })
                 })
               }
