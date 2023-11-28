@@ -26,6 +26,13 @@ const DefaultWindow = ({
   const { states, dispatch } = useStore()
   const { settings } = useSettings()
 
+  useEffect(() => {
+    dispatch(ClearAllFocused())
+    dispatch(WindowSetTabFocused({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+  }, [])
 
   const MinimizeTab = () => {
     dispatch(ClearAllFocused())

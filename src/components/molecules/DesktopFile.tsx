@@ -54,7 +54,8 @@ const DesktopFile = ({
               uuid: uuid(6),
               value: path,
               maximized: false,
-              minimized: false
+              minimized: false,
+              focused:true
             }
           }))
         )
@@ -69,6 +70,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -83,6 +85,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -97,6 +100,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -111,6 +115,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -132,6 +137,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -146,6 +152,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -160,6 +167,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -175,6 +183,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -265,7 +274,9 @@ const DesktopFile = ({
                   uuid: uuid(6),
                   value: path,
                   maximized: false,
-                  minimized: false
+                  minimized: false,
+                  focused:true,
+                  focused: true
                 }
               }))
             )

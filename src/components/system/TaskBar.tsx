@@ -5,12 +5,11 @@ import StartMenu from './StartMenu'
 import Image from 'next/image'
 import useStore from '@/hooks/useStore'
 import { programProps } from '@/types/programs'
-import { ClearAllFocused, SetGlobalVolumeMultiplier, WindowRemoveTab, WindowToggleMinimizeTab } from '@/store/actions'
+import { SetGlobalVolumeMultiplier, WindowRemoveTab, WindowSetTabFocused, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
 import CustomText from '../atoms/CustomText'
 import { Slider } from '@mantine/core'
-import useSettings from '@/hooks/useSettings'
 
 
 
@@ -20,27 +19,7 @@ const TaskBarItem = ({
 }: programProps) => {
 
   const { states, dispatch } = useStore()
-
-  const {settings} = useSettings()
-  const [taskBarItemBackgroundColor, setTaskBarItemBackgroundColor] = useState(settings?.taskbar.items.backgroundColor)
-  const [taskBarItemTextColor, setTaskBarItemTextColor] = useState(settings?.taskbar.items.color)
-  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = useState(settings?.system.systemHighlightColor)
-
-  useEffect(() => {
-    if(settings?.taskbar.items.color === taskBarItemTextColor) return
-    setTaskBarItemTextColor(settings?.taskbar.items.color)
-  },[settings?.taskbar.items.color, taskBarItemTextColor])
-
-  useEffect(() => {
-    if(settings?.taskbar.items.backgroundColor === taskBarItemBackgroundColor) return 
-    setTaskBarItemBackgroundColor(settings?.taskbar.items.backgroundColor)
-  },[settings?.taskbar.items.backgroundColor, taskBarItemBackgroundColor])
-
-  useEffect(() => {
-    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
-    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
-  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
-
+ 
   return (
     <div
       onClick={() => {
@@ -48,21 +27,22 @@ const TaskBarItem = ({
           title: window.title,
           uuid: tab.uuid,
         }))
-        if (tab.focused) {
-          dispatch(ClearAllFocused())
-        }
+        dispatch(WindowSetTabFocused({
+          title: window.title,
+          uuid: tab.uuid,
+        }))
       }}
       className={`
       flex items-center w-40  h-10
       backdrop-filter backdrop-blur-sm
       justify-between px-2 mx-px cursor-pointer
       transition-all duration-100 ease-in-out
-      ${tab.focused ? 'border-b-4 ' : ''}
+      ${(tab.focused && !tab.minimized) ? 'border-b-4 ' : ''}
       `}
       style={{
-        backgroundColor: taskBarItemBackgroundColor,
-        color: taskBarItemTextColor,
-        borderColor: SystemDefaultHighlightColor,
+        backgroundColor: states.Settings.settings.taskbar.items.backgroundColor || 'transparent',
+        color: states.Settings.settings.taskbar.items.color || 'white',
+        borderColor: states.Settings.settings.system.systemHighlightColor || 'transparent',
       }}
     >
 
@@ -76,7 +56,7 @@ const TaskBarItem = ({
         text={truncateText(tab.ficTitle || tab.title, 12)}
         className='text-xs'
         style={{
-          color: taskBarItemTextColor,
+          color: states.Settings.settings.taskbar.items.color || 'white',
 
         }}
       />
@@ -104,11 +84,8 @@ const TaskBarItem = ({
 const TaskBar = () => {
 
   const { states, dispatch } = useStore()
-  const {settings} = useSettings()
   const [globalVolume, setGlobalVolume] = React.useState(100)
   const [isVolumeOpen, setIsVolumeOpen] = React.useState(false)
-
-
 
   const handleRenderTabs = () => {
     return states.Windows.windows.map((window, index) => {
@@ -125,8 +102,6 @@ const TaskBar = () => {
     })
   }
 
-
-
   useEffect(() => {
     handlerChangeGlobalVolume(globalVolume)
   }, [globalVolume])
@@ -134,19 +109,6 @@ const TaskBar = () => {
   const handlerChangeGlobalVolume = (value: number) => {
     dispatch(SetGlobalVolumeMultiplier(value / 100))
   }
-
-  const [footerBackgroundColor, setFooterBackgroundColor] = useState('')
-  const [footerPosition, setFooterPosition] = useState('')
-  const [audioIconColor, setAudioIconColor] = useState(settings?.taskbar.items.color || '')
-  const [audioIconEnabled, setAudioIconEnabled] = useState(settings?.taskbar.hideSoundController)
-
-  useEffect(() => {
-    setFooterBackgroundColor(settings?.taskbar.backgroundColor || '')
-    setFooterPosition(settings?.taskbar.position || '')
-    setAudioIconColor(settings?.taskbar.items.color || '')
-    setAudioIconEnabled(settings?.taskbar.hideSoundController)
-  }, [settings?.taskbar])
-
 
 
   
@@ -158,7 +120,7 @@ const TaskBar = () => {
         border-t border-white border-opacity-20 flex justify-start items-center
         `}
         style={{
-          backgroundColor: footerBackgroundColor,
+          backgroundColor: states.Settings.settings.taskbar.backgroundColor || 'transparent',
         }}
       >
         <div className={`absolute w-40 h-10  bottom-10 
@@ -178,18 +140,15 @@ const TaskBar = () => {
           {handleRenderTabs()}
         </div>
         <div className='w-2/12 h-full flex justify-end items-center pr-1'>
-          <div className='flex w-1/2 items-center justify-end -mr-6'>
-  
-            <span
-              className='i-mdi-volume-high text-lg cursor-pointer'
+          <div className='flex w-full items-center justify-end -mr-5'>
+          <span
+              className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
               style={{
-                color: audioIconColor,
-                display: audioIconEnabled ? 'none' : 'block',
+                color: states.Settings.settings.taskbar.items.color || 'white',
+                display: states.Settings.settings.taskbar.hideSoundController ? 'none' : 'block',
               }}
             />
-          </div>
-          <div className='flex w-1/2 items-center justify-end -mr-5'>
             <Clock />
           </div>
         </div>
@@ -205,7 +164,7 @@ const TaskBar = () => {
         border-t border-white border-opacity-20 flex justify-start items-center
         `}
         style={{
-          backgroundColor: footerBackgroundColor,
+          backgroundColor: states.Settings.settings.taskbar.backgroundColor || 'transparent',
         }}
       >
         <div className={`absolute w-40 h-10  bottom-10 
@@ -225,18 +184,15 @@ const TaskBar = () => {
           {handleRenderTabs()}
         </div>
         <div className='w-2/12 h-full flex justify-end items-center pr-1'>
-          <div className='flex w-1/2 items-center justify-end -mr-6'>
-  
-            <span
-              className='i-mdi-volume-high text-lg cursor-pointer'
+          <div className='flex w-full items-center justify-end -mr-5'>
+          <span
+              className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
               style={{
-                color: audioIconColor,
-                display: audioIconEnabled ? 'none' : 'block',
+                color: states.Settings.settings.taskbar.items.color || 'white',
+                display: states.Settings.settings.taskbar.hideSoundController ? 'none' : 'block',
               }}
             />
-          </div>
-          <div className='flex w-1/2 items-center justify-end -mr-5'>
             <Clock />
           </div>
         </div>
@@ -244,7 +200,7 @@ const TaskBar = () => {
     )
   }
   
-  switch (footerPosition) {
+  switch (states.Settings.settings.taskbar.position) {
     case 'top':
       return <FooterTop />
     case 'bottom':
