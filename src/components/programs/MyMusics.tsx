@@ -603,8 +603,9 @@ const MyMusics = ({
                 className='text-xs'
               />
               <Progress
-                color='blue'
+                color={states.Settings.settings.system.systemHighlightColor}
                 value={musicProgress}
+                animated
                 w={"80%"}
                 h={6}
                 radius={6}
