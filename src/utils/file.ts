@@ -39,6 +39,7 @@ export const uuid = (length: number) => {
 };
 
 export const getExtension = (filename: string) => {
+  if(!filename) return ''
   const parts = filename.split('.');
   return parts[parts.length - 1];
 }

@@ -30,6 +30,9 @@ const MouseMenuContext = ({
     onMouseLeave,
     left,
   }: mouseContextMenuOptionsProps) => {
+
+    const [isHovered, setIsHovered] = React.useState(false)
+
     return (
       <div
         onClick={(e) => {
@@ -39,15 +42,20 @@ const MouseMenuContext = ({
         }}
         onMouseEnter={() => {
           onMouseEnter && onMouseEnter()
+          setIsHovered(true)
         }}
         onMouseLeave={() => {
           onMouseLeave && onMouseLeave()
+          setIsHovered(false)
         }}
         className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}
-        text-white text-sm flex items-center hover:bg-blue-500 
+        text-white text-sm flex items-center 
         transition-all duration-300 ease-in-out cursor-pointer 
-        w-44 h-6 -ml-1
+        w-48 h-8 -ml-1 p-2
         `}
+        style={{
+          backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : states.Settings.settings.system.systemBackgroundColor,
+        }}
       >
         <span className={`${className} text-lg`}></span>
         <div className='ml-1 w-full h-full flex items-center justify-between'>
@@ -399,17 +407,17 @@ const MouseMenuContext = ({
                 setIsOptionsOpen(false)
               }}
               className={`
-              bg-gray-300 
-                backdrop-filter backdrop-blur-sm shadow-md
-                flex flex-col w-44 z-40  
+                backdrop-filter backdrop-blur-sm shadow-sm drop-shadow-md shadow-gray-800 
+                flex flex-col w-48 z-40  
                 bg-opacity-30 rounded-r-md
-                p-1
+                p-2 overflow-hidden
             `}
               style={{
                 position: 'absolute',
-                left: 176,
-                top: 48,
+                left: 192,
+                top: 64,
                 zIndex: 100,
+                backgroundColor: states.Settings.settings.system.systemBackgroundColor,
               }}
             >
               <MouseOptionOpenInBrowser />
@@ -444,6 +452,7 @@ const MouseMenuContext = ({
                   fs?.writeFile(`${removeExtension(states.File.selectedFiles[0])}.zip`,content, (err) => {
                     if(err) console.log(err)
                     console.log('compressed')
+                    onRefresh && onRefresh()
                   })
                 })
               }
@@ -478,6 +487,7 @@ const MouseMenuContext = ({
                       fs?.writeFile(`${states.File.selectedFiles[0]}.zip`,content, (err) => {
                         if(err) console.log(err)
                         console.log('compressed')
+                        onRefresh && onRefresh()
                       })
                     })
                   })
@@ -490,12 +500,28 @@ const MouseMenuContext = ({
       )
   }
 
+  const MouseOptionUnzip = () => {
+    return (
+      <MouseOption
+        title='Unzip'
+        disabled={getExtension(states.File.selectedFiles[0]) !== 'zip' || states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          const zip = new jszip()
+          const path = states.File.selectedFiles[0]
+          fs?.readFile(path, 'utf-8', (err, data) => {
+            console.log(data)
+          })
+        }}
+        className='i-mdi-folder-open'
+      />
+    )
+  }
+
   return (
     <div
       className={`
-      bg-gray-300 
-        backdrop-filter backdrop-blur-sm shadow-md
-        flex flex-col w-44 z-40  
+        backdrop-filter backdrop-blur-sm shadow-sm drop-shadow-md shadow-gray-800 
+        flex flex-col w-48 z-40  
         bg-opacity-30 rounded-md
         p-1
     `}
@@ -504,6 +530,7 @@ const MouseMenuContext = ({
         top: y,
         left: x,
         zIndex: 100,
+        backgroundColor: states.Settings.settings.system.systemBackgroundColor,
       }}
     >
       
@@ -513,6 +540,7 @@ const MouseMenuContext = ({
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
+      <MouseOptionUnzip />
       <MouseOptionCompressFile />
       <MouseOptionCompressFolder />
       <MouseOptionDownload />
