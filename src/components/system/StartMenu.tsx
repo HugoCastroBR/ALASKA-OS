@@ -68,7 +68,7 @@ const StartMenu = () => {
               }))
             }}
             style={{
-              backgroundColor: isHovering ? `${states.Settings.settings.system.systemHighlightColor || 'rgba(0, 0, 0, 0.2)'}` : `${states.Settings.settings.startMenu.background || 'transparent'}`,
+              backgroundColor: isHovering ? `${states.Settings.settings.system.systemHighlightColor || 'rgba(0, 0, 0, 0.2)'}` : `${'transparent'}`,
             }}
           >
             <Group placeholder={window.title}>

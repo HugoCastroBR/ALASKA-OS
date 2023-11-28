@@ -214,7 +214,7 @@ const WeatherApp = ({
             onClick={handlerSearchCity}
           >
             <span 
-            className='i-mdi-magnify'
+            className='i-mdi-magnify text-lg'
             style={{
               color: states.Settings?.settings.system?.systemTextColor || 'white'
             

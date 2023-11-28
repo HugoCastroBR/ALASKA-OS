@@ -4,12 +4,14 @@ import React, { useEffect, useState } from 'react'
 import StartMenu from './StartMenu'
 import Image from 'next/image'
 import useStore from '@/hooks/useStore'
-import { programProps } from '@/types/programs'
-import { SetGlobalVolumeMultiplier, WindowRemoveTab, WindowSetTabFocused, WindowToggleMinimizeTab } from '@/store/actions'
+import { WeatherProps, programProps } from '@/types/programs'
+import { SetGlobalVolumeMultiplier, WindowAddTab, WindowRemoveTab, WindowSetTabFocused, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
 import CustomText from '../atoms/CustomText'
 import { Slider } from '@mantine/core'
+import { getWeather } from '@/api/weatherApi'
+import { uuid } from '@/utils/file'
 
 
 
@@ -19,9 +21,13 @@ const TaskBarItem = ({
 }: programProps) => {
 
   const { states, dispatch } = useStore()
- 
+  const [isHoveringClose, setIsHoveringClose] = useState(false)
+  const [isHovering, setIsHovering] = useState(false)
+
   return (
     <div
+      onMouseEnter={() => setIsHovering(true)}
+      onMouseLeave={() => setIsHovering(false)}
       onClick={() => {
         dispatch(WindowToggleMinimizeTab({
           title: window.title,
@@ -57,7 +63,7 @@ const TaskBarItem = ({
         className='text-xs'
         style={{
           color: states.Settings.settings.taskbar.items.color || 'white',
-
+          marginLeft: 16,
         }}
       />
       <div
@@ -67,13 +73,19 @@ const TaskBarItem = ({
             title: window.title,
             uuid: tab.uuid,
           }))
-
         }}
-        className='h-4 w-4 bg-transparent flex justify-center items-center
-      rounded-sm hover:bg-slate-200 hover:bg-opacity-30 transition-all
-      duration-200 ease-in-out
-      '>
-        <span className='i-mdi-close text-lg' ></span>
+        onMouseEnter={() => setIsHoveringClose(true)}
+        onMouseLeave={() => setIsHoveringClose(false)}
+        className='h-4 bg-transparent flex justify-center items-center
+        rounded-sm  transition-all duration-300 ease-in-out overflow-hidden'
+        style={{
+          width: isHovering ? 16 : 0,
+          backgroundColor: isHoveringClose ? states.Settings.settings.system.systemHighlightColor : 'transparent',
+        }}
+        >
+        <span 
+        className='i-mdi-close text-lg' 
+        />
       </div>
     </div>
   )
@@ -110,9 +122,43 @@ const TaskBar = () => {
     dispatch(SetGlobalVolumeMultiplier(value / 100))
   }
 
+  const [weatherData, setWeatherData] = useState<WeatherProps>({} as any)
+
+    useEffect(() => {
+      if(navigator.geolocation){
+        navigator.permissions.query({name:'geolocation'}).then((result) => {
+          if(result.state === 'granted'){
+            navigator.geolocation.getCurrentPosition((position) => {
+              handlerGetWeather(position.coords.latitude, position.coords.longitude)
+              
+            })
+          }
+          else if(result.state === 'prompt'){
+            navigator.geolocation.getCurrentPosition((position) => {
+              handlerGetWeather(position.coords.latitude, position.coords.longitude)
+            })
+          }
+          else if(result.state === 'denied'){
+            console.log('Permission denied.')
+          }
+        })
+      }else{
+        console.log('Geolocation is not supported by this browser.')
+      }
+    }, [])
+
+    const handlerGetWeather = (lat:number,lon:number) => {
+      getWeather(lat, lon).then((data) => {
+        setWeatherData(data)
+      }).catch((err) => {
+        console.log(err)
+      })
+  }
 
   
   const FooterBottom = () => {
+
+    
     return (
       <footer
         className={` w-full h-10 bottom-0 
@@ -141,6 +187,41 @@ const TaskBar = () => {
         </div>
         <div className='w-2/12 h-full flex justify-end items-center pr-1'>
           <div className='flex w-full items-center justify-end -mr-5'>
+          {weatherData?.main?.temp && 
+          <div 
+          className='flex h-full justify-end items-center mr-2 cursor-pointer'
+          onClick={ () => {
+            dispatch(WindowAddTab({
+              title: 'Weather App',
+              tab: {
+                title: 'Weather App',
+                uuid: uuid(6),
+                value: 'https://www.google.com/search?q=weather',
+                maximized: false,
+                minimized: false,
+                focused:true,
+              }
+            }))
+          }}
+          >
+            <CustomText
+              text={`${weatherData?.main?.temp.toFixed(0)}°C`}
+              className='text-xs ml-1'
+              style={{
+                color: states.Settings.settings.taskbar.items.color || 'white',
+              }}
+            />
+            <Image
+              src={`http://openweathermap.org/img/wn/${weatherData?.weather[0]?.icon}@2x.png`}
+              alt={weatherData?.weather[0]?.description}
+              width={36}
+              height={36}
+              className='mt-1 cursor-pointer'
+              
+            />
+
+          </div>
+          }
           <span
               className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
@@ -185,6 +266,41 @@ const TaskBar = () => {
         </div>
         <div className='w-2/12 h-full flex justify-end items-center pr-1'>
           <div className='flex w-full items-center justify-end -mr-5'>
+          {weatherData?.main?.temp && 
+          <div 
+          className='flex h-full justify-end items-center mr-2 cursor-pointer'
+          onClick={ () => {
+            dispatch(WindowAddTab({
+              title: 'Weather App',
+              tab: {
+                title: 'Weather App',
+                uuid: uuid(6),
+                value: 'https://www.google.com/search?q=weather',
+                maximized: false,
+                minimized: false,
+                focused:true,
+              }
+            }))
+          }}
+          >
+            <CustomText
+              text={`${weatherData?.main?.temp.toFixed(0)}°C`}
+              className='text-xs ml-1'
+              style={{
+                color: states.Settings.settings.taskbar.items.color || 'white',
+              }}
+            />
+            <Image
+              src={`http://openweathermap.org/img/wn/${weatherData?.weather[0]?.icon}@2x.png`}
+              alt={weatherData?.weather[0]?.description}
+              width={36}
+              height={36}
+              className='mt-1 cursor-pointer'
+              
+            />
+
+          </div>
+          }
           <span
               className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}

@@ -8,7 +8,6 @@ import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
 import { Loader } from "@mantine/core"
-import useSettings from "@/hooks/useSettings"
 
 const DesktopFile = ({
   title,
@@ -26,7 +25,6 @@ const DesktopFile = ({
   const [isRename, setIsRename] = useState(false)
 
   const { fs } = useFS()
-  const {settings} = useSettings()
 
   useEffect(() => {
     if(states.File.selectedFiles.includes(path)){
@@ -238,17 +236,6 @@ const DesktopFile = ({
     }
   }
 
-  
-  const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
-  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = useState(settings?.system?.systemHighlightColor)
-  
-  useEffect(() => {
-    setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
-  }, [settings?.desktop.desktopIcon.textColor])
-
-  useEffect(() => {
-    setDefaultSystemHighlightColor(settings?.system?.systemHighlightColor)
-  }, [settings?.system?.systemHighlightColor])
 
   return (
     <>
@@ -276,7 +263,6 @@ const DesktopFile = ({
                   maximized: false,
                   minimized: false,
                   focused:true,
-                  focused: true
                 }
               }))
             )
@@ -295,7 +281,7 @@ const DesktopFile = ({
         
         `}
         style={{
-          backgroundColor: isItemSelected ? defaultSystemHighlightColor : 'transparent'
+          backgroundColor: isItemSelected ? states.Settings.settings.system.systemHighlightColor : 'transparent'
         }}
       >
         {
@@ -330,7 +316,7 @@ const DesktopFile = ({
             className="break-words w-20 text-xs text-center"
             style={
               {
-                color: `${fileTextColor || 'rgba(0, 0, 0, 1)'}`
+                color: `${states.Settings.settings.system.systemTextColor || 'rgba(0, 0, 0, 1)'}`
               }
             }
           />

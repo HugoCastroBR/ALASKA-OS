@@ -1,39 +1,25 @@
-import useSettings from '@/hooks/useSettings'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import CustomText from '../atoms/CustomText'
 import { Button, Input, Progress, SimpleGrid, Slider, Text, TextInput } from '@mantine/core'
 import { Dropzone } from '@mantine/dropzone'
 import { truncateText } from '@/utils/text'
 import { MusicItemProps } from '@/types/musics'
 import useFS from '@/hooks/useFS'
-import { addTypeToBase64, audioToBase64, getExtension, getExtensionFromBase64, imageToBase64, removeTypeFromBase64, uuid, verifyIfExtensionIsAudio } from '@/utils/file'
+import { addTypeToBase64, audioToBase64, getExtension, getExtensionFromBase64, imageToBase64, removeTypeFromBase64, uuid, verifyIfExtensionIsAudio, wait } from '@/utils/file'
 import { ApiError } from 'next/dist/server/api-utils'
 import Image from 'next/image'
 import { secondsToMinutes } from '@/utils/date'
 import { programProps } from '@/types/programs'
 import DefaultWindow from '../containers/DefaultWindow'
+import useStore from '@/hooks/useStore'
 
 const MyMusics = ({
   tab,
   window
 }: programProps) => {
 
-  const { settings } = useSettings()
   const { fs } = useFS()
-
-  const [systemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)')
-  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor || 'rgba(0, 0, 0, 1)')
-
-  useEffect(() => {
-    if (settings?.system?.systemBackgroundColor === systemDefaultBackgroundColor) return
-    setSystemDefaultBackgroundColor(settings?.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)')
-  }, [settings?.system?.systemBackgroundColor])
-
-  useEffect(() => {
-    if (settings?.system?.systemTextColor === defaultSystemTextColor) return
-    setDefaultSystemTextColor(settings?.system?.systemTextColor || 'rgba(0, 0, 0, 1)')
-
-  }, [settings?.system?.systemTextColor])
+  const {states, dispatch} = useStore()
 
   const [isUploadOpen, setIsUploadOpen] = React.useState(false)
   const [uploadMusicText, setUploadMusicText] = React.useState('Music')
@@ -70,7 +56,7 @@ const MyMusics = ({
     return (
       <div className='w-full h-20  flex justify-center items-center cursor-pointer'
         style={{
-          backgroundColor: systemDefaultBackgroundColor,
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'whitesmoke',
         }}
         onClick={() => {
           setCurrentMusicIndex(index)
@@ -82,7 +68,7 @@ const MyMusics = ({
           })
         }}
       >
-        <div className='w-20 h-20 flex justify-center items-center bg-blue-200' >
+        <div className='w-20 h-20 flex justify-center items-center' >
           <Image
             src={image || '/assets/icons/Alaska.png'}
             width={80}
@@ -121,54 +107,49 @@ const MyMusics = ({
     }
   }
 
-
+  
   const handlerPlayMusic = (music: MusicItemProps) => {
-    if (audioElement) {
-      audioElement.pause()
+
+  
+    setMusicSelected(music);
+    const newAudioElement = new Audio(music.music);
+  
+    newAudioElement.addEventListener('loadeddata', (e) => {
+      setMusicDuration(newAudioElement.duration || 0);
+      setIsMusicPlaying(true);
+      setIsMusicPaused(false);
+      newAudioElement.play();
+    });
+  
+    newAudioElement.addEventListener('timeupdate', (e) => {
+      setMusicCurrentTime(newAudioElement.currentTime || 0);
+      setMusicProgress((newAudioElement.currentTime || 0) / (newAudioElement.duration || 0) * 100);
+    });
+  
+    newAudioElement.addEventListener('ended', handleMusicEnded);
+  
+    newAudioElement.addEventListener('error', (e) => {
+      console.log(e);
+    });
+  
+    setAudioElement(newAudioElement);
+  };
+  
+  const handleMusicEnded = async () => {
+    // Adicione um controle para evitar a execução múltipla
+    if (!musicEndedHandled) {
+      console.log("end");
+      setMusicEndedHandled(true);
+      handleTogglePause();
+      await wait(1000);
+      handleNextMusic();
     }
-    setMusicSelected(music)
-    setAudioElement(new Audio(music.music))
+  };
+  
+  // Adicione um estado para controlar se o evento 'ended' foi manipulado
+  const [musicEndedHandled, setMusicEndedHandled] = useState(false);
 
-    setAudioElement((audio) => {
 
-      audio?.addEventListener('loadeddata', (e) => {
-        setMusicDuration(audio?.duration || 0)
-        setIsMusicPlaying(true)
-        setIsMusicPaused(false)
-        audio?.play()
-      })
-      audio?.addEventListener('timeupdate', (e) => {
-        setMusicCurrentTime(audio?.currentTime || 0)
-        setMusicProgress((audio?.currentTime || 0) / (audio?.duration || 0) * 100)
-      })
-      audio?.addEventListener('ended', (e) => {
-        setIsMusicPlaying(false)
-        setIsMusicPaused(true)
-        setMusicDuration(0)
-        setMusicCurrentTime(0)
-        setAudioElement(null)
-        // setAudioElement((audio) => {
-        //   if (audio) {
-        //     audio.pause()
-        //   }
-        //   return audio
-        // })
-
-        // if (currentMusicIndex === musics.length - 1) {
-        //   setCurrentMusicIndex(0)
-        //   handlerPlayMusic(musics[0])
-        // } else {
-        //   setCurrentMusicIndex(currentMusicIndex + 1)
-        //   handlerPlayMusic(musics[currentMusicIndex + 1])
-        // }
-        handleNextMusic()
-      })
-      audio?.addEventListener('error', (e) => {
-        console.log(e)
-      })
-      return audio
-    })
-  }
 
   const AppendToMusics = (music: MusicItemProps) => {
     setMusics((prevMusics) => {
@@ -350,7 +331,6 @@ const MyMusics = ({
 
 
 
-
   return (
     <DefaultWindow
       currentTab={tab}
@@ -358,29 +338,8 @@ const MyMusics = ({
       title='My Musics'
       uuid={tab?.uuid || ''}
       onClose={() => { 
-        setIsMusicPaused(true)
-        setIsMusicPlaying(false)
-        setMusicVolume(0)
-        setAudioElement((audio) => {
-          if (audio) {
-            audio.pause()
-          }
-          return audio
-        })
-        setMusicDuration(0)
-        setMusicCurrentTime(0)
-        setMusicProgress(0)
-        setMusicSelected(null)
-        setMusics([])
-        setMusicToUpload(null)
-        setImageToUpload(null)
-        setInputMusicTitle('')
-        setInputMusicArtist('')
-        setUploadImageText('')
-        setUploadMusicText('')
-        setCurrentMusicIndex(0)
-        setSearchText('')
-        setIsUploadOpen(false)
+        console.log("close")
+        handleTogglePause()
       }}
       onMinimize={() => { }}
       onMaximize={() => { }}
@@ -392,7 +351,7 @@ const MyMusics = ({
         transition-all duration-300 ease-in-out
       '
           style={{
-            backgroundColor: systemDefaultBackgroundColor,
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'whitesmoke',
             height: isUploadOpen ? '176px' : '70px',
           }}
         >
@@ -403,7 +362,7 @@ const MyMusics = ({
               height: isUploadOpen ? '60%' : '0%',
               // display: isUploadOpen ? 'flex' : 'none',
               borderBottom: '1px solid',
-              borderColor: isUploadOpen ? defaultSystemTextColor : 'transparent',
+              borderColor: isUploadOpen ? states.Settings.settings.system.systemTextColor : 'transparent',
             }}
           >
             <Dropzone
@@ -422,14 +381,14 @@ const MyMusics = ({
             >
               <span className='i-mdi-upload text-lg -mb-1'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
               <CustomText
                 text={truncateText(uploadMusicText, 6)}
                 className='text-xs mr-1'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </Dropzone>
@@ -445,14 +404,14 @@ const MyMusics = ({
             >
               <span className='i-mdi-upload text-lg -mb-1'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
               <CustomText
                 text={truncateText(uploadImageText, 6)}
                 className='text-xs mr-1'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </Dropzone>
@@ -466,8 +425,8 @@ const MyMusics = ({
                   setInputMusicTitle(event.currentTarget.value)
                 }}
                 style={{
-                  color: defaultSystemTextColor,
-                  borderColor: defaultSystemTextColor,
+                  color: states.Settings.settings.system.systemTextColor,
+                  borderColor: states.Settings.settings.system.systemTextColor,
                 }}
               />
               <TextInput
@@ -479,17 +438,17 @@ const MyMusics = ({
                   setInputMusicArtist(event.currentTarget.value)
                 }}
                 style={{
-                  color: defaultSystemTextColor,
-                  borderColor: defaultSystemTextColor,
+                  color: states.Settings.settings.system.systemTextColor,
+                  borderColor: states.Settings.settings.system.systemTextColor,
                 }}
               />
               <Button
                 className='w-2/12 mx-1 mt-6'
                 style={{
                   backgroundColor: 'transparent',
-                  color: defaultSystemTextColor,
+                  color: states.Settings.settings.system.systemTextColor,
                   border: '1px solid',
-                  borderColor: defaultSystemTextColor,
+                  borderColor: states.Settings.settings.system.systemTextColor,
                 }}
                 onClick={() => {
                   setInputMusicTitle('')
@@ -519,9 +478,9 @@ const MyMusics = ({
               className='w-2/12 mx-1 mt-5 ml-2'
               style={{
                 backgroundColor: 'transparent',
-                color: defaultSystemTextColor,
+                color: states.Settings.settings.system.systemTextColor,
                 border: '1px solid',
-                borderColor: defaultSystemTextColor,
+                borderColor: states.Settings.settings.system.systemTextColor,
               }}
               onClick={() => {
                 setIsUploadOpen(!isUploadOpen)
@@ -531,7 +490,7 @@ const MyMusics = ({
                 text='New Music'
                 className='text-xs'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </Button>
@@ -545,8 +504,8 @@ const MyMusics = ({
               }}
               className='w-4/12 mx-1 mb-1 ml-6'
               style={{
-                color: defaultSystemTextColor,
-                borderColor: defaultSystemTextColor,
+                color: states.Settings.settings.system.systemTextColor,
+                borderColor: states.Settings.settings.system.systemTextColor,
               }}
             />
 
@@ -555,7 +514,7 @@ const MyMusics = ({
 
         <div className='w-full flex flex-col h-full overflow-y-auto py-2 px-2 '>
           <SimpleGrid
-            cols={2}
+            cols={3}
             verticalSpacing={6}
             spacing={6}
           > {!searchText
@@ -573,7 +532,7 @@ const MyMusics = ({
         </div>
         <div className='sticky  w-full h-32 flex justify-center items-center'
           style={{
-            backgroundColor: systemDefaultBackgroundColor,
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'whitesmoke',
           }}
         >
           <div className='h-20 w-3/12 flex justify-center items-start py-2 mx-1 '
@@ -590,7 +549,7 @@ const MyMusics = ({
                   :
                   <span className='i-mdi-music-note text-4xl'
                     style={{
-                      color: defaultSystemTextColor
+                      color: states.Settings.settings.system.systemTextColor
                     }}
                   />
               }
@@ -613,7 +572,7 @@ const MyMusics = ({
               hover:bg-slate-500 transition-all duration-300 ease-in-out'
                 onClick={handlePreviousMusic}
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
               <div className='
@@ -634,7 +593,7 @@ const MyMusics = ({
               '
                 onClick={handleNextMusic}
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </div>
@@ -665,7 +624,7 @@ const MyMusics = ({
             <div className='w-1/6 h-full flex justify-center items-center'>
               <span className='i-mdi-volume-high text-2xl cursor-pointer'
                 style={{
-                  color: defaultSystemTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </div>
@@ -673,7 +632,7 @@ const MyMusics = ({
               <Slider
                 h={6}
                 w={'100%'}
-                color={defaultSystemTextColor}
+                color={states.Settings.settings.system.systemTextColor}
                 value={Number((musicVolume * 100).toFixed(0))}
                 onChange={(value) => {
                   setMusicVolume(value / 100)

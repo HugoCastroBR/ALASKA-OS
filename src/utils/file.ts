@@ -68,7 +68,7 @@ export function getLastPathSegment(path: string): string {
 }
 
 export function verifyIfIsImage(filename: string): boolean {
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif','webp'];
   const extension = getExtension(filename);
   return imageExtensions.includes(extension);
 }
