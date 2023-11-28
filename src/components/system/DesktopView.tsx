@@ -32,6 +32,7 @@ import useSettings from '@/hooks/useSettings';
 import Settings from './Settings';
 import MyMusics from '../programs/MyMusics';
 import Gallery from '../programs/Gallery';
+import WeatherApp from '../programs/WeatherApp';
 
 const DesktopView = () => {
 
@@ -412,6 +413,7 @@ const DesktopView = () => {
         }
       >
 
+        <WeatherApp />
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
