@@ -53,30 +53,132 @@ export type GalleryItemProps = {
   index: number
 }
 
-export type WeatherProps = {
-  last_updated: string;
-  last_updated_epoch: number;
-  temp_c: number;
-  temp_f: number;
-  feelslike_c: number;
-  feelslike_f: number;
-  condition: {
-    text: string;
-    icon: string;
-    code: number;
-  };
-  wind_mph: number;
-  wind_kph: number;
-  wind_degree: number;
-  wind_dir: string;
-  pressure_mb: number;
-  pressure_in: number;
-  precip_mm: number;
-  precip_in: number;
+
+export type Coord = {
+  lon: number;
+  lat: number;
+};
+
+export type Weather = {
+  id: number;
+  main: string;
+  description: string;
+  icon: string;
+};
+
+export type Main = {
+  temp: number;
+  feels_like: number;
+  pressure: number;
   humidity: number;
-  cloud: number;
-  is_day: number;
-  uv: number;
-  gust_mph: number;
-  gust_kph: number;
+  temp_min: number;
+  temp_max: number;
+  sea_level: number;
+  grnd_level: number;
+};
+
+export type Wind = {
+  speed: number;
+  deg: number;
+  gust: number;
+};
+
+export type Clouds = {
+  all: number;
+};
+
+export type Rain = {
+  '1h'?: number;
+  '3h'?: number;
+};
+
+export type Snow = {
+  '1h'?: number;
+  '3h'?: number;
+};
+
+export type Sys = {
+  type: number;
+  id: number;
+  message: number;
+  country: string;
+  sunrise: number;
+  sunset: number;
+};
+
+export type WeatherProps = {
+  coord: Coord;
+  weather: Weather[];
+  base: string;
+  main: Main;
+  visibility: number;
+  wind: Wind;
+  clouds: Clouds;
+  rain?: Rain;
+  snow?: Snow;
+  dt: number;
+  sys: Sys;
+  timezone: number;
+  id: number;
+  name: string;
+  cod: number;
+};
+
+export type ForecastFiveDays = {
+  cod: string;
+  message: number;
+  cnt: number;
+  list: {
+    dt: number;
+    main: {
+      temp: number;
+      feels_like: number;
+      temp_min: number;
+      temp_max: number;
+      pressure: number;
+      sea_level: number;
+      grnd_level: number;
+      humidity: number;
+      temp_kf: number;
+    };
+    weather: {
+      id: number;
+      main: string;
+      description: string;
+      icon: string;
+    }[];
+    clouds: {
+      all: number;
+    };
+    wind: {
+      speed: number;
+      deg: number;
+      gust: number;
+    };
+    visibility: number;
+    pop: number;
+    rain?: {
+      '3h': number;
+    };
+    snow?: {
+      '3h': number;
+    };
+    sys: {
+      pod: string;
+    };
+    dt_txt: string;
+  }[];
+  city: {
+    id: number;
+    name: string;
+    coord: {
+      lat: number;
+      lon: number;
+    };
+    country: string;
+    population: number;
+    timezone: number;
+    sunrise: number;
+    sunset: number;
+  };
 };

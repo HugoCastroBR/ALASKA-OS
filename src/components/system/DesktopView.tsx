@@ -241,6 +241,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Weather App':
+            return(
+              <WeatherApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -413,7 +421,6 @@ const DesktopView = () => {
         }
       >
 
-        <WeatherApp />
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
