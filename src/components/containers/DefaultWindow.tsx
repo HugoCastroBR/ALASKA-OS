@@ -5,7 +5,6 @@ import Image from 'next/image'
 import React, { useEffect } from 'react'
 import Draggable from 'react-draggable'
 import CustomText from '../atoms/CustomText'
-import useSettings from '@/hooks/useSettings'
 
 
 
@@ -18,14 +17,19 @@ const DefaultWindow = ({
   currentTab,
   currentWindow,
   resizable,
-  uuid,
   className,
   preventDefaultClose,
 }: DefaultWindowProps) => {
 
   const { states, dispatch } = useStore()
-  const { settings } = useSettings()
 
+  useEffect(() => {
+    dispatch(ClearAllFocused())
+    dispatch(WindowSetTabFocused({
+      title: currentWindow?.title || '',
+      uuid: currentTab?.uuid || '',
+    }))
+  }, [])
 
   const MinimizeTab = () => {
     dispatch(ClearAllFocused())
@@ -56,22 +60,6 @@ const DefaultWindow = ({
     }))
   }
 
-  const [topBarColor, setTopBarColor] = React.useState(settings?.windowTopBar.color || 'rgba(0, 0, 0, 0.2)')
-  const [topBarIconsColor, setTopBarIconsColor] = React.useState(settings?.windowTopBar.items.color || 'rgba(0, 0, 0, 1)')
-  const [systemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)')
-
-
-  useEffect(() => {
-    setTopBarColor(settings?.windowTopBar.color || 'rgba(0, 0, 0, 0.2)')
-  }, [settings?.windowTopBar.color])
-
-  useEffect(() => {
-    setTopBarIconsColor(settings?.windowTopBar.items.color || 'rgba(0, 0, 0, 1)')
-  }, [settings?.windowTopBar.items.color])
-
-  useEffect(() => {
-    setSystemDefaultBackgroundColor(settings?.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)')
-  }, [settings?.system?.systemBackgroundColor])
 
   return (
     <Draggable
@@ -100,7 +88,7 @@ const DefaultWindow = ({
         ${resizable && !currentTab?.maximized ? 'hover:resize' : ''}
         ${className}`}
         style={{
-          backgroundColor: systemDefaultBackgroundColor
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'transparent',
         }}
       >
         <div
@@ -109,7 +97,7 @@ const DefaultWindow = ({
           flex items-center justify-between px-2 cursor-move handle${currentTab.uuid} fixed z-20
           `}
           style={{
-            backgroundColor: topBarColor,
+            backgroundColor: states.Settings.settings.windowTopBar.color || 'transparent',
           }}
           >
           <Image
@@ -122,7 +110,7 @@ const DefaultWindow = ({
             text={title}
             className='ml-12 text-base font-semibold'
             style={{
-              color: topBarIconsColor,
+              color: states.Settings.settings.windowTopBar.items.color || 'white',
             }}
           />
           <div className='flex justify-end items-center'>
@@ -137,7 +125,7 @@ const DefaultWindow = ({
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
               style={{
-                color: topBarIconsColor,
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
               }}
               />
             }
@@ -152,7 +140,7 @@ const DefaultWindow = ({
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
               style={{
-                color: topBarIconsColor,
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
               }}
               />
             }
@@ -167,7 +155,7 @@ const DefaultWindow = ({
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
               style={{
-                color: topBarIconsColor,
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
               }}
               />
             }

@@ -3,12 +3,13 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
+import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
 import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename, WindowAddTab } from '@/store/actions'
 import { ApiError } from 'next/dist/server/api-utils'
+import jszip from 'jszip'
 const MouseMenuContext = ({
   x,
   y,
@@ -29,6 +30,9 @@ const MouseMenuContext = ({
     onMouseLeave,
     left,
   }: mouseContextMenuOptionsProps) => {
+
+    const [isHovered, setIsHovered] = React.useState(false)
+
     return (
       <div
         onClick={(e) => {
@@ -38,15 +42,20 @@ const MouseMenuContext = ({
         }}
         onMouseEnter={() => {
           onMouseEnter && onMouseEnter()
+          setIsHovered(true)
         }}
         onMouseLeave={() => {
           onMouseLeave && onMouseLeave()
+          setIsHovered(false)
         }}
         className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}
-        text-white text-sm flex items-center hover:bg-blue-500 
+        text-white text-sm flex items-center 
         transition-all duration-300 ease-in-out cursor-pointer 
-        w-44 h-6 -ml-1
+        w-48 h-8 -ml-1 p-2
         `}
+        style={{
+          backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : states.Settings.settings.system.systemBackgroundColor,
+        }}
       >
         <span className={`${className} text-lg`}></span>
         <div className='ml-1 w-full h-full flex items-center justify-between'>
@@ -228,6 +237,7 @@ const MouseMenuContext = ({
             if (!verifyIfIsFile(file)) return;
 
             fs?.readFile(file, 'utf-8', (err, data) => {
+              console.log(file,data)
               if (err) console.error(err);
               if (!data) return;
 
@@ -236,6 +246,8 @@ const MouseMenuContext = ({
                 fileType,
                 fileName: getLastPathSegment(file),
               });
+
+              console.log(fileSolved)
 
               const blob = new Blob([fileSolved]);
               const objectUrl = URL.createObjectURL(blob);
@@ -338,6 +350,33 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenWithRichTextEditor = () => {
+    return (
+      <MouseOption
+        title='Open as Document'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Rich Text Editor',
+                tab: {
+                  title: 'Rich Text Editor',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-format-color-text'
+      />
+    )
+  }
+
   const MouseOptionOpenWith = () => {
     const [isOptionsOpen, setIsOptionsOpen] = React.useState(false)
 
@@ -368,21 +407,22 @@ const MouseMenuContext = ({
                 setIsOptionsOpen(false)
               }}
               className={`
-              bg-gray-300 
-                backdrop-filter backdrop-blur-sm shadow-md
-                flex flex-col w-44 z-40  
+                backdrop-filter backdrop-blur-sm shadow-sm drop-shadow-md shadow-gray-800 
+                flex flex-col w-48 z-40  
                 bg-opacity-30 rounded-r-md
-                p-1
+                p-2 overflow-hidden
             `}
               style={{
                 position: 'absolute',
-                left: 176,
-                top: 48,
+                left: 192,
+                top: 64,
                 zIndex: 100,
+                backgroundColor: states.Settings.settings.system.systemBackgroundColor,
               }}
             >
               <MouseOptionOpenInBrowser />
               <MouseOptionOpenWIthCodeEditor />
+              <MouseOptionOpenWithRichTextEditor />
               <MouseOptionOpenWithNotePad />
             </div>
           )
@@ -391,12 +431,97 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionCompressFile = () => {
+
+    const zip = new jszip()
+    const [ended, setEnded] = React.useState(false)
+
+    return (
+      <MouseOption
+        title='Zip Files'
+        disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path) === false) || states.File.selectedFiles.length < 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((path,index) => {
+            if(verifyIfIsFile(path) === false) return;
+            fs?.readFile(path, 'utf-8', (err, data) => {
+              if(err) console.log(err)
+              if(!data) return;
+              zip.file(getLastPathSegment(path), data, {base64: true})
+              if(index === states.File.selectedFiles.length - 1){
+                zip.generateAsync({type: 'base64'}).then((content) => {
+                  fs?.writeFile(`${removeExtension(states.File.selectedFiles[0])}.zip`,content, (err) => {
+                    if(err) console.log(err)
+                    console.log('compressed')
+                    onRefresh && onRefresh()
+                  })
+                })
+              }
+            })
+          })
+          
+        }}
+        className='i-mdi-folder-zip'
+      />
+    )
+  }
+
+  const MouseOptionCompressFolder = () => {
+      
+      const zip = new jszip()
+      const [ended, setEnded] = React.useState(false)
+  
+      return (
+        <MouseOption
+          title='Zip Folder'
+          disabled={states.File.selectedFiles.some((path) => verifyIfIsFile(path)) || states.File.selectedFiles.length !== 1}
+          onClick={
+            () => {
+              fs?.readdir(states.File.selectedFiles[0], (err, paths) => {
+                paths?.forEach((path,index) => {
+                  const fullPath = `${states.File.selectedFiles[0]}/${path}`
+                  fs?.readFile(fullPath, 'utf-8', (err, data) => {
+                    if(err) console.log(err)
+                    if(!data) return;
+                    zip.file(path, data, {base64: true})
+                    zip.generateAsync({type: 'base64'}).then((content) => {
+                      fs?.writeFile(`${states.File.selectedFiles[0]}.zip`,content, (err) => {
+                        if(err) console.log(err)
+                        console.log('compressed')
+                        onRefresh && onRefresh()
+                      })
+                    })
+                  })
+                })
+              })
+            }
+          }
+          className='i-mdi-folder-zip-outline'
+        />
+      )
+  }
+
+  const MouseOptionUnzip = () => {
+    return (
+      <MouseOption
+        title='Unzip'
+        disabled={getExtension(states.File.selectedFiles[0]) !== 'zip' || states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          const zip = new jszip()
+          const path = states.File.selectedFiles[0]
+          fs?.readFile(path, 'utf-8', (err, data) => {
+            console.log(data)
+          })
+        }}
+        className='i-mdi-folder-open'
+      />
+    )
+  }
+
   return (
     <div
       className={`
-      bg-gray-300 
-        backdrop-filter backdrop-blur-sm shadow-md
-        flex flex-col w-44 z-40  
+        backdrop-filter backdrop-blur-sm shadow-sm drop-shadow-md shadow-gray-800 
+        flex flex-col w-48 z-40  
         bg-opacity-30 rounded-md
         p-1
     `}
@@ -405,6 +530,7 @@ const MouseMenuContext = ({
         top: y,
         left: x,
         zIndex: 100,
+        backgroundColor: states.Settings.settings.system.systemBackgroundColor,
       }}
     >
       
@@ -414,6 +540,9 @@ const MouseMenuContext = ({
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
+      <MouseOptionUnzip />
+      <MouseOptionCompressFile />
+      <MouseOptionCompressFolder />
       <MouseOptionDownload />
       <MouseOptionDelete />
       <MouseOptionRefresh />

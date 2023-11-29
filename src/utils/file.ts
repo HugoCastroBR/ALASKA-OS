@@ -39,6 +39,7 @@ export const uuid = (length: number) => {
 };
 
 export const getExtension = (filename: string) => {
+  if(!filename) return ''
   const parts = filename.split('.');
   return parts[parts.length - 1];
 }
@@ -67,7 +68,7 @@ export function getLastPathSegment(path: string): string {
 }
 
 export function verifyIfIsImage(filename: string): boolean {
-  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif'];
+  const imageExtensions = ['jpg', 'jpeg', 'png', 'gif','webp'];
   const extension = getExtension(filename);
   return imageExtensions.includes(extension);
 }
@@ -326,3 +327,50 @@ export const getSizeFromBase64 = (base64String: string) => {
   return size;
 }
 
+export function toArrayBuffer(buffer: Buffer) {
+  const arrayBuffer = new ArrayBuffer(buffer.length);
+  const view = new Uint8Array(arrayBuffer);
+  for (let i = 0; i < buffer.length; ++i) {
+    view[i] = buffer[i];
+  }
+  return arrayBuffer;
+}
+
+export const base64ToArrayBuffer = (base64: string) => {
+  const binaryString = window.atob(base64);
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+  for (let i = 0; i < len; ++i) {
+      bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes.buffer;
+}
+
+export const htmlToArrayBuffer = (html: string) => {
+  const bytes = new TextEncoder().encode(html);
+  return bytes.buffer;
+}
+
+export const htmlToBase64 = (html: string) => {
+    // Encode the HTML content to handle characters outside the Latin1 range
+    const encodedHtml = encodeURIComponent(html);
+
+    // Use btoa to convert the encoded HTML to Base64
+    const base64 = btoa(encodedHtml);
+  
+    return base64;
+}
+
+export const encodedBase64ToArrayBuffer = (base64: string) => {
+  // Decode the Base64 string and handle characters outside the Latin-1 range
+  const binaryString = Buffer.from(base64, 'base64').toString('binary');
+
+  const len = binaryString.length;
+  const bytes = new Uint8Array(len);
+
+  for (let i = 0; i < len; ++i) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+
+  return bytes.buffer;
+};

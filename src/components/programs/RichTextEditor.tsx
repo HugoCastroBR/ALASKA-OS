@@ -12,11 +12,12 @@ import CustomText from '../atoms/CustomText';
 import { Button, Divider, Loader, LoadingOverlay } from '@mantine/core';
 import useStore from '@/hooks/useStore';
 import useFS from '@/hooks/useFS';
-import { removeExtension, extractParentPath, getExtension } from '@/utils/file';
+import { removeExtension, extractParentPath, getExtension, toArrayBuffer, base64ToArrayBuffer, htmlToArrayBuffer, htmlToBase64, toBase64, encodedBase64ToArrayBuffer } from '@/utils/file';
 import RingLoader from '../atoms/RingLoader';
 import { programProps } from '@/types/programs';
 import DefaultWindow from '../containers/DefaultWindow';
 import AppTaskMenu from '../molecules/AppTaskMenu';
+import mammoth from 'mammoth';
 
 
 const RichTextEditorComponent = ({
@@ -32,6 +33,8 @@ const RichTextEditorComponent = ({
   const [saveAsInputOpen, setSaveAsInputOpen] = useState(false);
   const [saveAsName, setSaveAsName] = useState<string>(`${removeExtension(tab.ficTitle || '')}_new`)
   const [isLoading, setIsLoading] = useState(false)
+  const [isDocument, setIsDocument] = useState(false)
+  const documentsType = ['doc', 'docx']
 
   const editor = useEditor({
     extensions: [
@@ -54,16 +57,42 @@ const RichTextEditorComponent = ({
   useEffect(() => {
     if (!tab.value) return
     if (tab.value === '/Desktop') return
-    setIsLoading(true)
-    fs?.readFile(`${tab.value}`, 'utf8', (err, data) => {
-      if (err) throw err
-      if (data) {
-        editor?.commands.setContent(data)
-        setText(data)
-      }
-      console.log(data)
-      setIsLoading(false)
-    })
+    if(documentsType.includes(getExtension(tab.value || '/'))){
+      setIsDocument(true)
+      setIsLoading(true)
+      fs?.readFile(`${tab.value}`,'utf-8', (err, data) => {
+        if (err) throw err
+        if (data) {
+
+          const arrayBuffer = base64ToArrayBuffer(data)
+          console.log(typeof ArrayBuffer)
+          mammoth.convertToHtml({ arrayBuffer }).then((result) => {
+            const html = result.value 
+            console.log(html)
+            editor?.commands.setContent(html)
+            setText(html)
+            setIsLoading(false)
+          }).catch((err) => {
+            console.log(err)
+            setIsLoading(false)
+            // Handle the error
+          })
+        }
+        
+      })
+    }else{
+      setIsLoading(true)
+      fs?.readFile(`${tab.value}`, 'utf8', (err, data) => {
+        if (err) throw err
+        if (data) {
+          editor?.commands.setContent(data)
+          setText(data)
+        }
+        console.log(data)
+        setIsLoading(false)
+      })
+    }
+    
   }, [fs])
 
 

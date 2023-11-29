@@ -8,7 +8,6 @@ import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
 import { desktopFileProps } from "@/types/DesktopItem"
 import { Loader } from "@mantine/core"
-import useSettings from "@/hooks/useSettings"
 
 const DesktopFile = ({
   title,
@@ -26,7 +25,6 @@ const DesktopFile = ({
   const [isRename, setIsRename] = useState(false)
 
   const { fs } = useFS()
-  const {settings} = useSettings()
 
   useEffect(() => {
     if(states.File.selectedFiles.includes(path)){
@@ -54,7 +52,8 @@ const DesktopFile = ({
               uuid: uuid(6),
               value: path,
               maximized: false,
-              minimized: false
+              minimized: false,
+              focused:true
             }
           }))
         )
@@ -69,6 +68,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -83,6 +83,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -97,6 +98,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -111,6 +113,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -132,6 +135,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -146,6 +150,7 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
@@ -160,10 +165,26 @@ const DesktopFile = ({
             value: path,
             maximized: false,
             minimized: false,
+            focused:true,
           }
         }))
       )
-      
+      case 'docx':
+      case 'doc':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Rich Text Editor',
+          tab: {
+            title: 'Rich Text Editor',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+            focused:true,
+          }
+        }))
+      )
     }
   }
 
@@ -215,17 +236,6 @@ const DesktopFile = ({
     }
   }
 
-  
-  const [fileTextColor, setFileTextColor] = useState(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
-  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = useState(settings?.system?.systemHighlightColor)
-  
-  useEffect(() => {
-    setFileTextColor(settings?.desktop.desktopIcon.textColor || 'rgba(0, 0, 0, 1)')
-  }, [settings?.desktop.desktopIcon.textColor])
-
-  useEffect(() => {
-    setDefaultSystemHighlightColor(settings?.system?.systemHighlightColor)
-  }, [settings?.system?.systemHighlightColor])
 
   return (
     <>
@@ -251,7 +261,8 @@ const DesktopFile = ({
                   uuid: uuid(6),
                   value: path,
                   maximized: false,
-                  minimized: false
+                  minimized: false,
+                  focused:true,
                 }
               }))
             )
@@ -270,7 +281,7 @@ const DesktopFile = ({
         
         `}
         style={{
-          backgroundColor: isItemSelected ? defaultSystemHighlightColor : 'transparent'
+          backgroundColor: isItemSelected ? states.Settings.settings.system.systemHighlightColor : 'transparent'
         }}
       >
         {
@@ -305,7 +316,7 @@ const DesktopFile = ({
             className="break-words w-20 text-xs text-center"
             style={
               {
-                color: `${fileTextColor || 'rgba(0, 0, 0, 1)'}`
+                color: `${states.Settings.settings.system.systemTextColor || 'rgba(0, 0, 0, 1)'}`
               }
             }
           />

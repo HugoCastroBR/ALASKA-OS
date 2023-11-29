@@ -2,7 +2,7 @@
 
 import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
-import useSettings from '@/hooks/useSettings'
+import useStore from '@/hooks/useStore'
 
 const AppTaskMenu = ({
   onSave,
@@ -20,33 +20,16 @@ const AppTaskMenu = ({
   codeMode?: boolean
 }) => {
 
-  const {settings} = useSettings()
 
-  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor)
-  const [defaultSystemHighlightColor, setDefaultSystemHighlightColor] = React.useState(settings?.system?.systemHighlightColor)
-  const [defaultSystemBackgroundColor, setDefaultSystemBackgroundColor] = React.useState(settings?.system?.systemBackgroundColor)
-  useEffect(() => {
-    if(settings?.system?.systemTextColor === defaultSystemTextColor) return
-    setDefaultSystemTextColor(settings?.system?.systemTextColor)
-  }, [settings?.system?.systemTextColor, settings?.system.systemHighlightColor, defaultSystemTextColor])
-
-  useEffect(() => {
-    if(settings?.system?.systemHighlightColor === defaultSystemHighlightColor) return
-    setDefaultSystemHighlightColor(settings?.system?.systemHighlightColor)
-  }, [settings?.system?.systemHighlightColor, defaultSystemHighlightColor])
-
-  useEffect(() => {
-    if(settings?.system?.systemBackgroundColor === defaultSystemBackgroundColor) return
-    setDefaultSystemBackgroundColor(settings?.system?.systemBackgroundColor)
-  }, [settings?.system?.systemBackgroundColor, defaultSystemBackgroundColor])
-
+  const { states, dispatch } = useStore()
   const [isFileMenuOpen, setIsFileMenuOpen] = React.useState(false)
   const [isCodeMenuOpen, setIsCodeMenuOpen] = React.useState(false)
+  
 
   return (
     <div className='flex h-6 absolute w-full top-8 items-center z-30'
       style={{
-        backgroundColor: defaultSystemBackgroundColor
+        backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
       }}
     >
       {onRun && (
@@ -56,17 +39,21 @@ const AppTaskMenu = ({
           }}
           className='
           flex justify-center items-center cursor-pointer 
-          hover:bg-blue-500 hover:bg-opacity-40 transition-all duration-300 ease-in-out
+          hover:bg-opacity-40 transition-all duration-300 ease-in-out
           px-2 h-6
-        '>
+        '
+          style={{
+            backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
+          }}
+        >
           <span className='i-mdi-play-circle-outline mr-1'
           style={{
-            color: defaultSystemTextColor
+            color: states.Settings?.settings.system?.systemTextColor || 'white'
           }}
           ></span>
           <CustomText text='Run'
           style={{
-            color: defaultSystemTextColor
+            color: states.Settings?.settings.system?.systemTextColor || 'white'
           }}
           />
         </div>
@@ -79,17 +66,22 @@ const AppTaskMenu = ({
           }}
           className='
           flex justify-center items-center cursor-pointer 
-          hover:bg-blue-500 hover:bg-opacity-40 transition-all duration-300 ease-in-out
+          hover:bg-opacity-40 transition-all duration-300 ease-in-out
           px-2 h-6
-        '>
+          '
+          style={{
+            backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
+          
+          }}
+          >
           <span className='i-mdi-code-tags mr-1'
           style={{
-            color: defaultSystemTextColor
+            color: states.Settings.settings.system.systemTextColor || 'white'
           }}
           ></span>
           <CustomText text='Code' 
           style={{
-            color: defaultSystemTextColor
+            color: states.Settings.settings.system.systemTextColor || 'white'
           }}
           />
         </div>
@@ -99,18 +91,23 @@ const AppTaskMenu = ({
           setIsFileMenuOpen(!isFileMenuOpen)
         }}
         className='
-      flex justify-center items-center cursor-pointer 
-      hover:bg-blue-500 hover:bg-opacity-40 transition-all duration-300 ease-in-out
-      px-2 h-6
-      '>
+        flex justify-center items-center cursor-pointer 
+        hover:bg-opacity-40 transition-all duration-300 ease-in-out
+        px-2 h-6
+        '
+        style={{
+          backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
+        
+        }}
+        >
         <span className='i-mdi-file-outline  mr-1'
         style={{
-          color: defaultSystemTextColor
+          color: states.Settings.settings.system.systemTextColor || 'white'
         }}
         ></span>
         <CustomText text='File' 
           style={{
-            color: defaultSystemTextColor
+            color: states.Settings.settings.system.systemTextColor || 'white'
           }}
         />
       </div>
@@ -118,11 +115,13 @@ const AppTaskMenu = ({
       {isFileMenuOpen &&
         <div
           style={{
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)',
             top: '28px'
           }}
-          className=' absolute w-32 h-44 bg-slate-300 rounded-sm bg-opacity-50 
+          className=' absolute w-32 h-44 rounded-sm bg-opacity-50 
           left-0 py-1 flex flex-col backdrop-filter backdrop-blur-sm shadow-lg -mt-1
           '
+          
         >
           <div
             onClick={() => {
@@ -130,10 +129,10 @@ const AppTaskMenu = ({
               onNewTab && onNewTab()
               setIsFileMenuOpen(false)
             }}
-            className='cursor-pointer h-6 hover:bg-slate-100 hover:bg-opacity-60 transition-all duration-300 pl-1'>
+            className='cursor-pointer h-6 hover:bg-opacity-60 transition-all duration-300 pl-1'>
             <CustomText text='New' 
             style={{
-              color: defaultSystemTextColor
+              color: states.Settings.settings.system.systemTextColor || 'white'
             }}
             />
           </div>
@@ -143,10 +142,10 @@ const AppTaskMenu = ({
               onSave && onSave()
               setIsFileMenuOpen(false)
             }}
-            className='cursor-pointer h-6 hover:bg-slate-100 hover:bg-opacity-60 transition-all duration-300 pl-1'>
+            className='cursor-pointer h-6 hover:bg-opacity-60 transition-all duration-300 pl-1'>
             <CustomText text='Save' 
             style={{
-              color: defaultSystemTextColor
+              color: states.Settings.settings.system.systemTextColor || 'white'
             }}
             />
           </div>
@@ -156,10 +155,10 @@ const AppTaskMenu = ({
               onSaveAs && onSaveAs()
               setIsFileMenuOpen(false)
             }}
-            className='cursor-pointer h-6 hover:bg-slate-100 hover:bg-opacity-60 transition-all duration-300 pl-1'>
+            className='cursor-pointer h-6 hover:bg-opacity-60 transition-all duration-300 pl-1'>
             <CustomText text='Save As' 
             style={{
-              color: defaultSystemTextColor
+              color: states.Settings.settings.system.systemTextColor || 'white'
             }}
             />
           </div>
@@ -169,11 +168,13 @@ const AppTaskMenu = ({
         isCodeMenuOpen && (
           <div
             style={{
+              backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)',
               top: '28px'
             }}
-            className=' absolute w-32 h-44 bg-slate-300 rounded-sm bg-opacity-50 
+            className=' absolute w-32 h-44  rounded-sm bg-opacity-50 
             left-0 py-1 flex flex-col backdrop-filter backdrop-blur-sm shadow-lg -mt-1
             '
+
           >
             <div
               onClick={() => {
@@ -181,10 +182,10 @@ const AppTaskMenu = ({
                 onRun && onRun()
                 setIsCodeMenuOpen(false)
               }}
-              className='cursor-pointer h-6 hover:bg-slate-100 hover:bg-opacity-60 transition-all duration-300 pl-1'>
+              className='cursor-pointer h-6 hover:bg-opacity-60 transition-all duration-300 pl-1'>
               <CustomText text='Run Code'
               style={{
-                color: defaultSystemTextColor
+                color: states.Settings.settings.system.systemTextColor || 'white'
               }}
               />
             </div>
@@ -194,10 +195,10 @@ const AppTaskMenu = ({
                 closeConsole && closeConsole()
                 setIsCodeMenuOpen(false)
               }}
-              className='cursor-pointer h-6 hover:bg-slate-100 hover:bg-opacity-60 transition-all duration-300 pl-1'>
+              className='cursor-pointer h-6 hover:bg-opacity-60 transition-all duration-300 pl-1'>
               <CustomText text='Toggle Console' 
               style={{
-                color: defaultSystemTextColor
+                color: states.Settings.settings.system.systemTextColor || 'white'
               }}
               />
             </div>
@@ -206,18 +207,18 @@ const AppTaskMenu = ({
       }
       <div
         className='
-        flex justify-center items-center cursor-pointer 
-        hover:bg-blue-500 hover:bg-opacity-40 transition-all duration-300 ease-in-out
-        px-2 h-6
+        flex justify-center items-center cursor-not-allowed 
+        hover:bg-opacity-40 transition-all duration-300 ease-in-out
+        px-2 h-6 opacity-70
       '>
         <span className='i-mdi-about-outline mr-1'
         style={{
-          color: defaultSystemTextColor
+          color: states.Settings.settings.system.systemTextColor || 'white'
         }}
         ></span>
         <CustomText text='About' 
         style={{
-          color: defaultSystemTextColor
+          color: states.Settings.settings.system.systemTextColor || 'white'
         }}
         />
       </div>

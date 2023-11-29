@@ -110,7 +110,11 @@ const Explorer = ({
       title='Explorer'
     >
       <div
-        className='w-full h-full flex flex-col bg-slate-300 bg-opacity-40 backdrop-blur-md'>
+        className='w-full h-full flex flex-col bg-opacity-40 backdrop-blur-md'
+        style={{
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor
+        }}
+        >
         <div className='flex w-full h-20  overflow-hidden'>
           <ExplorerActionBar
             onReload={Reload}
@@ -125,7 +129,12 @@ const Explorer = ({
           />
         </div>
         <div className='flex w-full h-full'>
-          <div className='w-2/12 pt-2 bg-slate-300 bg-opacity-40 '>
+          <div className='w-2/12 pt-2  bg-opacity-40 '
+            style={{
+              backgroundColor: states.Settings.settings.system.systemBackgroundColor
+            }}
+          >
+
             <Group justify="center">
               <FileButton onChange={async (e) => {
                 if (e) {
@@ -159,7 +168,7 @@ const Explorer = ({
                       backgroundColor: 'transparent',
                       border: '1px solid white',
                       borderStyle: 'dashed',
-                      color: 'white',
+                      color: states.Settings.settings.system.systemTextColor,
                       width: '90%'
                     }
                   }}
@@ -180,13 +189,16 @@ const Explorer = ({
                   root: {
                     backgroundColor: 'transparent',
                     border: '1px solid white',
-                    color: 'white',
+                    color: states.Settings.settings.system.systemTextColor,
                     width: '90%'
                   }
                 }}
               >  <CustomText
                   text='New File'
-                  className='text-white text-xs'
+                  className='text-xs'
+                  style={{
+                    color: states.Settings.settings.system.systemTextColor
+                  }}
                 /></Button>
               <Button
                 onClick={() => {
@@ -197,20 +209,26 @@ const Explorer = ({
                   root: {
                     backgroundColor: 'transparent',
                     border: '1px solid white',
-                    color: 'white',
+                    color: states.Settings.settings.system.systemTextColor,
                     width: '90%'
                   }
                 }}
               >  <CustomText
                   text='New Folder'
-                  className='text-white text-xs'
+                  className='text-xs'
+                  style={{
+                    color: states.Settings.settings.system.systemTextColor
+                  }}
                 /></Button>
             </Group>
 
 
           </div>
           <Dropzone
-            className='w-10/12  h-full flex bg-slate-200 bg-opacity-40'
+            className='w-10/12  h-full flex  bg-opacity-40'
+            style={{
+              backgroundColor: states.Settings.settings.system.systemBackgroundColor
+            }}
             onMouseEnter={() => {
               dispatch(SetMouseInDesktop(false))
               dispatch(SetMousePath(currentPath))

@@ -25,7 +25,6 @@ import NewDirFolderItem from '../molecules/NewDirFolderItem';
 import CalendarProgram from '../programs/Calendar';
 import VideoPlayer from '../programs/VideoPlayer';
 import Calculator from '../programs/Calculator';
-import MusicLibrary from '../programs/MusicLibrary';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
@@ -33,6 +32,9 @@ import useSettings from '@/hooks/useSettings';
 import Settings from './Settings';
 import MyMusics from '../programs/MyMusics';
 import Gallery from '../programs/Gallery';
+import WeatherApp from '../programs/WeatherApp';
+import TodoApp from '../programs/TodoApp';
+
 const DesktopView = () => {
 
 
@@ -240,6 +242,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Weather App':
+            return(
+              <WeatherApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -312,6 +322,17 @@ const DesktopView = () => {
     })
   }
 
+  const handleGeneralUploadToDesktop = async (file: File) => {
+    const fileContent = await file.arrayBuffer()
+    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
+    
+    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
+      if (err) throw err;
+      console.log('File Saved!');
+      reloadDesktop()
+    })
+  }
+
 
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
   const [x, setX] = React.useState(0)
@@ -329,6 +350,7 @@ const DesktopView = () => {
     })
   }
 
+  
 
   return (
     <div 
@@ -381,6 +403,8 @@ const DesktopView = () => {
               }
               if(getExtension(file.name) === 'mp3' || getExtension(file.name) === 'wav'){
                 handlerUploadMusicToDesktop(file)
+              }else{
+                handleGeneralUploadToDesktop(file)
               }
             })
           }
@@ -397,6 +421,8 @@ const DesktopView = () => {
           }
         }
       >
+
+        {/* <TodoApp /> */}
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

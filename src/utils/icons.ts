@@ -46,6 +46,12 @@ export function generateIcon(extension:string){
       return '/assets/icons/mp4.png'
     case 'xlsx':
       return '/assets/icons/xlsx.png'
+    case 'doc':
+      return '/assets/icons/doc.png'
+    case 'docx':
+      return '/assets/icons/docx.png'
+    case 'zip':
+      return '/assets/icons/zip.png'
       
     default: '/assets/icons/file.png'
   }
