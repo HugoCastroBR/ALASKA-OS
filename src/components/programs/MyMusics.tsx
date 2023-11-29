@@ -109,7 +109,9 @@ const MyMusics = ({
 
   
   const handlerPlayMusic = (music: MusicItemProps) => {
-
+    if (audioElement) {
+      audioElement.pause();
+    }
   
     setMusicSelected(music);
     const newAudioElement = new Audio(music.music);
@@ -136,7 +138,6 @@ const MyMusics = ({
   };
   
   const handleMusicEnded = async () => {
-    // Adicione um controle para evitar a execução múltipla
     if (!musicEndedHandled) {
       console.log("end");
       setMusicEndedHandled(true);
@@ -146,7 +147,6 @@ const MyMusics = ({
     }
   };
   
-  // Adicione um estado para controlar se o evento 'ended' foi manipulado
   const [musicEndedHandled, setMusicEndedHandled] = useState(false);
 
 
@@ -250,14 +250,19 @@ const MyMusics = ({
     })
   }
 
+
+
   useEffect(() => {
+    console.log("Global Volume:", states.System.globalVolumeMultiplier);
+    console.log("Tab Volume:", musicVolume)
+    console.log("Final Volume:", musicVolume * states.System.globalVolumeMultiplier)
     setAudioElement((audio) => {
       if (audio) {
-        audio.volume = musicVolume
+        audio.volume = musicVolume * states.System.globalVolumeMultiplier
       }
       return audio
     })
-  }, [musicVolume])
+  },[states.System.globalVolumeMultiplier,musicVolume])
 
   const handlerUploadMusic = async ({
     name,

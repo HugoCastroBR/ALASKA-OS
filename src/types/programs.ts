@@ -182,3 +182,18 @@ export type ForecastFiveDays = {
     sunset: number;
   };
 };
+
+type TodoProps = {
+  uuid: string
+  title: string
+  description: string
+  completed: boolean
+}
+
+export type TodoListProps = {
+  uuid: string
+  title: string
+  icon: string
+  todos: TodoProps[]
+  createdAt: string
+}

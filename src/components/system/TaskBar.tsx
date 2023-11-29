@@ -176,7 +176,7 @@ const TaskBar = () => {
         ${isVolumeOpen ? 'right-0' : '-right-40'}
         `}>
           <Slider
-            value={Number(globalVolume.toFixed(0))}
+            defaultValue={Number(globalVolume.toFixed(0))}
             onChange={(value) => setGlobalVolume(value)}
             w={100}
           />
@@ -216,7 +216,7 @@ const TaskBar = () => {
               alt={weatherData?.weather[0]?.description}
               width={36}
               height={36}
-              className='mt-1 cursor-pointer'
+              className='mt-0.5 cursor-pointer'
               
             />
 
