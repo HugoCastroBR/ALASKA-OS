@@ -3,9 +3,10 @@ import CustomText from '../atoms/CustomText';
 import { Indicator } from '@mantine/core';
 import { Calendar } from '@mantine/dates';
 import useStore from '@/hooks/useStore';
+import { CallNotification } from '@/store/actions';
 
 const Clock = () => {
-  const { states } = useStore();
+  const { states,dispatch } = useStore();
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [time, setTime] = useState(new Date());
 
@@ -13,6 +14,7 @@ const Clock = () => {
     const hour = time.getHours();
     const minute = time.getMinutes().toString().padStart(2, '0');
     const second = time.getSeconds().toString().padStart(2, '0');
+    
 
     if (format === '12') {
       const hour12 = hour % 12 || 12;
@@ -31,12 +33,41 @@ const Clock = () => {
   useEffect(() => {
     const intervalId = setInterval(() => {
       setTime(new Date());
-    }, states.Settings.settings?.system.clock.showSeconds ? 100 : 1000);
+    }, states.Settings.settings?.system.clock.showSeconds ? 1000 : 60000);
 
     return () => {
       clearInterval(intervalId);
     };
   }, [states.Settings.settings?.system.clock.showSeconds]);
+
+
+
+  useEffect(() => {
+    const hour = time.getHours().toString().padStart(2, '0');
+    const minute = time.getMinutes().toString().padStart(2, '0');
+    const currentTime = `${hour}:${minute}`;
+    const alarm = localStorage.getItem('alarm');
+    if(alarm === null) return
+    if(alarm === currentTime){
+      handlerCallAlarm()
+      localStorage.removeItem('alarm')
+    }
+  },[time])
+
+  const handlerCallAlarm = () => {
+    dispatch(CallNotification({
+      title: 'Alarm',
+      message: 'Alarm is ringing, it is time',
+      withCloseButton: true,
+    }))
+    playAlarmAudio()
+  }
+
+  const playAlarmAudio = () => {
+    const audio = new Audio('assets/sounds/notification.wav');
+    audio.volume = 1 * states.System.globalVolumeMultiplier;
+    audio.play();
+  }
 
   return (
     <>
