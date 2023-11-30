@@ -250,6 +250,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Todo App':
+            return(
+              <TodoApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -422,7 +430,6 @@ const DesktopView = () => {
         }
       >
 
-        {/* <TodoApp /> */}
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

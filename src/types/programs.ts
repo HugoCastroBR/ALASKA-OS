@@ -183,11 +183,12 @@ export type ForecastFiveDays = {
   };
 };
 
-type TodoProps = {
+export type TodoProps = {
   uuid: string
   title: string
   description: string
   completed: boolean
+  createdAt: string
 }
 
 export type TodoListProps = {

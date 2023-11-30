@@ -6,11 +6,13 @@ interface CustomTextProps {
   text: string
   className?: string,
   style?: React.CSSProperties
+  onClick?: () => void
 }
 const CustomText = ({
   text,
   className,
-  style
+  style,
+  onClick,
 }:CustomTextProps) => {
 
   const {settings} = useSettings()
@@ -28,6 +30,7 @@ const CustomText = ({
       style={{
         color: defaultSystemTextColor
       }}
+      onClick={onClick}
       >
         {text}
       </span>
@@ -38,6 +41,7 @@ const CustomText = ({
       text-gray-900 font-medium text-sm
     ${className}
     `}
+    onClick={onClick}
     style={style}
     >
       {text}
