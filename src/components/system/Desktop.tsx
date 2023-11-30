@@ -21,25 +21,25 @@ const Desktop = () => {
 
   const [isLoading, setIsLoading] = React.useState(false)
 
-  useEffect(() => {
-    if (fs) {
-      fs?.readFile('settings.json', 'utf8', (err, data) => {
-        if (err) {
-          console.log(err)
-          setIsLoading(false)
-          return
-        }
-        if (!data) {
-          setIsLoading(false)
-          return
-        }
-        console.log('Settings loaded!');
-        const _settings = JSON.parse(data)
-        dispatch(SettingsSetSettings(_settings))
-        setIsLoading(false)
-      })
-    }
-  }, [fs])
+  // useEffect(() => {
+  //   if (fs) {
+  //     fs?.readFile('settings.json', 'utf8', (err, data) => {
+  //       if (err) {
+  //         console.log(err)
+  //         setIsLoading(false)
+  //         return
+  //       }
+  //       if (!data) {
+  //         setIsLoading(false)
+  //         return
+  //       }
+  //       console.log('Settings loaded!');
+  //       const _settings = JSON.parse(data)
+  //       dispatch(SettingsSetSettings(_settings))
+  //       setIsLoading(false)
+  //     })
+  //   }
+  // }, [fs])
 
 
 
@@ -51,25 +51,25 @@ const Desktop = () => {
     setIsWallpaperEnabled(settings?.desktop.wallpaper.enabled || false)
   }, [settings?.desktop.wallpaper])
 
-  // if(!states.System.isSystemLoaded){
-  //   return (
-  //     <main
-  //       className='
-  //       min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
-  //       bg-cover bg-center bg-no-repeat bg-slate-50
-  //       '
-  //     >
-  //       <Loader size={128} />
-  //       <CustomText
-  //         text={loadingMessages}
-  //         className='text-slate-500 font-medium text-lg mt-4'
-  //         style={{
-  //           color: 'rgba(0,0,0,1)'
-  //         }}
-  //       />
-  //     </main>
-  //   )
-  // }
+  if(!states.System.isSystemLoaded){
+    return (
+      <main
+        className='
+        min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
+        bg-cover bg-center bg-no-repeat bg-slate-50
+        '
+      >
+        <Loader size={128} />
+        <CustomText
+          text={loadingMessages}
+          className='text-slate-500 font-medium text-lg mt-4'
+          style={{
+            color: 'rgba(0,0,0,1)'
+          }}
+        />
+      </main>
+    )
+  }
 
   return (
     <main

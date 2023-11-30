@@ -34,6 +34,7 @@ import MyMusics from '../programs/MyMusics';
 import Gallery from '../programs/Gallery';
 import WeatherApp from '../programs/WeatherApp';
 import TodoApp from '../programs/TodoApp';
+import ClockApp from '../programs/ClockApp';
 
 const DesktopView = () => {
 
@@ -430,6 +431,7 @@ const DesktopView = () => {
         }
       >
 
+        {/* <ClockApp/> */}
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
