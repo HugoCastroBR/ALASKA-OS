@@ -7,8 +7,13 @@ import ClockTab from '../organisms/clockApp/clockTab';
 import StopwatchTab from '../organisms/clockApp/stopwatchTab';
 import AlarmTab from '../organisms/clockApp/alarmTab';
 import TimerTab from '../organisms/clockApp/timer';
+import DefaultWindow from '../containers/DefaultWindow';
+import { programProps } from '@/types/programs';
 
-const ClockApp = () => {
+const ClockApp = ({
+  tab,
+  window,
+}:programProps) => {
 
 
   const {states, dispatch} = useStore()
@@ -21,11 +26,16 @@ const ClockApp = () => {
   
 
   return (
-    <div
-      className='
-      absolute w-1/4 h-1/2 top-1/4 left-1/4
-        flex flex-col  overflow-hidden
-        rounded-lg '
+    <DefaultWindow
+      className='!w-1/4 !h-1/2'
+      title='Clock App'
+      currentTab={tab}
+      currentWindow={window}
+      resizable
+      uuid={tab.uuid}
+      onClose={() => {}}
+      onMinimize={() => {}}
+      onMaximize={() => {}}
     >
       <div className='w-full h-full'
         style={{
@@ -37,7 +47,7 @@ const ClockApp = () => {
         color={states.Settings.settings.system.systemHighlightColor}
         variant="default" 
         radius="md" 
-        defaultValue="timer"
+        defaultValue="clock"
         className='w-full h-full'
         style={{
           background: states.Settings.settings.system.systemBackgroundColor,
@@ -138,7 +148,7 @@ const ClockApp = () => {
 
         </Tabs>
       </div>
-    </div>
+    </DefaultWindow>
   )
 }
 

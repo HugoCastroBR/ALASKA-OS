@@ -1,5 +1,6 @@
 import CustomText from '@/components/atoms/CustomText'
 import useStore from '@/hooks/useStore'
+import { CallNotification } from '@/store/actions'
 import { rgbaToHex } from '@/utils/style'
 import { Carousel } from '@mantine/carousel'
 import { Center, Divider, RingProgress } from '@mantine/core'
@@ -11,7 +12,7 @@ const TimerTab = () => {
   const { states, dispatch } = useStore()
 
   const [isRunning, setIsRunning] = useState<boolean>(false);
-  const [totalTime, setTotalTime] = useState<number>(0);
+  const [totalTime, setTotalTime] = useState<number>(1);
   const [currentTime, setCurrentTime] = useState<number>(0);
   const [progress, setProgress] = useState<number>(0);
   const [timeToShow, setTimeToShow] = useState<string>('00:00:00');
@@ -43,6 +44,8 @@ const TimerTab = () => {
       setCurrentTime(0);
       setProgress(0);
       setTimeToShow('00:00:00');
+      handlerCallAlarm()
+
     }
   }, [currentTime, totalTime]);
 
@@ -53,6 +56,21 @@ const TimerTab = () => {
       setTotalTime(totalSeconds);
     }
   };
+
+  const handlerCallAlarm = () => {
+    dispatch(CallNotification({
+      title: 'Timer',
+      message: 'Timer is ringing, it is time',
+      withCloseButton: true,
+    }))
+    playAlarmAudio()
+  }
+  
+  const playAlarmAudio = () => {
+    const audio = new Audio('assets/sounds/notification.wav');
+    audio.volume = 1 * states.System.globalVolumeMultiplier;
+    audio.play();
+  }
 
   const handleStop = () => {
     setIsRunning(false);

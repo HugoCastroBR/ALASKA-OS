@@ -258,6 +258,14 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Clock App':
+            return(
+              <ClockApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -468,7 +476,7 @@ const DesktopView = () => {
         }
       >
 
-        <ClockApp/>
+        
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
