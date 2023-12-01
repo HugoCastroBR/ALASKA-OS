@@ -1,23 +1,22 @@
-import useSettings from '@/hooks/useSettings'
-import React, { useEffect } from 'react'
+import useStore from '@/hooks/useStore'
+import React from 'react'
 
 
 interface CustomTextProps {
   text: string
   className?: string,
   style?: React.CSSProperties
+  onClick?: () => void
 }
 const CustomText = ({
   text,
   className,
-  style
+  style,
+  onClick,
 }:CustomTextProps) => {
 
-  const {settings} = useSettings()
-  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor)
-  useEffect(() => {
-    setDefaultSystemTextColor(settings?.system?.systemTextColor)
-  },[settings?.system?.systemTextColor])
+  const {states} = useStore()
+
 
   if(!style){
     return (
@@ -26,8 +25,9 @@ const CustomText = ({
       ${className}
       `}
       style={{
-        color: defaultSystemTextColor
+        color: states.Settings.settings.system.systemTextColor
       }}
+      onClick={onClick}
       >
         {text}
       </span>
@@ -38,6 +38,7 @@ const CustomText = ({
       text-gray-900 font-medium text-sm
     ${className}
     `}
+    onClick={onClick}
     style={style}
     >
       {text}

@@ -63,39 +63,49 @@ Alaska OS includes a variety of pre-configured software for different applicatio
 15. **Classic Paint**
 16. **Music Player**
 17. **SpreadSheet**
-18. **Settings** (New)
-19. **Gallery** (New)
+18. **Settings**
+19. **Gallery**
+20. Weather App
+21. Todo App
+22. Clock App
 
-## Update 0.2.4
+## Update 0.2.6 - Python and Optimizations
+
+#### Python is now full supported
 
 In Alaska OS, it is now possible to customize various functionalities and every stylistic detail of the system, in addition to optimizations that have been implemented. Enjoy a personalized experience!
 
-Alaska OS has been updated to version 0.2.4 with the addition of the following console commands:
+- Notifications: Alaska OS, now have notifications with sounds for clock events
+- Performance: Improved and majority of reported bugs are now fixed
+- Styles: Default Styles fixed to a good first experience
+- Loadings faster and a query of process to optimize
+- Now all native apps create the files needed and settings.
+- Settings can be exported
+- File Structure now have a pattern
+- Added new mouse features
 
-* `help`
 
 Alaska OS now supports a variety of file types, including:
 
-* Image: JPG, JPEG, PNG, GIF
+* Image: JPG, JPEG, PNG, GIF, WEBP
 * Text: TXT, MD, RTF
-* Document: PDF
+* Document: PDF, DOC, DOCX,
 * Audio: MP3, WAV
 * Video: MP4
-* Spreadsheet: XLSX
+* Spreadsheet: XLSX, XLS
 * Code: JS, JSX, TS, TSX, HTML, CSS, PY
 * Markup: MD, XML
 * Data: JSON, YAML, CSV
 * Vector Image: SVG
 * Others: ICO, WEBP, AVIF, TIFF, BMP
+* Archive: ZIP, RAR, 7Z
 
 Note: Some file types are supported but may not have been tested extensively.
 
 Unsupported File Types:
 
-* Archive: RAR, 7Z
-* Document: DOC, DOCX, PPT, PPTX
+* Document: PPT, PPTX
 * Executable: EXE, APK, ISO, DMG, IMG, NRG
-* Spreadsheet: XLS
 
 ## Installation
 

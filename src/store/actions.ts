@@ -2,6 +2,7 @@ import { windowStateProps, tabStateProps } from '@/types/windows';
 import { AppActions, WindowsActions,FileActions,MouseActions,MusicsActions,SystemActions,SettingsActions } from './index';
 import { MusicProps } from '@/types/programs';
 import { SettingsProps } from '@/types/settings';
+import { SystemNotificationType } from '@/types/system';
 
 
 export const SetGlobalVolumeMultiplier = (value: number) => {
@@ -9,6 +10,12 @@ export const SetGlobalVolumeMultiplier = (value: number) => {
 }
 export const SetIsSystemLoaded = (value: boolean) => {
   return SystemActions.SET_IS_SYSTEM_LOADED(value)
+}
+export const CallNotification = (value:SystemNotificationType ) => {
+  return SystemActions.SET_NOTIFICATION(value)
+}
+export const ClearNotification = () => {
+  return SystemActions.CLEAR_NOTIFICATION()
 }
 
 export const SettingsSetSettings = (value: SettingsProps) => {

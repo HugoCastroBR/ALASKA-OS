@@ -124,6 +124,18 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/weather.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: 'Todo App',
+        icon: '/assets/icons/todo.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'Clock App',
+        icon: '/assets/icons/clock.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
       }
     ] as windowStateProps[]
   

@@ -347,7 +347,6 @@ const MyMusics = ({
         handleTogglePause()
       }}
       onMinimize={() => { }}
-      onMaximize={() => { }}
       resizable
 
     >

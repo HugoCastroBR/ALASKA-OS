@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { Dropzone } from '@mantine/dropzone';
-import { SimpleGrid } from '@mantine/core';
+import { SimpleGrid,Notification } from '@mantine/core';
 import Console from './Console';
 import useStore from '@/hooks/useStore';
 import { desktopPath } from '@/utils/constants';
@@ -10,7 +10,7 @@ import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
 import Explorer from '../programs/Explorer';
-import { ClearFiles, SetIsSystemLoaded, WindowAddTab } from '@/store/actions';
+import { ClearFiles, ClearNotification, SetIsSystemLoaded, WindowAddTab } from '@/store/actions';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -28,17 +28,17 @@ import Calculator from '../programs/Calculator';
 import ClassicPaint from '../programs/ClassicPaint';
 import NativeMusicPlayer from '../programs/NativeMusicPlayer';
 import SpreadSheet  from '../programs/SpreadSheet';
-import useSettings from '@/hooks/useSettings';
 import Settings from './Settings';
 import MyMusics from '../programs/MyMusics';
 import Gallery from '../programs/Gallery';
 import WeatherApp from '../programs/WeatherApp';
 import TodoApp from '../programs/TodoApp';
+import ClockApp from '../programs/ClockApp';
+import CustomText from '../atoms/CustomText';
 
 const DesktopView = () => {
 
 
-  const {settings} = useSettings()
   const {states, dispatch} = useStore()
   const { fs } = useFS()
 
@@ -250,6 +250,22 @@ const DesktopView = () => {
                 window={window}
               />
             )
+          case 'Todo App':
+            return(
+              <TodoApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
+          case 'Clock App':
+            return(
+              <ClockApp
+                key={index}
+                tab={tab}
+                window={window}
+              />
+            )
           default:
             return (<></>)
         }
@@ -373,6 +389,44 @@ const DesktopView = () => {
     }}
 
     >
+      {states.System.notification !== null && 
+        <Notification
+        className='absolute top-6 right-6'
+        color={states.Settings.settings.system.systemHighlightColor}
+        title={states.System.notification.title}
+        onClose={() => {
+          dispatch(ClearNotification())
+        }}
+        styles={{
+          root: {
+            position: 'absolute',
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor,
+            color: states.Settings.settings.system.systemTextColor
+          },
+          description: {
+            color: states.Settings.settings.system.systemTextColor
+          },
+          icon: {
+            color: states.Settings.settings.system.systemTextColor
+          },
+          title: {
+            color: states.Settings.settings.system.systemTextColor
+          },
+          closeButton: {
+            color: states.Settings.settings.system.systemTextColor,
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor
+          }
+        }}
+      >
+        <CustomText
+          text={states.System.notification.message}
+          className='font-medium !text-lg'
+          style={{
+            color: states.Settings.settings.system.systemTextColor
+          }}
+        />
+      </Notification>
+      }
       <MouseMenuContext
           onRefresh={() => {
             reloadPath('/Desktop')
@@ -422,7 +476,7 @@ const DesktopView = () => {
         }
       >
 
-        {/* <TodoApp /> */}
+        
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

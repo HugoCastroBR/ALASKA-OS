@@ -225,7 +225,6 @@ const SpreadSheet = ({
         onMinimize={() => { }}
       >
 
-        <div className='absolute w-full h-6 top-0'>
           <AppTaskMenu
             onSave={() => {
               if (!tab.value) return
@@ -239,9 +238,8 @@ const SpreadSheet = ({
               setSaveAsInputOpen(true)
             }}
           />
-        </div>
         <div
-          className='w-full h-full mt-6 resize overflow-auto'
+          className='w-full h-full resize overflow-auto'
         >
           <Workbook
             hooks={{

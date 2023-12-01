@@ -28,3 +28,8 @@ export type CommandAction = {
 //   };
 // }
 
+export type SystemNotificationType = {
+  withCloseButton?: boolean;
+  title: string;
+  message: string;
+}

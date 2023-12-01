@@ -197,8 +197,7 @@ const RichTextEditorComponent = ({
         uuid={tab.uuid}
         resizable
       >
-        <div className='w-full h-full bg-white pb-16  -mt-16'>
-          <div className=' fixed w-full bg-gray-transparent flex z-30 top-0 '>
+        <div className='w-full h-full bg-white pb-16 '>
             <AppTaskMenu
 
               onSave={() => {
@@ -213,8 +212,7 @@ const RichTextEditorComponent = ({
                 setSaveAsInputOpen(true)
               }}
             />
-          </div>
-          <div className='h-full w-full mt-6 overflow-hidden'>
+          <div className='h-full w-full overflow-hidden'>
           <RichTextEditor editor={editor}
               className='w-full h-full pt-10 mt-16'
 

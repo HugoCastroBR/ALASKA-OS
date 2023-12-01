@@ -16,7 +16,6 @@ const NativeMusicPlayer = ({
 
   const {fs} = useFS()
   const {states, dispatch} = useStore()
-  const {settings} = useSettings()
 
   const [isPaused, setIsPaused] = React.useState(true)  
   const [MusicVolume, setMusicVolume] = React.useState(1)
@@ -26,24 +25,6 @@ const NativeMusicPlayer = ({
   const [musicProvided, setMusicProvided] = React.useState(false)
 
 
-  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = React.useState(settings?.system.systemHighlightColor)
-  const [SystemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system.systemBackgroundColor)
-  const [SystemDefaultTextColor, setSystemDefaultTextColor] = React.useState(settings?.system.systemTextColor)
-
-  useEffect(() => {
-    if(settings?.system.systemTextColor === SystemDefaultTextColor) return 
-    setSystemDefaultTextColor(settings?.system.systemTextColor)
-  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor, settings?.system.systemTextColor, SystemDefaultTextColor])
-
-  useEffect(() => {
-    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
-    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
-  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
-
-  useEffect(() => {
-    if(settings?.system.systemBackgroundColor === SystemDefaultBackgroundColor) return 
-    setSystemDefaultBackgroundColor(settings?.system.systemBackgroundColor)
-  },[settings?.system.systemBackgroundColor, SystemDefaultBackgroundColor])
 
 
   const handlerVolume = (value: number) => {}
@@ -119,7 +100,7 @@ const NativeMusicPlayer = ({
       <div className='w-full h-full flex justify-center items-center'>
         <span className='i-mdi-music text-6xl mb-8' 
         style={{
-          color: SystemDefaultTextColor
+          color: states.Settings.settings.system.systemTextColor
         }}
         />
       </div>
@@ -149,7 +130,7 @@ const NativeMusicPlayer = ({
     >
       <div className='h-full w-full flex flex-col justify-center items-center'
       style={{
-        backgroundColor: SystemDefaultBackgroundColor
+        backgroundColor: states.Settings.settings.system.systemBackgroundColor
       }}
       >
         <MusicVisualizer />
@@ -165,7 +146,7 @@ const NativeMusicPlayer = ({
               className='i-mdi-skip-previous text-4xl mx-1 cursor-not-allowed
             transition-all duration-300 ease-in-out'
             style={{
-              color: SystemDefaultTextColor
+              color: states.Settings.settings.system.systemTextColor
             }}
             />
 
@@ -181,7 +162,7 @@ const NativeMusicPlayer = ({
                   className='i-mdi-pause text-2xl cursor-pointer'
                   onClick={() => handlerPlayMusic()}
                   style={{
-                    color: SystemDefaultTextColor
+                    color: states.Settings.settings.system.systemTextColor
                   }}
                 />
                 :
@@ -189,7 +170,7 @@ const NativeMusicPlayer = ({
                   className='i-mdi-play text-2xl cursor-pointer'
                   onClick={() => handlerPlayMusic()}
                   style={{
-                    color: SystemDefaultTextColor
+                    color: states.Settings.settings.system.systemTextColor
                   }}
                 />
               }
@@ -213,7 +194,7 @@ const NativeMusicPlayer = ({
                 text={secondsToMinutes(musicCurrentTime)}
                 className='text-xs'
                 style={{
-                  color: SystemDefaultTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </div>
@@ -230,7 +211,7 @@ const NativeMusicPlayer = ({
                 text={secondsToMinutes(musicDuration)}
                 className='text-xs'
                 style={{
-                  color: SystemDefaultTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
               />
             </div>
@@ -240,15 +221,15 @@ const NativeMusicPlayer = ({
               <div className='w-1/6 h-full flex justify-center items-center mr-0.5'>
                 <span className='i-mdi-volume-high text-xl cursor-pointer' 
                 style={{
-                  color: SystemDefaultTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
                 />
               </div>
               <Slider
                 h={6}
                 w={'80%'}
-                color={SystemDefaultTextColor}
-                value={Number(((MusicVolume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
+                color={states.Settings.settings.system.systemTextColor}
+                value={Number((MusicVolume * 100).toFixed(0))}
                 onChange={(value) => {
                   handlerVolume(value / 100)
                   setMusicVolume(value / 100)

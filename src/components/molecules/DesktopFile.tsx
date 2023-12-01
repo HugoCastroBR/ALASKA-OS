@@ -34,10 +34,7 @@ const DesktopFile = ({
     }
   }, [states.File.selectedFiles])
 
-  const CodeExtension = ["js" || "ts" || "css"]
-
   const [Image64, setImage64] = useState<string | null>(null)
-
 
   const handlerOpen = (extension:string) => {
     if(isProgram) return

@@ -14,8 +14,7 @@ const VideoPlayer = ({
 }:programProps) => {
 
   const { fs } = useFS()
-  const {states, dispatch} = useStore()
-  const {settings} = useSettings()
+  const {states} = useStore()
 
   const [isPaused, setIsPaused] = React.useState(true)
   const [isFullScreen, setIsFullScreen] = React.useState(false)
@@ -25,26 +24,6 @@ const VideoPlayer = ({
   const [videoCurrentTime, setVideoCurrentTime] = React.useState(0)
   const [videoVolume, setVideoVolume] = React.useState(1)
   const [isLoading, setIsLoading] = React.useState(true)
-
-  const [SystemDefaultHighlightColor, setSystemDefaultHighlightColor] = React.useState(settings?.system.systemHighlightColor)
-  const [SystemDefaultBackgroundColor, setSystemDefaultBackgroundColor] = React.useState(settings?.system.systemBackgroundColor)
-  const [SystemDefaultTextColor, setSystemDefaultTextColor] = React.useState(settings?.system.systemTextColor)
-
-  useEffect(() => {
-    if(settings?.system.systemTextColor === SystemDefaultTextColor) return 
-    setSystemDefaultTextColor(settings?.system.systemTextColor)
-  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor, settings?.system.systemTextColor, SystemDefaultTextColor])
-
-  useEffect(() => {
-    if(settings?.system.systemHighlightColor === SystemDefaultHighlightColor) return 
-    setSystemDefaultHighlightColor(settings?.system.systemHighlightColor)
-  },[settings?.system.systemHighlightColor, SystemDefaultHighlightColor])
-
-  useEffect(() => {
-    if(settings?.system.systemBackgroundColor === SystemDefaultBackgroundColor) return 
-    setSystemDefaultBackgroundColor(settings?.system.systemBackgroundColor)
-  },[settings?.system.systemBackgroundColor, SystemDefaultBackgroundColor])
-
 
 
   const LoadVideo = () => {
@@ -62,12 +41,9 @@ const VideoPlayer = ({
         return
       }
     })
-
   }
 
   const videoRef = useRef<HTMLVideoElement>(null)
-
-
 
   useEffect(() => {
     videoRef.current?.addEventListener('loadeddata', (e) => {
@@ -110,14 +86,14 @@ const VideoPlayer = ({
       <div className='w-full h-full flex flex-col justify-center items-center'>
         <span className='i-mdi-video-off-outline text-6xl ' 
         style={{
-          color: SystemDefaultTextColor
+          color: states.Settings.settings.system.systemTextColor
         }}
         />
         <CustomText
           text='No video provided'
           className='text-6xl  mt-2'
           style={{
-            color: SystemDefaultTextColor
+            color: states.Settings.settings.system.systemTextColor
           }}
         />
       </div>
@@ -178,7 +154,7 @@ const VideoPlayer = ({
       <div className='
         h-full w-full flex flex-col '
         style={{
-          backgroundColor: SystemDefaultBackgroundColor
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor
         }}
         >
         <div className='flex justify-center items-center w-full h-full'>
@@ -191,7 +167,7 @@ const VideoPlayer = ({
             src={`data:${convertFileExtensionToFileType(getExtension(tab.value || ''))};base64,${videoBase64}`}
             ref={videoRef}
             style={{
-              backgroundColor: SystemDefaultBackgroundColor
+              backgroundColor: states.Settings.settings.system.systemBackgroundColor
             }}
           />
           }
@@ -200,7 +176,7 @@ const VideoPlayer = ({
         <div
           className={`
           absolute bottom-0 w-full h-20  
-          ${!isMenuOpen ? `${SystemDefaultBackgroundColor}` : `opacity-0 hover:opacity-90 backdrop-filter bg-opacity-0`} 
+          ${!isMenuOpen ? `${states.Settings.settings.system.systemBackgroundColor}` : `opacity-0 hover:opacity-90 backdrop-filter bg-opacity-0`} 
           flex-col transition-all duration-600 ease-in-out 
         `}
         >
@@ -223,7 +199,7 @@ const VideoPlayer = ({
                   className='i-mdi-pause text-2xl  cursor-pointer'
                   onClick={() => handlerPlayVideo()}
                   style={{
-                    color: SystemDefaultTextColor
+                    color: states.Settings.settings.system.systemTextColor
                   }}
                 />
                 :
@@ -231,7 +207,7 @@ const VideoPlayer = ({
                   className='i-mdi-play text-2xl  cursor-pointer'
                   onClick={() => handlerPlayVideo()}
                   style={{
-                    color: SystemDefaultTextColor
+                    color: states.Settings.settings.system.systemTextColor
                   }}
                 />
               }
@@ -254,7 +230,7 @@ const VideoPlayer = ({
               <Slider
                 h={6}
                 w={'80%'}
-                color={SystemDefaultTextColor}
+                color={states.Settings.settings.system.systemTextColor}
                 value={Number(((videoVolume * 100) * states.System.globalVolumeMultiplier).toFixed(0))}
                 onChange={(value) => {
                   handlerVolume(value / 100)
@@ -271,7 +247,7 @@ const VideoPlayer = ({
             <div className='w-6/12'>
               <Progress
                 value={(videoCurrentTime * 100) / videoDuration}
-                color={SystemDefaultHighlightColor}
+                color={states.Settings.settings.system.systemHighlightColor}
                 h={6}
                 radius={6}
               />
@@ -292,13 +268,13 @@ const VideoPlayer = ({
               {isFullScreen ?
                 <span className='i-mdi-fullscreen-exit text-2xl' 
                 style={{
-                  color: SystemDefaultTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
                 />
                 :
                 <span className='i-mdi-fullscreen text-2xl' 
                 style={{
-                  color: SystemDefaultTextColor
+                  color: states.Settings.settings.system.systemTextColor
                 }}
                 />
               }

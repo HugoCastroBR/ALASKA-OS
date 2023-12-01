@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import MDEditor, { selectWord } from "@uiw/react-md-editor";
 import { removeExtension, extractParentPath, getExtension } from '@/utils/file';
-import { Button, Divider } from '@mantine/core';
+import { Button } from '@mantine/core';
 import CustomText from '../atoms/CustomText';
 import AppTaskMenu from '../molecules/AppTaskMenu';
 import useFS from '@/hooks/useFS';
@@ -130,7 +130,7 @@ const MarkdownEditor = ({
           }}
         />
 
-        <div data-color-mode="light" className='w-full h-full !z-10 mt-6'>
+        <div data-color-mode="light" className='w-full h-full !z-10'>
           <MDEditor style={{ zIndex: 1 }} className='w-full h-full !z-10' height={'100%'} value={content} onChange={(content) => {
             setContent(content || '')
           }} />

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import CustomText from '../atoms/CustomText'
 import useStore from '@/hooks/useStore'
 
@@ -21,13 +21,13 @@ const AppTaskMenu = ({
 }) => {
 
 
-  const { states, dispatch } = useStore()
+  const { states } = useStore()
   const [isFileMenuOpen, setIsFileMenuOpen] = React.useState(false)
   const [isCodeMenuOpen, setIsCodeMenuOpen] = React.useState(false)
   
 
   return (
-    <div className='flex h-6 absolute w-full top-8 items-center z-30'
+    <div className='sticky flex h-6  w-full  items-center z-30'
       style={{
         backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
       }}

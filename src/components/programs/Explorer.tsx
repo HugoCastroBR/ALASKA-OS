@@ -2,13 +2,11 @@
 
 import { explorerProps } from '@/types/programs'
 import React, { useEffect, useState } from 'react'
-// import WindowBox from '../templates/WindowBox'
 import { getExtension, verifyIfIsFile } from '@/utils/file'
 import ExplorerActionBar from '../molecules/ExplorerActionBar'
 import { Group, FileButton, Button, SimpleGrid } from '@mantine/core'
 import useFS from '@/hooks/useFS'
 import { generateIcon } from '@/utils/icons'
-
 import useStore from '@/hooks/useStore'
 import DefaultWindow from '../containers/DefaultWindow'
 import DesktopFile from '../molecules/DesktopFile'
@@ -18,9 +16,7 @@ import NewDirFileItem from '../molecules/NewDirFileItem'
 import NewDirFolderItem from '../molecules/NewDirFolderItem'
 import { Dropzone } from '@mantine/dropzone'
 import { SetMouseInDesktop, SetMousePath, WindowSetTabFocused } from '@/store/actions'
-// import { MouseSetMouseContextPath, MouseSetMousePath } from '@/store/actions'
-// import NewDirFileItem from './NewDirFileItem'
-// import NewDirFolderItem from './NewDirFolderItem'
+
 
 
 const Explorer = ({
@@ -55,12 +51,6 @@ const Explorer = ({
     })
   }
 
-  // const refreshExplorerEvery30Seconds = () => {
-  //   setInterval(() => {
-  //     Reload()
-  //   }, 30000);
-  // }
-  // refreshExplorerEvery30Seconds()
 
   useEffect(() => {
     console.log(tab.value)
