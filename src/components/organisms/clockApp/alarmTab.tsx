@@ -1,37 +1,40 @@
 import CustomText from '@/components/atoms/CustomText';
 import useStore from '@/hooks/useStore';
-import React, { useState } from 'react';
-import { Button, Divider } from '@mantine/core';
+import React, { useEffect, useRef, useState } from 'react';
+import { ActionIcon, Button, Divider, rem } from '@mantine/core';
 import { Carousel } from '@mantine/carousel';
-import { IconChevronDown, IconChevronUp } from '@tabler/icons-react';
+import { IconChevronDown, IconChevronUp, IconClock } from '@tabler/icons-react';
+import { TimeInput } from '@mantine/dates';
+import { format12hourTo24hour } from '@/utils/date';
 
 const AlarmTab: React.FC = () => {
   const { states, dispatch } = useStore();
   const [alarmHour, setAlarmHour] = useState<number>(0);
   const [alarmMinute, setAlarmMinute] = useState<number>(0);
+  const [alreadySetAlarm, setAlreadySetAlarm] = useState<boolean>(false);
 
-  const generateCarouselItems = (maxValue: number, setValue: React.Dispatch<React.SetStateAction<number>>) => {
-    const items = Array.from({ length: maxValue + 1 }, (_, index) => index);
 
-    return items.map((item, index) => (
-      <div
-        key={index}
-        className='w-full h-full flex justify-center items-center'
-        onClick={() => setValue(item)}
-        style={{
-          cursor: 'pointer',
-        }}
-      >
-        <CustomText
-          text={item.toString().padStart(2, '0')}
-          className='font-medium !text-4xl select-none cursor-default'
-          style={{
-            color: states.Settings.settings.system.systemTextColor,
-          }}
-        />
-      </div>
-    ));
-  };
+  const ref = useRef<HTMLInputElement>(null);
+
+  const pickerControl = (
+    <ActionIcon variant="subtle" color="gray" onClick={() => ref.current?.showPicker()}>
+      <IconClock style={{ width: rem(16), height: rem(16) }} stroke={1.5} />
+    </ActionIcon>
+  );
+
+  useEffect(() => {
+    verifyIfAlarmIsSet();
+  }	, []);
+
+  const verifyIfAlarmIsSet = () => {
+    const alarm = localStorage.getItem('alarm');
+    if (alarm) {
+      const [hour, minute] = alarm.split(':');
+      setAlarmHour(parseInt(hour));
+      setAlarmMinute(parseInt(minute));
+      setAlreadySetAlarm(true);
+    }
+  }
 
   return (
     <div className='w-full h-full flex flex-col'>
@@ -42,104 +45,53 @@ const AlarmTab: React.FC = () => {
         }}
       >
         <div className='mr-2'>
-          <Carousel
-            slideSize='100%'
-            height={125}
-            orientation='vertical'
-            slideGap='xs'
-            dragFree
-            onSlideChange={setAlarmHour}
-            loop
-            previousControlIcon={
-              <IconChevronUp
-                size='25px'
-                style={{
-                  color: states.Settings.settings.system.systemTextColor,
-                }}
-              />
-            }
-            nextControlIcon={
-              <IconChevronDown
-                size='25px'
-                style={{
-                  color: states.Settings.settings.system.systemTextColor,
-                }}
-              />
-            }
-            withControls={true}
+          {
+            alreadySetAlarm && 
+            <CustomText
+              text={`You have already set an alarm for ${alarmHour}:${alarmMinute}`}
+              className='font-medium !text-xs'
+              style={{
+                color: states.Settings.settings.system.systemTextColor,
+              }}
+            />
+          }
+          <TimeInput
+            size='lg'
+            label='Select time (12h format): '
+            placeholder='Select time'
+            withSeconds={false}
+            className='outline-none'
+            ref={ref} 
+            onChange={(e) => {
+              verifyIfAlarmIsSet();
+              const [hour, minute] = e.target.value.split(':');
+              setAlarmHour(parseInt(hour));
+              setAlarmMinute(parseInt(minute));
+            }}
+            rightSection={pickerControl}
             styles={{
-              controls: {
-                height: 230,
-              },
-              control: {
-                marginBottom: 65,
-                marginTop: -40,
+              input: {
                 backgroundColor: states.Settings.settings.system.systemBackgroundColor,
                 color: states.Settings.settings.system.systemTextColor,
-                borderRadius: 4,
-                border: '1px solid rgba(255,255,255,0.1)',
-                width: 50,
-                marginLeft: -12.5,
               },
-            }}
-          >
-            {generateCarouselItems(23, setAlarmHour)}
-          </Carousel>
-        </div>
-        <Divider orientation='vertical' h={150} mt={50} color='rgba(255, 255, 255, 0.2)' />
-        <div className='ml-2'>
-          <Carousel
-            slideSize='100%'
-            height={125}
-            orientation='vertical'
-            slideGap='xs'
-            onSlideChange={setAlarmMinute}
-            dragFree
-            loop
-            previousControlIcon={
-              <IconChevronUp
-                size='25px'
-                style={{
-                  color: states.Settings.settings.system.systemTextColor,
-                }}
-              />
-            }
-            nextControlIcon={
-              <IconChevronDown
-                size='25px'
-                style={{
-                  color: states.Settings.settings.system.systemTextColor,
-                }}
-              />
-            }
-            withControls={true}
-            styles={{
-              controls: {
-                height: 230,
-              },
-              control: {
-                marginBottom: 65,
-                marginTop: -40,
-                backgroundColor: states.Settings.settings.system.systemBackgroundColor,
+              label: {
                 color: states.Settings.settings.system.systemTextColor,
-                borderRadius: 4,
-                border: '1px solid rgba(255,255,255,0.1)',
-                width: 50,
-                marginLeft: -12.5,
               },
+              error: {
+                color: states.Settings.settings.system.systemTextColor,
+              },
+
             }}
-          >
-            {generateCarouselItems(59, setAlarmMinute)}
-          </Carousel>
+          />
         </div>
       </div>
-      <div className='w-full h-1/3 flex justify-center items-center'>
+      <div className='w-full h-1/3 flex justify-center items-center -mt-12'>
         <Button
           color={states.Settings.settings.system.systemTextColor}
           onClick={() => {
-            const formattedAlarmHour = alarmHour.toString().padStart(2, '0');
-            const formattedAlarmMinute = alarmMinute.toString().padStart(2, '0');
-            localStorage.setItem('alarm', `${formattedAlarmHour}:${formattedAlarmMinute}`);
+            
+            localStorage.setItem('alarm', `${alarmHour}:${alarmMinute}`);
+            // localStorage.setItem('alarm', `${formattedAlarmHour}:${formattedAlarmMinute}`);
           }}
         >
           <CustomText
