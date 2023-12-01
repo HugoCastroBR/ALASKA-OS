@@ -16,7 +16,7 @@ const ClockApp = ({
 }:programProps) => {
 
 
-  const {states, dispatch} = useStore()
+  const {states} = useStore()
   
   const iconStyle = { 
     width: rem(24),

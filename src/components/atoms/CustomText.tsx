@@ -1,5 +1,5 @@
-import useSettings from '@/hooks/useSettings'
-import React, { useEffect } from 'react'
+import useStore from '@/hooks/useStore'
+import React from 'react'
 
 
 interface CustomTextProps {
@@ -15,11 +15,8 @@ const CustomText = ({
   onClick,
 }:CustomTextProps) => {
 
-  const {settings} = useSettings()
-  const [defaultSystemTextColor, setDefaultSystemTextColor] = React.useState(settings?.system?.systemTextColor)
-  useEffect(() => {
-    setDefaultSystemTextColor(settings?.system?.systemTextColor)
-  },[settings?.system?.systemTextColor])
+  const {states} = useStore()
+
 
   if(!style){
     return (
@@ -28,7 +25,7 @@ const CustomText = ({
       ${className}
       `}
       style={{
-        color: defaultSystemTextColor
+        color: states.Settings.settings.system.systemTextColor
       }}
       onClick={onClick}
       >

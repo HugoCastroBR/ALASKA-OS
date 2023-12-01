@@ -19,7 +19,7 @@ const TaskItem = ({
   removeTask,
 }: Props) => {
 
-  const {states, dispatch} = useStore()
+  const {states} = useStore()
 
   const [isHovered, setIsHovered] = React.useState(false)
   const [isOpen, setIsOpen] = React.useState(false)

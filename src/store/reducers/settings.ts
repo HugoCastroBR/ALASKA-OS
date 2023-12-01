@@ -12,14 +12,14 @@ export const SettingsSlice = createSlice({
         hideSoundController: false,
         backgroundColor: "transparent",
         items: {
-          color: "black",
+          color: "white",
           backgroundColor: "transparent",
         }
       },
       desktop: {
         backgroundColor: "transparent",
         desktopIcon:{
-          textColor: "black",
+          textColor: "white",
         
       
         },
@@ -29,11 +29,11 @@ export const SettingsSlice = createSlice({
         }
       },
       startMenu: {
-        background: 'rgba(200, 200, 255, 0.5)',
+        background: 'rgba(24, 171, 255, 0.1)',
         ordered: true,
         textColor: "black",
         searchInput : {
-          disabled: false,
+          disabled: true,
           background: "white",
           textColor: "black"
         }
@@ -45,8 +45,8 @@ export const SettingsSlice = createSlice({
         }
       },
       system: {
-        systemBackgroundColor: "white",
-        systemHighlightColor: "white",
+        systemBackgroundColor: "rgba(24, 171, 255, 0.5)",
+        systemHighlightColor: "rgba(123, 215, 232, 0.7  )",
         systemTextColor: "black",
         clock: {
           disabled: false,

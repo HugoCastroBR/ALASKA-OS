@@ -1,8 +1,9 @@
-import React, { useState } from 'react'
-import { IconPhoto, IconMessageCircle, IconSettings, IconFolder, IconArrowBack, IconAbc, IconTrash, IconReload } from '@tabler/icons-react';
-import { Breadcrumbs, Button, rem, Tabs } from '@mantine/core';
+import React from 'react'
+import {  IconSettings, IconFolder, IconArrowBack, IconReload } from '@tabler/icons-react';
+import { rem, Tabs } from '@mantine/core';
 import CustomText from '../atoms/CustomText';
 import { explorerActionBarProps } from '@/types/programs';
+import useStore from '@/hooks/useStore';
 const ExplorerActionBar = ({
   path,
   onBack,
@@ -10,7 +11,8 @@ const ExplorerActionBar = ({
 }:explorerActionBarProps) => {
 
   const iconStyle = { width: rem(20), height: rem(20), };
-
+  
+  const {states} = useStore()
 
   return (
     <Tabs variant="outline" radius="xs" defaultValue="Directory" styles={{
@@ -43,13 +45,13 @@ const ExplorerActionBar = ({
       <Tabs.List>
         <Tabs.Tab  value="Directory" leftSection={<IconFolder  color='white' style={iconStyle} />}>
           <CustomText
-            className='text-white text-base'
+            className='text-base'
             text='Directory'
           />
         </Tabs.Tab>
         <Tabs.Tab value="settings" disabled leftSection={<IconSettings color='white' style={iconStyle} />}>
         <CustomText
-            className='text-white text-base'
+            className=' text-base'
             text='Settings'
           />
         </Tabs.Tab>
@@ -83,8 +85,12 @@ const ExplorerActionBar = ({
         </div>
         <div className=' flex w-10/12 items-center p-2 pb-4 mt-2'>
           <CustomText
-            className='text-white text-base'
+            className='text-base'
             text={path}
+            style={{
+              color: states.Settings.settings.system.systemTextColor || 'white'
+            
+            }}
           />
         </div>
       </div>

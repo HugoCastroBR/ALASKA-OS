@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect, useState } from "react"
+import React, { useState } from "react"
 import Image from "next/image"
 import useStore from "@/hooks/useStore"
 import useFS from "@/hooks/useFS"
@@ -18,12 +18,9 @@ const NewDirFileItem = ({
   const { states, dispatch } = useStore()
   const [inputValue, setInputValue] = useState('')
 
-
-
   return (
     <>
       <div
-
         className={`
         h-24 px-4
         flex flex-col justify-evenly items-center cursor-pointer
@@ -50,9 +47,7 @@ const NewDirFileItem = ({
               })
             }
           }}
-
         />
-
       </div>
     </>
   )

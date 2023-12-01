@@ -7,7 +7,6 @@ import { useEffect, useState } from "react"
 import useStore from "@/hooks/useStore"
 
 
-
 const MusicItem = ({
   music,
   index,
@@ -15,10 +14,9 @@ const MusicItem = ({
 }: MusicItemProps) => {
 
   const [seconds, setSeconds] = useState<number>(0)
-  const [currentPlaying, setCurrentPlaying] = useState<boolean>(false)
   
 
-  const {states, dispatch} = useStore()
+  const {states} = useStore()
 
   const handlerLoadSeconds = async () => {
     if(!music.musicFile) return
@@ -35,12 +33,8 @@ const MusicItem = ({
     <div
       className={`w-full h-16 flex justify-start items-center my-1 cursor-pointer
     hover:bg-slate-200 transition-all duration-300 ease-in-out
-    ${currentPlaying ? 'bg-slate-100' : ''}
     `}
       onClick={() => {
-
-        
-
         onClick && onClick({
           uuid: uuid(6),
           title: music.title,
@@ -70,15 +64,10 @@ const MusicItem = ({
         />
       </div>
       <div className='h-full w-8 flex justify-center items-end'>
-        {currentPlaying ?
-          <span className='i-mdi-volume-high text-xl text-slate-600 mb-1 cursor-pointer' />
-          :
           <CustomText
             text={secondsToMinutes(seconds)}
             className='text-xs mb-px'
           />
-        }
-
       </div>
     </div>
   )

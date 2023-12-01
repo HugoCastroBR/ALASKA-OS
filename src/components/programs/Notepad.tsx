@@ -1,7 +1,6 @@
 'use client'
 import React, { useEffect, useState } from 'react'
 import useFS from '@/hooks/useFS'
-import useStore from '@/hooks/useStore'
 import { Button, Divider } from '@mantine/core'
 import CustomText from '../atoms/CustomText'
 import { extractParentPath, getExtension, removeExtension } from '@/utils/file'

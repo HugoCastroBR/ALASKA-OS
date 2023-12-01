@@ -1,8 +1,7 @@
 'use client'
 import React from 'react'
-import { MantineProvider, Button, Group, createTheme, Loader } from '@mantine/core';
+import { MantineProvider, Button, createTheme, Loader } from '@mantine/core';
 import RingLoader from '@/components/atoms/RingLoader';
-import useStore from '@/hooks/useStore';
 
 
 interface ThemeProvidersProps {
@@ -30,7 +29,6 @@ const ThemeProviders = (
   { children }: ThemeProvidersProps
 ) => {
 
-  const {states, dispatch} = useStore()
 
   return (
       <MantineProvider theme={theme}>

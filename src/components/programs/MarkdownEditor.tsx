@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react'
 import DefaultWindow from '../containers/DefaultWindow'
 import MDEditor, { selectWord } from "@uiw/react-md-editor";
 import { removeExtension, extractParentPath, getExtension } from '@/utils/file';
-import { Button, Divider } from '@mantine/core';
+import { Button } from '@mantine/core';
 import CustomText from '../atoms/CustomText';
 import AppTaskMenu from '../molecules/AppTaskMenu';
 import useFS from '@/hooks/useFS';

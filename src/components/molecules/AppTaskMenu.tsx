@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 import CustomText from '../atoms/CustomText'
 import useStore from '@/hooks/useStore'
 
@@ -21,7 +21,7 @@ const AppTaskMenu = ({
 }) => {
 
 
-  const { states, dispatch } = useStore()
+  const { states } = useStore()
   const [isFileMenuOpen, setIsFileMenuOpen] = React.useState(false)
   const [isCodeMenuOpen, setIsCodeMenuOpen] = React.useState(false)
   

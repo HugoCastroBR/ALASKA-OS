@@ -3,7 +3,6 @@ import { ImageReaderProps } from '@/types/programs'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../atoms/CustomText'
 import useFS from '@/hooks/useFS'
-import useStore from '@/hooks/useStore'
 import NextImageRender from '../atoms/NextImageRender'
 import DefaultWindow from '../containers/DefaultWindow'
 
@@ -15,7 +14,6 @@ const ImageReader = ({
 
 
   const [image, setImage] = useState<string | null>(null)
-  const {states, dispatch} = useStore()
   const [width, setWidth] = useState<number>(0)
   const [height, setHeight] = useState<number>(0)
   const [margin, setMargin] = useState<number>(0)

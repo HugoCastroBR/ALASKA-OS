@@ -1,7 +1,7 @@
 'use client'
 
 import React, { useEffect, useState } from "react"
-import { extractParentPath, getLastPathSegment, uuid } from "@/utils/file"
+import { extractParentPath, getLastPathSegment } from "@/utils/file"
 import Image from "next/image"
 import CustomText from "../atoms/CustomText"
 import useStore from "@/hooks/useStore"
