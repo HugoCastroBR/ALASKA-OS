@@ -35,6 +35,7 @@ import WeatherApp from '../programs/WeatherApp';
 import TodoApp from '../programs/TodoApp';
 import ClockApp from '../programs/ClockApp';
 import CustomText from '../atoms/CustomText';
+import FileExplorer from '../programs/FileExplorer';
 
 const DesktopView = () => {
 
@@ -476,7 +477,7 @@ const DesktopView = () => {
         }
       >
 
-        
+        <FileExplorer/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

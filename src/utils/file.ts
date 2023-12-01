@@ -24,6 +24,25 @@ export const convertSizeToKBMBGB = (size: number) => {
 
   return `${size} B`;
 }
+export const convertSizeToKBMBGBExtended = (size: number) => {
+  const kb = 1024;
+  const mb = kb * 1024;
+  const gb = mb * 1024;
+
+  if (size >= gb) {
+    return `${(size / gb).toFixed(2)} Gigabytes`;
+  }
+
+  if (size >= mb) {
+    return `${(size / mb).toFixed(2)} Megabytes`;
+  }
+
+  if (size >= kb) {
+    return `${(size / kb).toFixed(2)} Kilobytes`;
+  }
+
+  return `${size} Bytes`;
+}
 
 export const uuid = (length: number) => {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -374,3 +393,12 @@ export const encodedBase64ToArrayBuffer = (base64: string) => {
 
   return bytes.buffer;
 };
+
+export function isFile(item: any): item is File {
+  return item instanceof File;
+}
+
+export const fileToBase64 = async (file: File):Promise<string> => {
+  const base64 = await toBase64(file);
+  return base64 as unknown as string;
+}

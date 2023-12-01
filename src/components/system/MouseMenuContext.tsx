@@ -51,7 +51,7 @@ const MouseMenuContext = ({
         className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}
         text-white text-sm flex items-center 
         transition-all duration-300 ease-in-out cursor-pointer 
-        w-48 h-8 -ml-1 p-2
+        w-48 h-8 -ml-1 px-2 py-1
         `}
         style={{
           backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : 'transparent',
@@ -517,6 +517,18 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionClearSelectedFiles = () => {
+    return (
+      <MouseOption
+        title='Clear Selection'
+        disabled={states.File.selectedFiles.length < 1}
+        onClick={() => {
+          dispatch(ClearFiles())
+        }}
+        className='i-mdi-close'
+      />
+    )
+  }
   
 
   return (
@@ -538,6 +550,7 @@ const MouseMenuContext = ({
       
       <MouseOptionCopy />
       <MouseOptionPaste />
+      <MouseOptionClearSelectedFiles />
       <MouseOptionOpenWith />
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
