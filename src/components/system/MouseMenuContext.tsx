@@ -54,7 +54,7 @@ const MouseMenuContext = ({
         w-48 h-8 -ml-1 p-2
         `}
         style={{
-          backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : states.Settings.settings.system.systemBackgroundColor,
+          backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : 'transparent',
         }}
       >
         <span className={`${className} text-lg`}></span>
@@ -516,6 +516,8 @@ const MouseMenuContext = ({
       />
     )
   }
+
+  
 
   return (
     <div

@@ -16,7 +16,6 @@ const CalendarProgram = ({
       uuid={tab.uuid}
       resizable
       onClose={() => { }}
-      onMaximize={() => { }}
       onMinimize={() => { }}
       className="w-80 h-80"
     >

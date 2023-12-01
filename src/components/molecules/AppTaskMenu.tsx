@@ -27,7 +27,7 @@ const AppTaskMenu = ({
   
 
   return (
-    <div className='flex h-6 absolute w-full top-8 items-center z-30'
+    <div className='sticky flex h-6  w-full  items-center z-30'
       style={{
         backgroundColor: states.Settings?.settings.system?.systemBackgroundColor || 'rgba(0, 0, 0, 0.2)'
       }}

@@ -35,7 +35,6 @@ const ClockApp = ({
       uuid={tab.uuid}
       onClose={() => {}}
       onMinimize={() => {}}
-      onMaximize={() => {}}
     >
       <div className='w-full h-full'
         style={{

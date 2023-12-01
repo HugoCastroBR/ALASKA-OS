@@ -134,7 +134,7 @@ const Notepad = ({
           }}
           className='
           w-full h-full bg-white flex flex-col
-          outline-none mt-6
+          outline-none
           '
         />
 

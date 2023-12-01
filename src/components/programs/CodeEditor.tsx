@@ -219,7 +219,7 @@ const CodeEditor = ({
             setConsoleOpen(!consoleOpen)
           }}
         />
-        <div className='w-full h-full mt-6 flex flex-col'>
+        <div className='w-full h-full  flex flex-col'>
           <Editor
             height={`${consoleOpen ? '67%' : '100%'}`}
             language={language}

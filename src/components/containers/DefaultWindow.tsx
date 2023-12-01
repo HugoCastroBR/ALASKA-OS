@@ -81,10 +81,10 @@ const DefaultWindow = ({
         flex flex-col  overflow-hidden
         rounded-lg 
         ${currentTab?.minimized ? 'hidden' : ''}
+        ${currentTab?.maximized ? '!top-0 !left-0' : ''}
         ${currentTab?.maximized ? '!w-full !h-[calc(96%)] rounded-none ' : ''}
         ${currentTab?.maximized ? '' : 'backdrop-filter backdrop-blur-sm shadow-2xl'}
         ${currentTab?.focused ? 'z-30' : 'z-20'}
-        ${currentTab?.maximized ? '!top-0 !left-0' : ''}
         ${resizable && !currentTab?.maximized ? 'hover:resize' : ''}
         ${className}`}
         style={{
@@ -93,8 +93,9 @@ const DefaultWindow = ({
       >
         <div
           className={`
-          w-full h-8 bg-slate-50 bg-opacity-50 backdrop-filter backdrop-blur-sm
-          flex items-center justify-between px-2 cursor-move handle${currentTab.uuid} fixed z-20
+          sticky top-0 left-0
+          w-full h-10 bg-slate-50 bg-opacity-50 backdrop-filter backdrop-blur-sm
+          flex items-center justify-between px-2 cursor-move handle${currentTab.uuid} z-20
           `}
           style={{
             backgroundColor: states.Settings.settings.windowTopBar.color || 'transparent',
@@ -115,7 +116,7 @@ const DefaultWindow = ({
           />
           <div className='flex justify-end items-center'>
             {
-              onMinimize &&
+              onMinimize ?
               <span
                 onClick={() => {
                   MinimizeTab()
@@ -128,9 +129,18 @@ const DefaultWindow = ({
                 color: states.Settings.settings.windowTopBar.items.color || 'white',
               }}
               />
+              :
+              <span
+                className='i-mdi-minus text-2xl filter brightness-95
+              mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
+              '
+              style={{
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
+              }}
+              />
             }
             {
-              onMaximize &&
+              onMaximize ?
               <span
                 onClick={() => {
                   MaximizeTab()
@@ -143,9 +153,18 @@ const DefaultWindow = ({
                 color: states.Settings.settings.windowTopBar.items.color || 'white',
               }}
               />
+              :
+              <span
+                className='i-mdi-window-maximize text-2xl filter brightness-95
+              mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
+              '
+              style={{
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
+              }}
+              />
             }
             {
-              onClose &&
+              onClose ?
               <span
                 onClick={() => {
                   CloseTab()
@@ -153,6 +172,15 @@ const DefaultWindow = ({
                 }}
                 className='i-mdi-close text-2xl
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
+              '
+              style={{
+                color: states.Settings.settings.windowTopBar.items.color || 'white',
+              }}
+              />
+              :
+              <span
+                className='i-mdi-close text-2xl filter brightness-95
+              mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
               '
               style={{
                 color: states.Settings.settings.windowTopBar.items.color || 'white',
@@ -171,7 +199,7 @@ const DefaultWindow = ({
             }))
           }
         }
-        className='w-full h-full pt-8'>
+        className='w-full h-full'>
           {children}
         </div>
       </section>

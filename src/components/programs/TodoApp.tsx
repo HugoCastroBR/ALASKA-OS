@@ -583,7 +583,6 @@ const TodoApp = ({
       uuid={tab.uuid}
       resizable
       onClose={() => {}}
-      onMaximize={() => {}}
       onMinimize={() => {}}
     >
       <div

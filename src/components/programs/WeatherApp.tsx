@@ -172,7 +172,6 @@ const WeatherApp = ({
       uuid={tab.uuid}
       title={window.title}
       onClose={() => {}}
-      onMaximize={() => {}}
       onMinimize={() => {}}
     >
       <div className='w-full h-full flex flex-col'>

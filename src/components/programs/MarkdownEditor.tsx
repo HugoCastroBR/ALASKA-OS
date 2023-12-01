@@ -130,7 +130,7 @@ const MarkdownEditor = ({
           }}
         />
 
-        <div data-color-mode="light" className='w-full h-full !z-10 mt-6'>
+        <div data-color-mode="light" className='w-full h-full !z-10'>
           <MDEditor style={{ zIndex: 1 }} className='w-full h-full !z-10' height={'100%'} value={content} onChange={(content) => {
             setContent(content || '')
           }} />

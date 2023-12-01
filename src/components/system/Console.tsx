@@ -175,7 +175,6 @@ const Console = ({
       )}
           <div className='flex w-full h-8 items-center'
           style={{
-            backgroundColor: states.Settings.settings.system.systemBackgroundColor,
             color: states.Settings.settings.system.systemTextColor
           }}
           >
