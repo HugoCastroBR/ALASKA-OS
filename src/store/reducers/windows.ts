@@ -11,9 +11,15 @@ export const WindowsSlice = createSlice({
         tabs: [] as tabStateProps[],
         showOnDesktop: true
       },
+      // {
+      //   title: "Explorer",
+      //   icon: "/assets/icons/folder.png",
+      //   tabs: [] as tabStateProps[],
+      //   showOnDesktop: false
+      // },
       {
-        title: "Explorer",
-        icon: "/assets/icons/folder.png",
+        title: 'File Explorer',
+        icon: '/assets/icons/folder.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
       },
@@ -136,7 +142,8 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/clock.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
-      }
+      },
+
     ] as windowStateProps[]
   
   },    

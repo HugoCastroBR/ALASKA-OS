@@ -402,3 +402,4 @@ export const fileToBase64 = async (file: File):Promise<string> => {
   const base64 = await toBase64(file);
   return base64 as unknown as string;
 }
+

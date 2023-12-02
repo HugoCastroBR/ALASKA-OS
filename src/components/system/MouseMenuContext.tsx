@@ -20,7 +20,7 @@ const MouseMenuContext = ({
 
 
   const { states, dispatch } = useStore()
-  const { fs } = useFS()
+  const { fs, deleteFileByPath } = useFS()
   const MouseOption = ({
     className,
     title,
@@ -77,26 +77,20 @@ const MouseMenuContext = ({
         onClick={() => {
           states.File.selectedFiles.forEach((item) => {
             if (verifyIfIsFile(item)) {
-              fs?.unlink(item, (err) => {
-                if (err) {
-                  fs?.rmdir(item, (err) => {
-                    if (err) console.log(err)
-                    console.log('deleted folder');
-                  })
-                } else {
-                  console.log('deleted file');
-                }
-
-              })
+              deleteFileByPath(item)
             } else {
               fs?.rmdir(item, (err) => {
                 if (err) {
                   fs?.unlink(item, (err) => {
                     if (err) console.log(err)
                     console.log('deleted file');
+                    dispatch(ClearFiles())
+
                   })
                 } else {
                   console.log('deleted folder');
+                  dispatch(ClearFiles())
+
                 }
 
 
@@ -189,6 +183,7 @@ const MouseMenuContext = ({
                   fs?.writeFile(`${"/Desktop"}/${getLastPathSegment(file)}`, data, (err) => {
                     if (err) console.log(err)
                     console.log('copied');
+                    dispatch(ClearFiles())
                   })
                 })
               }
@@ -196,6 +191,8 @@ const MouseMenuContext = ({
                 fs?.mkdir(`${"/Desktop"}/${getLastPathSegment(file)}`, (err: ApiError) => {
                   if (err) console.log(err)
                   console.log('copied');
+                  dispatch(ClearFiles())
+
                 })
               }
             })
@@ -208,6 +205,8 @@ const MouseMenuContext = ({
                 fs?.writeFile(`${pasteTo}/${getLastPathSegment(file)}`, data, (err) => {
                   if (err) console.log(err)
                   console.log('copied');
+                  dispatch(ClearFiles())
+
                 })
               })
             }
@@ -215,6 +214,8 @@ const MouseMenuContext = ({
               fs?.mkdir(`${pasteTo}/${getLastPathSegment(file)}`, (err: ApiError) => {
                 if (err) console.log(err)
                 console.log('copied');
+                dispatch(ClearFiles())
+
               })
             }
           })

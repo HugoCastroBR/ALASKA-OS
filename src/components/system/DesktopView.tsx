@@ -5,12 +5,11 @@ import Console from './Console';
 import useStore from '@/hooks/useStore';
 import { desktopPath } from '@/utils/constants';
 import useFS from '@/hooks/useFS';
-import { getExtension, uuid, verifyIfIsFile, verifyIfIsImage, wait } from '@/utils/file';
+import { getExtension, uuid, verifyIfIsFile} from '@/utils/file';
 import DesktopFile from '../molecules/DesktopFile';
 import { generateIcon } from '@/utils/icons';
 import DesktopFolder from '../molecules/DesktopFolder';
-import Explorer from '../programs/Explorer';
-import { ClearFiles, ClearNotification, SetIsSystemLoaded, WindowAddTab } from '@/store/actions';
+import { ClearFiles, ClearNotification, SetMouseInDesktop, SetMousePath, WindowAddTab } from '@/store/actions';
 import Browser from '../programs/Browser';
 import ImageReader from '../programs/ImageReader';
 import PokemonFireRed from '../Games/PokemonFireRed';
@@ -36,12 +35,13 @@ import TodoApp from '../programs/TodoApp';
 import ClockApp from '../programs/ClockApp';
 import CustomText from '../atoms/CustomText';
 import FileExplorer from '../programs/FileExplorer';
+import { ImageReaderProps } from '@/types/programs';
 
 const DesktopView = () => {
 
 
   const {states, dispatch} = useStore()
-  const { fs } = useFS()
+  const { fs,copyExternalFile,moveFileByPath } = useFS()
 
   const [desktopItems, setDesktopItems] = React.useState<string[]>([]);
 
@@ -68,287 +68,60 @@ const DesktopView = () => {
   },[fs,states.Windows, states.File,states.Mouse])
 
   
-  const generateGrid = () => {
-    const grid = []
-    for(let i = 0; i < 140; i++){
-      grid.push(
-      <div 
-        key={i}
-        className='
-        h-28 w-24 border border-slate-100 border-opacity-40
-        flex flex-col justify-evenly items-center
-        hover:bg-gray-600 transition-all duration-300 ease-in-out
-        '>
-          {i +1}
-        </div>
-      )
-    }
-    return grid
-  }
-
-  const handleRenderTabs = () => {
-    return states.Windows.windows.map((window, index) => {
-      return window.tabs.map((tab, index) => {
-        switch (tab.title) {
-          case 'Console':
-            return(
-              <Console
-              key={index}
-              tab={tab}
-              window={window}
-            />
-            )
-          case 'Explorer':
-            return(
-              <Explorer
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Browser':
-            return(
-              <Browser
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Image Reader':
-            return(
-              <ImageReader
-                key={index}
-                tab={tab}
-                path={tab.value || ''}
-                window={window}
-              />
-            )
-          case 'Pokemon Fire Red':
-            return(
-              <PokemonFireRed
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Notepad':
-              return(
-                <Notepad
-                  key={index}
-                  tab={tab}
-                  window={window}
-                />
-              )
-          case 'Markdown Editor':
-            return(
-              <MarkdownEditor
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Rich Text Editor':
-            return(
-              <RichTextEditor
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'PDF Reader':
-            return (
-              <PdfReader
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Code Editor':
-            return(
-              <CodeEditor
-              key={index}
-              tab={tab}
-              window={window}
-            />
-            )
-          case 'Calendar':
-            return(
-              <CalendarProgram
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'My Musics':
-            return(
-              <MyMusics
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Video Player':
-            return(
-              <VideoPlayer
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Calculator':
-            return(
-              <Calculator
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Classic Paint':
-            return(
-              <ClassicPaint
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Music Player':
-            return(
-              <NativeMusicPlayer
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'SpreadSheet':
-            return(
-              <SpreadSheet
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Settings':
-            return(
-              <Settings
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Gallery':
-            return(
-              <Gallery
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Weather App':
-            return(
-              <WeatherApp
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Todo App':
-            return(
-              <TodoApp
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          case 'Clock App':
-            return(
-              <ClockApp
-                key={index}
-                tab={tab}
-                window={window}
-              />
-            )
-          default:
-            return (<></>)
-        }
-      })
-    })
-  }
+  // const generateGrid = () => {
+  //   const grid = []
+  //   for(let i = 0; i < 140; i++){
+  //     grid.push(
+  //     <div 
+  //       key={i}
+  //       className='
+  //       h-28 w-24 border border-slate-100 border-opacity-40
+  //       flex flex-col justify-evenly items-center
+  //       hover:bg-gray-600 transition-all duration-300 ease-in-out
+  //       '>
+  //         {i +1}
+  //       </div>
+  //     )
+  //   }
+  //   return grid
+  // }
 
 
-
-
-
-  const handlerUploadTXTToDesktop = async (file: File) => {
-    const reader = new FileReader();
-    reader.onload = async (e) => {
-      const text = (e.target?.result || '').toString();
-      const fileName = file.name;
-      console.log(text, fileName);
-      fs?.writeFile(`${desktopPath}/${fileName}`, text, (err) => {
-        if (err) throw err;
-        console.log('File Saved!');
-        reloadDesktop()
-      })
-      
-    };
-    reader.readAsText(file);
-  }
-
-  const handlerUploadImageToDesktop = async (file: File) => {
-
-    const fileContent = await file.arrayBuffer()
-    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-    
-    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
-      if (err) throw err;
-      console.log('File Saved!');
-      reloadDesktop()
-    })
+  const COMPONENT_MAP: Record<string, React.FC<ImageReaderProps>> = {
+    'Console': Console,
+    'File Explorer': FileExplorer,
+    'Browser': Browser,
+    'Image Reader': ImageReader,
+    'Pokemon Fire Red': PokemonFireRed,
+    'Notepad': Notepad,
+    'Markdown Editor': MarkdownEditor,
+    'Rich Text Editor': RichTextEditor,
+    'PDF Reader': PdfReader,
+    'Code Editor': CodeEditor,
+    'Calendar': CalendarProgram,
+    'My Musics': MyMusics,
+    'Video Player': VideoPlayer,
+    'Calculator': Calculator,
+    'Classic Paint': ClassicPaint,
+    'Music Player': NativeMusicPlayer,
+    'SpreadSheet': SpreadSheet,
+    'Settings': Settings,
+    'Gallery': Gallery,
+    'Weather App': WeatherApp,
+    'Todo App': TodoApp,
+    'Clock App': ClockApp,
   };
+  
+  const handleRenderTabs = () => {
+    return states.Windows.windows.map((window) => {
+      return window.tabs.map((tab) => {
+        const Component = COMPONENT_MAP[tab.title];
+        return Component ? <Component key={tab.uuid} tab={tab} window={window} path={tab.value || ''} /> : null;
+      });
+    });
+  };
+  
 
-  const handlerUploadPDFToDesktop = async (file: File) => {
-    const fileContent = await file.arrayBuffer()
-    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-    
-    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
-      if (err) throw err;
-      console.log('File Saved!');
-      reloadDesktop()
-    })
-  }
-
-  const handlerUploadMp4ToDesktop = async (file: File) => {
-    const fileContent = await file.arrayBuffer()
-    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-    
-    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
-      if (err) throw err;
-      console.log('File Saved!');
-      reloadDesktop()
-    })
-  }
-
-  const handlerUploadMusicToDesktop = async (file: File) => {
-    const fileContent = await file.arrayBuffer()
-    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-    
-    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
-      if (err) throw err;
-      console.log('File Saved!');
-      reloadDesktop()
-    })
-  }
-
-  const handleGeneralUploadToDesktop = async (file: File) => {
-    const fileContent = await file.arrayBuffer()
-    const fileContentBase64 = Buffer.from(fileContent).toString('base64')
-    
-    fs?.writeFile(`${desktopPath}/${file.name}`, fileContentBase64, (err) => {
-      if (err) throw err;
-      console.log('File Saved!');
-      reloadDesktop()
-    })
-  }
 
 
   const [isRightMenuOpen, setIsRightMenuOpen] = React.useState(false)
@@ -439,33 +212,26 @@ const DesktopView = () => {
       <Dropzone 
         disabled={!states.Mouse.mouseInDesktop}
         onDrop={(files) => {
+          console.log('drop Desktop')
           if(!states.Mouse.mouseInDesktop) return
           if(states.File.selectedFiles.length > 0){
+            states.File.selectedFiles.forEach((path) => {
+              console.log(path)
+              moveFileByPath(path, desktopPath)
+              reloadDesktop()
+            })
             return
           }else{
             files.forEach((file) => {
-              if(getExtension(file.name) === 'txt'){
-                handlerUploadTXTToDesktop(file)
-              }
-              if(verifyIfIsImage(file.name)){
-                handlerUploadImageToDesktop(file)
-              }
-              if(getExtension(file.name) === 'pdf'){
-                handlerUploadPDFToDesktop(file)
-              }
-              if(getExtension(file.name) === 'mp4'){
-                handlerUploadMp4ToDesktop(file)
-              }
-              if(getExtension(file.name) === 'mp3' || getExtension(file.name) === 'wav'){
-                handlerUploadMusicToDesktop(file)
-              }else{
-                handleGeneralUploadToDesktop(file)
-              }
+              copyExternalFile(file, desktopPath)
+              reloadDesktop()
             })
           }
         }}
         className='w-full h-full flex justify-start items-start flex-wrap'
         onClick={(e) => {
+          dispatch(SetMouseInDesktop(true));
+          dispatch(SetMousePath(''));
           e.stopPropagation()
           setIsRightMenuOpen(false)
         }}
@@ -477,7 +243,6 @@ const DesktopView = () => {
         }
       >
 
-        <FileExplorer/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
@@ -531,10 +296,10 @@ const DesktopView = () => {
                   <DesktopFolder
                   onDoubleClick={() => {
                     dispatch(WindowAddTab({
-                      title: 'Explorer',
+                      title: 'File Explorer',
                       tab: {
                         uuid: uuid(6),
-                        title: 'Explorer',
+                        title: 'File Explorer',
                         maximized: false,
                         minimized: false,
                         value: `${desktopPath}/${item}`

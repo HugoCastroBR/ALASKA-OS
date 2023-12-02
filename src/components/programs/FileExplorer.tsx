@@ -4,28 +4,43 @@ import React, { useEffect, useState } from 'react'
 import CustomText from '../atoms/CustomText'
 import { convertSizeToKBMBGBExtended, extractParentPath, getExtension, verifyIfIsFile } from '@/utils/file'
 import { Dropzone } from '@mantine/dropzone'
-import { SetMouseInDesktop, SetMousePath } from '@/store/actions'
+import { ClearFiles, SetMouseInDesktop, SetMousePath } from '@/store/actions'
 import useFS from '@/hooks/useFS'
 import DesktopFile from '../molecules/DesktopFile'
 import DesktopFolder from '../molecules/DesktopFolder'
 import { generateIcon } from '@/utils/icons'
 import { HistoryPathProps } from '@/types/system'
+import NewDirFileItem from '../molecules/NewDirFileItem'
+import NewDirFolderItem from '../molecules/NewDirFolderItem'
+import { programProps } from '@/types/programs'
+import DefaultWindow from '../containers/DefaultWindow'
 
 
 
-const FileExplorer = () => {
+const FileExplorer = ({
+  tab,
+  window
+}: programProps) => {
 
   const { states, dispatch } = useStore()
-  const { fs, copyFileByPath,copyExternalFile } = useFS()
+  const { fs, copyFileByPath, copyExternalFile, moveFileByPath } = useFS()
+  const [currentPath, setCurrentPath] = useState<string>(tab.value || '/')
 
-  const [pathHistory, setPathHistory] = useState<HistoryPathProps[]>([{
-    title: 'C:',
-    path: '/'
-  }])
+  const [pathHistory, setPathHistory] = useState<HistoryPathProps[]>(currentPath.replaceAll('//', '/').split('/').map((p, index) => {
+    if (index === 0) {
+      return {
+        title: 'C:',
+        path: '/'
+      }
+    }
+    return {
+      title: `${p.replaceAll('/', '')}`,
+      path: currentPath.split('/').slice(0, index + 2).join('/')
+    }
+  }))
   const [totalItems, setTotalItems] = useState<number>(0)
   const [totalSelectedItems, setTotalSelectedItems] = useState<number>(0)
   const [totalBytes, setTotalBytes] = useState<number>(0)
-  const [currentPath, setCurrentPath] = useState<string>('/')
   const [draggedItemsCount, setDraggedItemsCount] = useState(0);
   const [paths, setPaths] = useState<string[]>([])
   const [searchValue, setSearchValue] = useState<string>('')
@@ -42,7 +57,7 @@ const FileExplorer = () => {
     console.log('change path: ', path)
 
     setPathHistory(path.replaceAll('//', '/').split('/').map((p, index) => {
-      if(index === 0){
+      if (index === 0) {
         return {
           title: 'C:',
           path: '/'
@@ -55,6 +70,10 @@ const FileExplorer = () => {
     }))
     setCurrentPath(path)
   }
+
+  useEffect(() => {
+    refresh()
+  }, [fs, currentPath, states.File, states.Mouse])
 
   const refresh = () => {
     fs?.readdir(currentPath, (err, files) => {
@@ -78,6 +97,18 @@ const FileExplorer = () => {
         }
         if (files) {
           setPaths(files)
+          setPathHistory(currentPath.replaceAll('//', '/').split('/').map((p, index) => {
+            if (index === 0) {
+              return {
+                title: 'C:',
+                path: '/'
+              }
+            }
+            return {
+              title: `${p.replaceAll('/', '')}`,
+              path: currentPath.split('/').slice(0, index + 2).join('/')
+            }
+          }))
         }
         setTotalItems(files?.length || 0)
       })
@@ -161,14 +192,11 @@ const FileExplorer = () => {
 
   const verifyMouseInFileExplorer = () => {
     if (states.Mouse.mouseInDesktop) {
-      console.log('mouse in desktop')
       return false
     }
     if (states.Mouse.mousePath === '/Desktop') {
-      console.log('mouse path is desktop')
       return false
     }
-    console.log('mouse in file explorer')
     return true
   }
 
@@ -176,96 +204,134 @@ const FileExplorer = () => {
     console.log(verifyMouseInFileExplorer())
   }, [states.Mouse])
 
-  type HandlerCopyProps = {
-    file: string | File 
-    toPath:string
-  }
-
-
 
   type HandlerDropProps = {
-    files:string[] | File[],
-    toPath:string
+    files: string[] | File[],
+    toPath: string
   }
-
 
 
   const handlerDrop = ({
     files,
     toPath
-  }:HandlerDropProps) => {
+  }: HandlerDropProps) => {
     console.log('drop files!')
-    if(states.File.selectedFiles.length === 0){
+    if (states.File.selectedFiles.length === 0) {
       files.forEach((file) => {
-        if(typeof file === 'string'){
-          copyFileByPath(file,toPath)
+        if (typeof file === 'string') {
+          copyFileByPath(file, toPath)
 
-        }else{
-          copyExternalFile(file,toPath)
+        } else {
+          copyExternalFile(file, toPath)
         }
       })
-    }else{
+    } else {
       states.File.selectedFiles.forEach((file) => {
-        copyFileByPath(file,toPath)
+        moveFileByPath(file, toPath)
       })
     }
     refresh()
   }
 
   return (
-    <div
-      className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-    flex flex-col  overflow-hidden
-    rounded-lg'
-      onDragOver={(e) => {
-        e.preventDefault();
+    <DefaultWindow
+      currentTab={tab}
+      currentWindow={window}
+      uuid={tab.uuid}
+      title='File Explorer'
+      onMinimize={() => {
+        dispatch(SetMouseInDesktop(true))
+        dispatch(SetMousePath(''))
       }}
-
-      onDragEnter={(e) => {
-        e.preventDefault();
-        setDraggedItemsCount((count) => count + 1);
-        dispatch(SetMouseInDesktop(false));
-        dispatch(SetMousePath(currentPath));
+      onMaximize={() => {
+        dispatch(SetMouseInDesktop(false))
+        dispatch(SetMousePath(currentPath))
       }}
-
-      onDragLeave={(e) => {
-        e.preventDefault();
-        setDraggedItemsCount((count) => count - 1);
-        if (draggedItemsCount === 0) {
-          dispatch(SetMouseInDesktop(true));
-          dispatch(SetMousePath(''));
-        }
+      onClose={() => {
+        dispatch(SetMouseInDesktop(true))
+        dispatch(SetMousePath(''))
       }}
+      resizable
     >
       <div className='w-full h-full flex-col overflow-hidden'
         style={{
           backgroundColor: states.Settings.settings.system.systemBackgroundColor,
           color: states.Settings.settings.system.systemTextColor,
         }}
+        onMouseEnter={() => {
+          dispatch(SetMouseInDesktop(false))
+          dispatch(SetMousePath(currentPath))
+        }}
+        onMouseLeave={() => {
+          dispatch(SetMouseInDesktop(true))
+          dispatch(SetMousePath(''))
+        }}
+        onDragOver={(e) => {
+          e.stopPropagation()
+          e.preventDefault()
+          if(states.Mouse.mouseInDesktop){
+            dispatch(SetMouseInDesktop(false))
+            dispatch(SetMousePath(currentPath))
+          }
+        }}
+        onDragEnter={(e) => {
+          e.preventDefault();
+          setDraggedItemsCount((count) => count + 1);
+          dispatch(SetMouseInDesktop(false));
+          dispatch(SetMousePath(currentPath));
+        }}
+  
+        onDragLeave={(e) => {
+          e.preventDefault();
+          setDraggedItemsCount((count) => count - 1);
+          // if (draggedItemsCount === 0) {
+          //   dispatch(SetMouseInDesktop(true));
+          //   dispatch(SetMousePath(''));
+          // }
+          dispatch(SetMouseInDesktop(true));
+          dispatch(SetMousePath(''));
+        }}
+        onDoubleClick={() => {
+          dispatch(ClearFiles())
+        }}
       >
         <div className='sticky w-full h-12 flex py-px items-center justify-between
         border-b border-gray-400 border-opacity-30
         '>
-          <div className='w-1/12 justify-end flex items-center px-1 h-full'>
-            <span className={`i-mdi-arrow-left text-2xl cursor-pointer ${currentPath === '/' ? 'brightness-50' : ''}`}
+          <div className='w-24 justify-evenly flex items-center px-1 h-full overflow-hidden'>
+            <div
+              className='w-12 h-12 flex items-center justify-center
+              hover:bg-gray-200 hover:bg-opacity-30 rounded cursor-pointer
+              transition-all duration-300 ease-in-out
+              '
               onClick={() => {
                 goBack()
               }}
-              style={{
-                color: states.Settings.settings.system.systemTextColor,
-              }}
-            />
-            <span className='i-mdi-refresh text-2xl cursor-pointer'
+            >
+              <span className={`i-mdi-arrow-left text-3xl cursor-pointer ${currentPath === '/' ? 'brightness-50' : ''}`}
+                style={{
+                  color: states.Settings.settings.system.systemTextColor,
+                }}
+              />
+            </div>
+            <div
+              className='w-12 h-12 flex items-center justify-center
+            hover:bg-gray-200 hover:bg-opacity-30 rounded cursor-pointer
+            transition-all duration-300 ease-in-out
+            '
               onClick={() => {
                 refresh()
               }}
-              style={{
-                color: states.Settings.settings.system.systemTextColor,
-              }}
-            />
+            >
+              <span className='i-mdi-refresh text-3xl cursor-pointer'
+                style={{
+                  color: states.Settings.settings.system.systemTextColor,
+                }}
+              />
+            </div>
           </div>
           <div
-            className='w-7/12 flex items-center px-1 h-8
+            className='flex items-center px-1 h-8 w-[calc(100%-252px)]
           border border-gray-400 border-opacity-30 rounded overflow-hidden
           '
             style={{
@@ -283,7 +349,11 @@ const FileExplorer = () => {
               {breadCrumbsItems}
             </Breadcrumbs>
           </div>
-          <div className='w-4/12 flex items-center px-1 h-full'>
+          <div className='flex items-center px-1 h-full'
+            style={{
+              width: '156px'
+            }}
+          >
             <input
               type='text'
               className='h-8 w-full text-xs outline-none rounded px-2 border border-gray-400 border-opacity-30'
@@ -302,11 +372,12 @@ const FileExplorer = () => {
         <Dropzone
           className='w-full h-[calc(100%-80px)] overflow-y-auto overflow-x-hidden'
           multiple
+          disabled={!verifyMouseInFileExplorer()}
           onDrop={(files) => {
             console.log(files)
             handlerDrop({
               files,
-              toPath:currentPath
+              toPath: currentPath
             })
           }}
           onClick={(e) => {
@@ -352,9 +423,21 @@ const FileExplorer = () => {
                 )
               }
             })}
+            {(states.File.setIsNewFile && !states.Mouse.mouseInDesktop) && (
+              <NewDirFileItem
+                title='New File'
+                icon='/assets/icons/file.png'
+              />
+            )}
+            {(states.File.setIsNewFolder && !states.Mouse.mouseInDesktop) && (
+              <NewDirFolderItem
+                title='New Folder'
+                icon='/assets/icons/folder.png'
+              />
+            )}
           </SimpleGrid>
         </Dropzone>
-        <div className='sticky w-full h-8 flex py-1 px-2 items-end border-t border-gray-400 border-opacity-30'>
+        <div className='sticky w-full h-8 flex py-1 px-2 items-center border-t border-gray-400 border-opacity-30'>
           <CustomText
             text={`${totalItems} items`}
             className='font-medium !text-xs mr-0.5'
@@ -362,23 +445,31 @@ const FileExplorer = () => {
               color: states.Settings.settings.system.systemTextColor,
             }}
           />
-          <CustomText
-            text={totalSelectedItems <= 1 ? `${totalSelectedItems} item selected` : `${totalSelectedItems} items selected`}
-            className='font-medium !text-xs mx-0.5'
-            style={{
-              color: states.Settings.settings.system.systemTextColor,
-            }}
-          />
-          <CustomText
-            text={convertSizeToKBMBGBExtended(totalBytes)}
-            className='font-medium !text-xs mx-0.5'
-            style={{
-              color: states.Settings.settings.system.systemTextColor,
-            }}
-          />
+          {
+            totalSelectedItems > 0 && (
+              <CustomText
+                text={totalSelectedItems <= 1 ? `${totalSelectedItems} item selected` : `${totalSelectedItems} items selected`}
+                className='font-medium !text-xs mx-0.5'
+                style={{
+                  color: states.Settings.settings.system.systemTextColor,
+                }}
+              />
+            )
+          }
+          {
+            totalSelectedItems > 0 && (
+              <CustomText
+                text={convertSizeToKBMBGBExtended(totalBytes)}
+                className='font-medium !text-xs mx-0.5'
+                style={{
+                  color: states.Settings.settings.system.systemTextColor,
+                }}
+              />
+            )
+          }
         </div>
       </div>
-    </div>
+    </DefaultWindow>
   )
 }
 
