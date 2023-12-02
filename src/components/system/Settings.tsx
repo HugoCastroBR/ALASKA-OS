@@ -21,7 +21,7 @@ import { programProps } from '@/types/programs';
 import DefaultWindow from '../containers/DefaultWindow';
 const Settings = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const { states, dispatch } = useStore()
@@ -111,7 +111,7 @@ const Settings = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       resizable
       onClose={() => { }}
       onMaximize={() => { }}

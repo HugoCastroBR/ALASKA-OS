@@ -15,7 +15,7 @@ import useStore from '@/hooks/useStore'
 
 const MyMusics = ({
   tab,
-  window
+  AlaskaWindow
 }: programProps) => {
 
   const { fs } = useFS()
@@ -339,7 +339,7 @@ const MyMusics = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='My Musics'
       uuid={tab?.uuid || ''}
       onClose={() => { 

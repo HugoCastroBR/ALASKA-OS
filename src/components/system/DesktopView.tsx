@@ -113,10 +113,10 @@ const DesktopView = () => {
   };
   
   const handleRenderTabs = () => {
-    return states.Windows.windows.map((window) => {
-      return window.tabs.map((tab) => {
+    return states.Windows.windows.map((AlaskaWindow) => {
+      return AlaskaWindow.tabs.map((tab) => {
         const Component = COMPONENT_MAP[tab.title];
-        return Component ? <Component key={tab.uuid} tab={tab} window={window} path={tab.value || ''} /> : null;
+        return Component ? <Component key={tab.uuid} tab={tab} AlaskaWindow={AlaskaWindow} path={tab.value || ''} /> : null;
       });
     });
   };

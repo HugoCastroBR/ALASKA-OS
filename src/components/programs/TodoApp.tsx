@@ -11,7 +11,7 @@ import TaskItem from '../organisms/TaskItem'
 
 const TodoApp = ({
   tab,
-  window
+  AlaskaWindow
 }:programProps) => {
 
   const { states, dispatch } = useStore()
@@ -578,7 +578,7 @@ const TodoApp = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='Todo App'
       uuid={tab.uuid}
       resizable

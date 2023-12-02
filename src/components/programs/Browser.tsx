@@ -8,7 +8,7 @@ import { WindowSetTabFocused } from '@/store/actions'
 
 const Browser = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const { states, dispatch } = useStore()
@@ -45,7 +45,7 @@ const Browser = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='Browser'
       resizable
       uuid={tab.uuid}
@@ -171,7 +171,7 @@ const Browser = ({
           <iframe
             onClick={() => {
               dispatch(WindowSetTabFocused({
-                title: window.title || '',
+                title: AlaskaWindow.title || '',
                 uuid: tab.uuid || '',
               }))
             }}
@@ -182,7 +182,7 @@ const Browser = ({
           <iframe
             onClick={() => {
               dispatch(WindowSetTabFocused({
-                title: window.title || '',
+                title: AlaskaWindow.title || '',
                 uuid: tab.uuid || '',
               }))
             }}

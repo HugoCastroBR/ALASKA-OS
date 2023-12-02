@@ -17,7 +17,7 @@ import { uuid } from '@/utils/file'
 
 const TaskBarItem = ({ 
   tab, 
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const { states, dispatch } = useStore()
@@ -30,11 +30,11 @@ const TaskBarItem = ({
       onMouseLeave={() => setIsHovering(false)}
       onClick={() => {
         dispatch(WindowToggleMinimizeTab({
-          title: window.title,
+          title: AlaskaWindow.title,
           uuid: tab.uuid,
         }))
         dispatch(WindowSetTabFocused({
-          title: window.title,
+          title: AlaskaWindow.title,
           uuid: tab.uuid,
         }))
       }}
@@ -53,7 +53,7 @@ const TaskBarItem = ({
     >
 
       <Image
-        src={window.icon || '/assets/icons/Alaska.png'}
+        src={AlaskaWindow.icon || '/assets/icons/Alaska.png'}
         alt={tab.ficTitle || tab.title}
         width={20}
         height={20}
@@ -70,7 +70,7 @@ const TaskBarItem = ({
         onClick={(e) => {
           e.stopPropagation()
           dispatch(WindowRemoveTab({
-            title: window.title,
+            title: AlaskaWindow.title,
             uuid: tab.uuid,
           }))
         }}
@@ -106,7 +106,7 @@ const TaskBar = () => {
           <TaskBarItem
             key={index}
             tab={tab}
-            window={window}
+            AlaskaWindow={window}
           />
         )
       })

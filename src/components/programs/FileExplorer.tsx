@@ -19,7 +19,7 @@ import DefaultWindow from '../containers/DefaultWindow'
 
 const FileExplorer = ({
   tab,
-  window
+  AlaskaWindow
 }: programProps) => {
 
   const { states, dispatch } = useStore()
@@ -236,7 +236,7 @@ const FileExplorer = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       uuid={tab.uuid}
       title='File Explorer'
       onMinimize={() => {

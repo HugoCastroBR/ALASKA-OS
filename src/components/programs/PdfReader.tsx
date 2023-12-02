@@ -7,7 +7,7 @@ import { Loader } from '@mantine/core';
 
 const PdfReader = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const { fs } = useFS();
@@ -30,7 +30,7 @@ const PdfReader = ({
   if(isLoading) return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='PDF Reader'
       uuid={tab.uuid}
       resizable
@@ -48,7 +48,7 @@ const PdfReader = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title={tab.ficTitle || tab.title}
       uuid={tab.uuid}
       resizable

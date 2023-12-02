@@ -12,7 +12,7 @@ import { truncateText } from '@/utils/text'
 import DefaultWindow from '../containers/DefaultWindow'
 
 const Gallery = ({
-  window,
+  AlaskaWindow,
   tab,
 }:programProps) => {
 
@@ -247,7 +247,7 @@ const Gallery = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='Gallery'
       uuid={tab.uuid}
       onMinimize={() => { }}

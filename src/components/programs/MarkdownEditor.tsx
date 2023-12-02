@@ -10,7 +10,7 @@ import useFS from '@/hooks/useFS';
 
 const MarkdownEditor = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const { fs } = useFS()
@@ -59,7 +59,7 @@ const MarkdownEditor = ({
       {saveAsInputOpen &&
         <DefaultWindow
           currentTab={tab}
-          currentWindow={window}
+          currentWindow={AlaskaWindow}
           preventDefaultClose
           onClose={() => {
             setSaveAsInputOpen(false)
@@ -107,7 +107,7 @@ const MarkdownEditor = ({
       }
       <DefaultWindow
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         title={tab.ficTitle || tab.title}
         resizable
         uuid={tab.uuid}

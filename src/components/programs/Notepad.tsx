@@ -10,7 +10,7 @@ import AppTaskMenu from '../molecules/AppTaskMenu'
 
 const Notepad = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
   const [text, setText] = useState<string>('')
@@ -55,7 +55,7 @@ const Notepad = ({
       {saveAsInputOpen &&
         <DefaultWindow
           currentTab={tab}
-          currentWindow={window}
+          currentWindow={AlaskaWindow}
           preventDefaultClose
           onClose={() => {
             setSaveAsInputOpen(false)
@@ -103,7 +103,7 @@ const Notepad = ({
       }
       <DefaultWindow
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         title={tab.ficTitle || 'Notepad'}
         uuid={tab.uuid}
         onClose={() => { }}

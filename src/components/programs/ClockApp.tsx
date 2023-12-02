@@ -12,7 +12,7 @@ import { programProps } from '@/types/programs';
 
 const ClockApp = ({
   tab,
-  window,
+  AlaskaWindow,
 }:programProps) => {
 
 
@@ -30,7 +30,7 @@ const ClockApp = ({
       className='!w-1/4 !h-1/2'
       title='Clock App'
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       resizable
       uuid={tab.uuid}
       onClose={() => {}}
