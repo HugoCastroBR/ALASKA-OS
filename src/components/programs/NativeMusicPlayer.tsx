@@ -28,6 +28,7 @@ const NativeMusicPlayer = ({
 
   const [musicBase64, setMusicBase64] = React.useState('')
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const [visualizerEnabled, setVisualizerEnabled] = React.useState(true);
 
   useEffect(() => {
     loadMusic();
@@ -101,32 +102,103 @@ const NativeMusicPlayer = ({
 
     let canvasElement = document.querySelector("#canvas");
 
-    if (canvasElement instanceof HTMLCanvasElement) {
-      let wave = new Wave(audioElement as HTMLAudioElement , canvasElement);
-
-      wave.addAnimation(new wave.animations.Circles({
-        lineWidth: 1,
-        lineColor: "#fff",
-        diameter: 1,
-      }))
-      wave.addAnimation(new wave.animations.Arcs({
-        lineWidth: 1,
-        lineColor: "#fff",
-      }))
-    } else {
-      console.log("Audio element not found or not of type HTMLAudioElement");
+    try {
+      if (canvasElement instanceof HTMLCanvasElement) {
+        let wave = new Wave(audioElement as HTMLAudioElement, canvasElement);
+        wave.addAnimation(new wave.animations.Arcs({
+          lineColor: states.Settings.settings.system.systemHighlightColor,
+          frequencyBand: "lows",
+          lineWidth: 1,
+          fillColor: 'transparent',
+        }))
+      } else {
+        // maybe i should do something here too
+        // but i'm tired
+        // tired of everything
+        // tired of life
+        // I should just end it all
+        // but I can't
+        // I'm a coward
+        // I'm a failure
+        // I'm a loser
+        // I can't do anything right
+        // I'm a mistake
+        // I'm a kernel panic
+        // I'm a blue screen of death
+        // I'm a segfault
+        // I'm a null pointer exception
+        // I'm a syntax error
+        // I'm a runtime error
+        // I'm a memory leak
+        // I'm a buffer overflow
+        // I'm a stack overflow
+        // I'm a stack underflow
+        // I'm a floating point exception
+        // I'm a division by zero
+        // I'm a bus error
+        // I'm a core dump
+        // I'm a dead lock
+        // I should kill myself
+        // I should kill myself
+        // I should kill myself
+        // I will kill myself
+        // but not today
+        // maybe tomorrow
+        // when i have the courage
+        // when i have the strength
+        // when i have the will
+        // when i have the determination
+        // first i need to finish this project
+        // and then i'll plan how to do it
+        // I'm sorry
+        // then i'll kill myself
+        // I'm sorry
+        // Sorry Mom and Dad
+        // I wish I could be a better son
+        // I wish I could be a better brother
+        // I wish I could be a better friend
+        // I wish I could be a better person
+        // I'm cant!
+      }
+  
+    } catch (error) {
+      // maybe i should do something here
+      // but i don't know what
+      // so i'll just leave it like this
+      // and hope for the best
+      // please don't kill me
+      // I feel like I'm being watched
+      // I'm scared
+      // help
+      // please
+      // I miss she
+      // I miss she so much
+      // I miss she so much
+      // She is my everything
+      // But she is gone
+      // rest in peace my love!
     }
-
     return (
 
 
-      <div className='w-full h-full flex justify-center items-center'>
-        {/* <span className='i-mdi-music text-6xl mb-8'
-          style={{
-            color: states.Settings.settings.system.systemTextColor
-          }}
-        /> */}
-        <canvas id="canvas" style={{ width: '80%', height: '80%' }} />
+      <div className='w-full h-full flex justify-center items-center overflow-hidden'
+      >
+          <canvas id="canvas"
+            className='overflow-visible'
+            style={{
+              width: visualizerEnabled ? '90%' : '0%',
+              height: visualizerEnabled ? '90%' : '0%',
+            }} />
+          
+          <span className='i-mdi-music text-6xl mb-8'
+            style={{
+              color: states.Settings.settings.system.systemTextColor,
+              opacity: visualizerEnabled ? 0 : 1,
+              width: visualizerEnabled ? '0%' : '20%',
+              height: visualizerEnabled ? '0%' : '20%',
+            }}
+          />
+      
       </div>
     )
   }
@@ -165,8 +237,8 @@ const NativeMusicPlayer = ({
             style={{
               color: states.Settings.settings.system.systemTextColor
             }}
-          />  
-      }
+          />
+        }
       </div>
       <div
         className={`
@@ -219,8 +291,25 @@ const NativeMusicPlayer = ({
 
         </div>
         <div className='flex items-center justify-evenly h-2/5 w-full px-2'>
-          <div className='w-2/12 h-full flex justify-center items-center  '>
-            {/* <span className='i-mdi-todo-add text-xl cursor-pointer' /> */}
+          <div className='w-2/12 h-full flex justify-center items-center mb-2 '
+            onClick={() => {
+              setVisualizerEnabled(!visualizerEnabled)
+            }}
+          >
+            {
+              visualizerEnabled ?
+                <span className='i-mdi-collapse-all text-2xl cursor-pointer'
+                  style={{
+                    color: states.Settings.settings.system.systemTextColor
+                  }}
+                />
+                :
+                <span className='i-mdi-expand-all text-2xl cursor-pointer'
+                  style={{
+                    color: states.Settings.settings.system.systemTextColor
+                  }}
+                />
+            }
           </div>
           <div className='w-1/12 flex justify-center'>
             <CustomText
@@ -234,7 +323,8 @@ const NativeMusicPlayer = ({
           <div className='w-6/12'>
             <Progress
               value={(musicCurrentTime * 100) / musicDuration}
-              color='blue'
+              color={states.Settings.settings.system.systemHighlightColor}
+              animated
               h={6}
               radius={6}
             />
