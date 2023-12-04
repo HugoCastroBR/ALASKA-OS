@@ -257,10 +257,13 @@ const NativeMusicPlayer = ({
 
 
           <div className='
-            bg-slate-800 mx-1 h-8 w-8 flex justify-center items-center rounded-full
+            mx-1 h-8 w-8 flex justify-center items-center rounded-full
             cursor-pointer hover:bg-slate-500 transition-all duration-300 ease-in-out
             '
-
+            style={{
+              backgroundColor: states.Settings.settings.system.systemBackgroundColor
+            
+            }}
           >
             {!isPaused ?
               <span
@@ -287,6 +290,9 @@ const NativeMusicPlayer = ({
             bg-slate-300 transition-all duration-300 ease-in-out
           
               '
+              style={{
+                color: states.Settings.settings.system.systemTextColor
+              }}
           />
 
         </div>

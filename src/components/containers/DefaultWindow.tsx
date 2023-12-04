@@ -5,6 +5,7 @@ import Image from 'next/image'
 import React, { useEffect } from 'react'
 import Draggable from 'react-draggable'
 import CustomText from '../atoms/CustomText'
+import { Tooltip } from '@mantine/core'
 
 
 
@@ -37,7 +38,7 @@ const DefaultWindow = ({
       title: currentWindow?.title || '',
       uuid: currentTab?.uuid || '',
     }))
-    if(currentTab.focused){
+    if (currentTab.focused) {
       dispatch(ClearAllFocused())
     }
   }
@@ -53,7 +54,7 @@ const DefaultWindow = ({
   }
 
   const CloseTab = () => {
-    if(preventDefaultClose) return
+    if (preventDefaultClose) return
     dispatch(WindowRemoveTab({
       title: currentWindow?.title || '',
       uuid: currentTab?.uuid || '',
@@ -100,13 +101,15 @@ const DefaultWindow = ({
           style={{
             backgroundColor: states.Settings.settings.windowTopBar.color || 'transparent',
           }}
-          >
-          <Image
-          alt='Program Icon'
-          src={currentWindow?.icon || '/assets/icons/Alaska.png'}
-          width={20}
-          height={20}
-          />
+        >
+          <Tooltip label={currentTab.ficTitle || currentWindow.title}>
+            <Image
+              alt='Program Icon'
+              src={currentWindow?.icon || '/assets/icons/Alaska.png'}
+              width={20}
+              height={20}
+            />
+          </Tooltip>
           <CustomText
             text={title}
             className='ml-12 text-base font-semibold'
@@ -117,89 +120,101 @@ const DefaultWindow = ({
           <div className='flex justify-end items-center'>
             {
               onMinimize ?
-              <span
-                onClick={() => {
-                  MinimizeTab()
-                  onMinimize()
-                }}
-                className='i-mdi-minus text-2xl
+                <Tooltip label='Minimize window'>
+                  <span
+                    onClick={() => {
+                      MinimizeTab()
+                      onMinimize()
+                    }}
+                    className='i-mdi-minus text-2xl
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
-              :
-              <span
-                className='i-mdi-minus text-2xl filter brightness-95
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
+                :
+                <Tooltip label='Minimize not allowed'>
+                  <span
+                    className='i-mdi-minus text-2xl filter brightness-95
               mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
             }
             {
               onMaximize ?
-              <span
-                onClick={() => {
-                  MaximizeTab()
-                  onMaximize()
-                }}
-                className='i-mdi-window-maximize text-2xl
+                <Tooltip label='Maximize window'>
+                  <span
+                    onClick={() => {
+                      MaximizeTab()
+                      onMaximize()
+                    }}
+                    className='i-mdi-window-maximize text-2xl
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
-              :
-              <span
-                className='i-mdi-window-maximize text-2xl filter brightness-95
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
+                :
+                <Tooltip label='Maximize not allowed'>
+                  <span
+                    className='i-mdi-window-maximize text-2xl filter brightness-95
               mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
             }
             {
               onClose ?
-              <span
-                onClick={() => {
-                  CloseTab()
-                  onClose()
-                }}
-                className='i-mdi-close text-2xl
+                <Tooltip label='Close window'>
+                  <span
+                    onClick={() => {
+                      CloseTab()
+                      onClose()
+                    }}
+                    className='i-mdi-close text-2xl
               mx-px cursor-pointer hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
-              :
-              <span
-                className='i-mdi-close text-2xl filter brightness-95
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
+                :
+                <Tooltip label='Close not allowed'>
+                  <span
+                    className='i-mdi-close text-2xl filter brightness-95
               mx-px cursor-not-allowed hover:text-blue-500 transition-all duration-300 ease-in-out
               '
-              style={{
-                color: states.Settings.settings.windowTopBar.items.color || 'white',
-              }}
-              />
+                    style={{
+                      color: states.Settings.settings.windowTopBar.items.color || 'white',
+                    }}
+                  />
+                </Tooltip>
             }
           </div>
         </div>
-        <div 
-        onClick={
-          () => {
-            dispatch(ClearAllFocused())
-            dispatch(WindowSetTabFocused({
-              title: currentWindow?.title || '',
-              uuid: currentTab?.uuid || '',
-            }))
+        <div
+          onClick={
+            () => {
+              dispatch(ClearAllFocused())
+              dispatch(WindowSetTabFocused({
+                title: currentWindow?.title || '',
+                uuid: currentTab?.uuid || '',
+              }))
+            }
           }
-        }
-        className='w-full h-full'>
+          className='w-full h-full'>
           {children}
         </div>
       </section>

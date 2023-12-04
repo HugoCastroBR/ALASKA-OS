@@ -36,25 +36,25 @@ const Desktop = () => {
 
 
 
-  // if(!states.System.isSystemLoaded){
-  //   return (
-  //     <main
-  //       className='
-  //       min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
-  //       bg-cover bg-center bg-no-repeat bg-slate-50
-  //       '
-  //     >
-  //       <Loader size={128} />
-  //       <CustomText
-  //         text={loadingMessages}
-  //         className='text-slate-500 font-medium text-lg mt-4'
-  //         style={{
-  //           color: 'rgba(0,0,0,1)'
-  //         }}
-  //       />
-  //     </main>
-  //   )
-  // }
+  if(!states.System.isSystemLoaded){
+    return (
+      <main
+        className='
+        min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
+        bg-cover bg-center bg-no-repeat bg-slate-50
+        '
+      >
+        <Loader size={128} />
+        <CustomText
+          text={loadingMessages}
+          className='text-slate-500 font-medium text-lg mt-4'
+          style={{
+            color: 'rgba(0,0,0,1)'
+          }}
+        />
+      </main>
+    )
+  }
 
   return (
     <main

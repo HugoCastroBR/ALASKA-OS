@@ -21,7 +21,11 @@ export default function useProcess(){
 
 
     const startLoading = async () => {
-      createDesktop()
+      await createProgramFilesFolder()
+      await createDesktop()
+      await createMyMusicsFolder()
+      await createMyPicturesFolder()
+      await createTodoAppFolder()
       runPythonScript('print("Python Loading")')
       setCurrentLoadingProcess(0)
       startLoadingSettings()
@@ -90,6 +94,88 @@ export default function useProcess(){
         handlerRunFirstExecution(script)
       }
     }
+
+    const createProgramFilesFolder = () => {
+      fs?.readdir('/', async (err, data) => {
+        if(err){
+          console.log(err)
+        }
+        if(data?.includes('ProgramFiles')){
+          setLoadingMessages('Welcome back, I am loading your Program Files folder')
+          await wait(500)
+        }else{
+          setLoadingMessages('I am creating your Program Files folder...')
+          await wait(1000)
+          fs?.mkdir('/ProgramFiles', (err:ApiError) => {
+            if(err){
+              console.log(err)
+            }
+          })
+        }
+      })
+    }
+
+    const createMyMusicsFolder = () => {
+      fs?.readdir('/ProgramFiles', async (err, data) => {
+        if(err){
+          console.log(err)
+        }
+        if(data?.includes('myMusics')){
+          setLoadingMessages('Welcome back, I am loading your Musics folder')
+          await wait(500)
+        }else{
+          setLoadingMessages('Now I am creating your Musics folder')
+          await wait(1000)
+          fs?.mkdir('/ProgramFiles/myMusics', (err:ApiError) => {
+            if(err){
+              console.log(err)
+            }
+          })
+          
+        }
+      })
+    }
+
+    const createMyPicturesFolder = () => {
+      fs?.readdir('/ProgramFiles', async (err, data) => {
+        if(err){
+          console.log(err)
+        }
+        if(data?.includes('myPictures')){
+          setLoadingMessages('Welcome back, I am loading your Pictures folder')
+          await wait(500)
+        }else{
+          setLoadingMessages('So we also need to create your Pictures folder')
+          await wait(1000)
+          fs?.mkdir('/ProgramFiles/myPictures', (err:ApiError) => {
+              if(err){
+                console.log(err)
+              }
+          })
+        }
+      })
+    }
+
+    const createTodoAppFolder = () => {
+      fs?.readdir('/ProgramFiles', async (err, data) => {
+        if(err){
+          console.log(err)
+        }
+        if(data?.includes('todoApp')){
+          setLoadingMessages('Welcome back, I am loading your TodoApp folder')
+          await wait(500)
+        }else{
+          setLoadingMessages('We are just finishing here, I am creating your all the folders you need')
+          await wait(1000)
+          fs?.mkdir('/ProgramFiles/todoApp', (err:ApiError) => {
+            if(err){
+              console.log(err)
+            }
+          })
+        }
+      })
+    }
+
 
     const createDesktop = () =>{
       fs?.readdir('/', async (err, data) => {
