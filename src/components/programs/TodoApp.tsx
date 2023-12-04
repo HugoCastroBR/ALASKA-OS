@@ -406,155 +406,7 @@ const TodoApp = ({
     const [title, setTitle] = React.useState<string>()
     const [description, setDescription] = React.useState<string>()
 
-  const AddTaskItem = ({ }) => {
-
-    
-
-
-    return (
-      <div className='w-full flex my-1 p-1 rounded-md 
-      justify-between items-start flex-col
-      drop-shadow-md backdrop-filter backdrop-blur-sm h-8
-      transition-all duration-300 ease-in-out
-      border border-transparent 
-      '
-        style={{
-          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white',
-          borderColor: isHovered ? states.Settings.settings.system.systemHighlightColor || 'white' : 'transparent',
-          height: isOpen ? '264px' : '32px',
-        }}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-      >
-        <div className='flex h-8 w-full justify-between items-start'>
-          <div className='flex h-8 -mt-1 w-4/5 items-center cursor-pointer'>
-            <span
-              className='!text-lg i-mdi-plus font-semibold text-center'
-              style={{
-                color: states.Settings.settings.system.systemTextColor || 'white',
-              }}
-            />
-            <CustomText
-              text={'Add New Task'}
-              className='!text-base font-semibold text-start ml-2 w-full'
-              onClick={() => setIsOpen(!isOpen)}
-              style={{
-                color: states.Settings.settings.system.systemTextColor || 'white',
-              }}
-            />
-          </div>
-          <span
-            onClick={() => setIsOpen(!isOpen)}
-            className={`i-mdi-menu-right text-4xl 
-            transition-all duration-300 ease-in-out
-            -mr-8 flex justify-end w-1/5 cursor-pointer
-          `}
-            style={{
-              color: isHovered ? states.Settings.settings.system.systemHighlightColor || 'white' : 'transparent',
-              transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
-              marginTop: '-7px',
-            }}
-          />
-        </div>
-        <div className='w-full flex-col px-1'
-          style={{
-            height: isOpen ? '232px' : '0px',
-            display: isOpen ? 'flex' : 'none',
-            overflowX: 'hidden',
-            overflowY: isOpen ? 'auto' : 'hidden',
-          }}
-        >
-          <div className='flex flex-col w-full'
-            style={{
-              height: isOpen ? '178px' : '0px',
-              display: isOpen ? 'flex' : 'none',
-              overflowX: 'hidden',
-              overflowY: isOpen ? 'auto' : 'hidden',
-            }}
-          >
-            <CustomText
-              text='Title:'
-              className='!text-sm mt-1 text-start w-full '
-              style={{
-                color: states.Settings.settings.system.systemTextColor || 'white',
-                height: isOpen ? '32px' : '0px',
-              }}
-            />
-            <input
-              className='w-full rounded-md outline-none'
-              type='text'
-              value={title || ''}
-              onChange={(e) => {
-                setTitle(e.currentTarget.value)
-              }}
-              style={{
-                resize: 'both',
-                height: isOpen ? '24px' : '0px',
-              }}
-            />
-            <CustomText
-              text='Description:'
-              className='!text-sm mt-1 text-start w-full '
-              style={{
-                color: states.Settings.settings.system.systemTextColor || 'white',
-                height: isOpen ? '24px' : '0px',
-              }}
-            />
-            <textarea
-              className='w-full rounded-md outline-none'
-              value={description || ''}
-              onChange={(e) => {
-                setDescription(e.currentTarget.value)
-              }}
-              style={{
-                resize: 'both',
-                height: isOpen ? '64px' : '0px',
-              }}
-            />
-          </div>
-          <div className='flex justify-between w-full'
-            style={{
-              height: isOpen ? '32px' : '0px',
-            }}
-          >
-            <div className='flex justify-end w-full'>
-              <Button
-                className='w-full h-6 mx-1'
-                color='red'
-                onClick={() => {
-                  setIsOpen(false)
-                }}
-              >
-                <CustomText
-                  text='Cancel'
-                  className='!text-xs font-semibold text-center'
-                  style={{
-                    color: 'red',
-                  }}
-                />
-              </Button>
-              <Button
-                className='w-full h-6 mx-1'
-                color='green'
-                onClick={() => {
-                  handlerSaveNewTask(title || '', description || '')
-                  setIsOpen(false)
-                }}
-              >
-                <CustomText
-                  text='Add'
-                  className='!text-xs font-semibold text-center'
-                  style={{
-                    color: 'green'
-                  }}
-                />
-              </Button>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
+  
 
   if (isLoading) {
     return (
@@ -835,7 +687,147 @@ const TodoApp = ({
             </Button>
           </div>
           <div className='w-full  h-[calc(100%-64px)] flex-col overflow-x-hidden overflow-y-auto p-1'>
-            <AddTaskItem />
+          <div className='w-full flex my-1 p-1 rounded-md 
+      justify-between items-start flex-col
+      drop-shadow-md backdrop-filter backdrop-blur-sm h-8
+      transition-all duration-300 ease-in-out
+      border border-transparent 
+      '
+        style={{
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white',
+          borderColor: isHovered ? states.Settings.settings.system.systemHighlightColor || 'white' : 'transparent',
+          height: isOpen ? '264px' : '32px',
+        }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
+        <div className='flex h-8 w-full justify-between items-start'>
+          <div className='flex h-8 -mt-1 w-4/5 items-center cursor-pointer'>
+            <span
+              className='!text-lg i-mdi-plus font-semibold text-center'
+              style={{
+                color: states.Settings.settings.system.systemTextColor || 'white',
+              }}
+            />
+            <CustomText
+              text={'Add New Task'}
+              className='!text-base font-semibold text-start ml-2 w-full'
+              onClick={() => setIsOpen(!isOpen)}
+              style={{
+                color: states.Settings.settings.system.systemTextColor || 'white',
+              }}
+            />
+          </div>
+          <span
+            onClick={() => setIsOpen(!isOpen)}
+            className={`i-mdi-menu-right text-4xl 
+            transition-all duration-300 ease-in-out
+            -mr-8 flex justify-end w-1/5 cursor-pointer
+          `}
+            style={{
+              color: isHovered ? states.Settings.settings.system.systemHighlightColor || 'white' : 'transparent',
+              transform: isOpen ? 'rotate(90deg)' : 'rotate(0deg)',
+              marginTop: '-7px',
+            }}
+          />
+        </div>
+        <div className='w-full flex-col px-1'
+          style={{
+            height: isOpen ? '232px' : '0px',
+            display: isOpen ? 'flex' : 'none',
+            overflowX: 'hidden',
+            overflowY: isOpen ? 'auto' : 'hidden',
+          }}
+        >
+          <div className='flex flex-col w-full'
+            style={{
+              height: isOpen ? '178px' : '0px',
+              display: isOpen ? 'flex' : 'none',
+              overflowX: 'hidden',
+              overflowY: isOpen ? 'auto' : 'hidden',
+            }}
+          >
+            <CustomText
+              text='Title:'
+              className='!text-sm mt-1 text-start w-full '
+              style={{
+                color: states.Settings.settings.system.systemTextColor || 'white',
+                height: isOpen ? '32px' : '0px',
+              }}
+            />
+            <input
+              className='w-full rounded-md outline-none'
+              type='text'
+              value={title || ''}
+              onChange={(e) => {
+                setTitle(e.currentTarget.value)
+              }}
+              style={{
+                resize: 'both',
+                height: isOpen ? '24px' : '0px',
+              }}
+            />
+            <CustomText
+              text='Description:'
+              className='!text-sm mt-1 text-start w-full '
+              style={{
+                color: states.Settings.settings.system.systemTextColor || 'white',
+                height: isOpen ? '24px' : '0px',
+              }}
+            />
+            <textarea
+              className='w-full rounded-md outline-none'
+              value={description || ''}
+              onChange={(e) => {
+                setDescription(e.currentTarget.value)
+              }}
+              style={{
+                resize: 'both',
+                height: isOpen ? '64px' : '0px',
+              }}
+            />
+          </div>
+          <div className='flex justify-between w-full'
+            style={{
+              height: isOpen ? '32px' : '0px',
+            }}
+          >
+            <div className='flex justify-end w-full'>
+              <Button
+                className='w-full h-6 mx-1'
+                color='red'
+                onClick={() => {
+                  setIsOpen(false)
+                }}
+              >
+                <CustomText
+                  text='Cancel'
+                  className='!text-xs font-semibold text-center'
+                  style={{
+                    color: 'red',
+                  }}
+                />
+              </Button>
+              <Button
+                className='w-full h-6 mx-1'
+                color='green'
+                onClick={() => {
+                  handlerSaveNewTask(title || '', description || '')
+                  setIsOpen(false)
+                }}
+              >
+                <CustomText
+                  text='Add'
+                  className='!text-xs font-semibold text-center'
+                  style={{
+                    color: 'green'
+                  }}
+                />
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
             {tasks
               ?.sort((a, b) => {
                 if (a.completed === b.completed) {
