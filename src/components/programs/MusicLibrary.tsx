@@ -1,13 +1,14 @@
 import useStore from '@/hooks/useStore'
 import React, { useEffect, useState } from 'react'
 import CustomText from '../atoms/CustomText'
-import { Button, Menu, Progress, Slider, TextInput, Tooltip } from '@mantine/core'
+import { Button, Loader, Menu, Progress, Slider, TextInput, Tooltip } from '@mantine/core'
 import { truncateText } from '@/utils/text'
 import useFS from '@/hooks/useFS'
 import { ApiError } from 'browserfs/dist/node/core/api_error'
 import { Dropzone } from '@mantine/dropzone'
 import Image from 'next/image'
-import { addTypeToBase64, getExtension, getLastPathSegment, getTypeFromExtension, removeExtension, removeTypeFromBase64, toBase64 } from '@/utils/file'
+import { addTypeToBase64, getExtension, removeTypeFromBase64, toBase64, wait } from '@/utils/file'
+import { secondsToMinutes } from '@/utils/date'
 
 const MusicLibrary = () => {
 
@@ -63,11 +64,133 @@ const MusicLibrary = () => {
   const [newMusicItemFile, setNewMusicItemFile] = useState<File>()
 
   // Music Infos
-  const [currentMusicItem, setCurrentMusicItem] = useState<MusicItemProps>()
-
+  const [musics, setMusics] = React.useState<MusicItemProps[]>([])
+  const [musicSelected, setMusicSelected] = React.useState<MusicItemProps | null>(null)
+  const [isMusicPlaying, setIsMusicPlaying] = useState(false)
+  const [isMusicPaused, setIsMusicPaused] = useState(true)
+  const [musicDuration, setMusicDuration] = useState(0)
+  const [musicCurrentTime, setMusicCurrentTime] = useState(0)
+  const [musicProgress, setMusicProgress] = useState(0)
+  const [musicVolume, setMusicVolume] = useState(1)
+  const [currentMusicIndex, setCurrentMusicIndex] = useState(0)
+  const [audioElement, setAudioElement] = React.useState<HTMLAudioElement | null>(null)
+  
 
   // Utils
   const [searchText, setSearchText] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+
+  // START Music Methods
+  const handleTogglePause = () => {
+    if (audioElement) {
+      if (!isMusicPaused) {
+        audioElement.pause()
+        setIsMusicPaused(true)
+      } else {
+        audioElement.play()
+        setIsMusicPaused(false)
+      }
+    }
+  }
+  const handlerPlayMusic = (music: MusicItemProps) => {
+    if (audioElement) {
+      audioElement.pause();
+    }
+  
+    setMusicSelected(music);
+    const newAudioElement = new Audio(music.file64);
+  
+    newAudioElement.addEventListener('loadeddata', (e) => {
+      setMusicDuration(newAudioElement.duration || 0);
+      setIsMusicPlaying(true);
+      setIsMusicPaused(false);
+      newAudioElement.play();
+    });
+    
+    newAudioElement.addEventListener('pause',(e) => {
+      setIsMusicPaused(true);
+    })
+    
+    newAudioElement.addEventListener('play',(e) => {
+      setIsMusicPaused(false);
+    })
+
+    newAudioElement.addEventListener('timeupdate', (e) => {
+      setMusicCurrentTime(newAudioElement.currentTime || 0);
+      setMusicProgress((newAudioElement.currentTime || 0) / (newAudioElement.duration || 0) * 100);
+    });
+  
+    newAudioElement.addEventListener('ended', handleMusicEnded);
+  
+    newAudioElement.addEventListener('error', (e) => {
+      console.log(e);
+    });
+  
+    setAudioElement(newAudioElement);
+  };
+  
+  const handleMusicEnded = async () => {
+    if (!musicEndedHandled) {
+      console.log("end");
+      setMusicEndedHandled(true);
+      handleTogglePause();
+      await wait(1000);
+      handleNextMusic();
+    }
+  };
+  
+  const [musicEndedHandled, setMusicEndedHandled] = useState(false);
+
+  const handleNextMusic = () => {
+    setAudioElement((audio) => {
+      if (audio) {
+        audio.pause()
+      }
+      return audio
+    })
+
+    if (currentMusicIndex === musics.length - 1) {
+      setCurrentMusicIndex(0)
+      handlerPlayMusic(musics[0])
+    } else {
+      setCurrentMusicIndex(currentMusicIndex + 1)
+      handlerPlayMusic(musics[currentMusicIndex + 1])
+    }
+
+  }
+
+  const handlePreviousMusic = () => {
+    setAudioElement((audio) => {
+      if (audio) {
+        audio.currentTime = 0
+        audio.pause()
+      }
+      return audio
+    })
+
+    if (currentMusicIndex === 0) {
+      setCurrentMusicIndex(musics.length - 1)
+      handlerPlayMusic(musics[musics.length - 1])
+    } else {
+      setCurrentMusicIndex(currentMusicIndex - 1)
+      handlerPlayMusic(musics[currentMusicIndex - 1])
+    }
+  }
+
+  useEffect(() => {
+    setAudioElement((audio) => {
+      if (audio) {
+        audio.volume = musicVolume * states.System.globalVolumeMultiplier
+      }
+      return audio
+    })
+  },[states.System.globalVolumeMultiplier,musicVolume])
+
+  useEffect(() => {
+    setMusics(musicItems)
+  }, [musicItems])
+
+  // END Music Methods
 
 
   const loadPlaylistItems = () => {
@@ -82,7 +205,6 @@ const MusicLibrary = () => {
         }
       }
       if (playListsFolder) {
-        console.log(playListsFolder)
         playListsFolder?.map((playListFolder) => {
           fs?.readFile(`/${basePath}/${playListFolder}/about.json`, 'utf-8', (err, data) => {
             if (err) console.log(err)
@@ -111,7 +233,6 @@ const MusicLibrary = () => {
   useEffect(() => {
     if (playlistItems.length > 0) {
       setCurrentPlaylistItem(editingPlaylistId === null ? playlistItems[0] : playlistItems[editingPlaylistId])
-      LoadMusics()
     }
   }, [playlistItems])
 
@@ -120,6 +241,10 @@ const MusicLibrary = () => {
       setMusicItems([])
       setEditPlaylistItemDescription(currentPlaylistItem?.description || '')
       setEditPlaylistItemTitle(currentPlaylistItem?.title || '')
+      if(currentPlaylistItem?.musics?.length === 0) return
+      if(currentPlaylistItem?.musics?.length || 0 > 0){
+        setCurrentMusicIndex(0)
+      }
       LoadMusics()
     }
   }, [currentPlaylistItem])
@@ -133,7 +258,7 @@ const MusicLibrary = () => {
 
   const LoadMusics = () => {
     setMusicItems([])
-    if (fs && (currentPlaylistItem?.musics?.length || 0 > 0)) {
+    if (fs) {
       console.log(currentPlaylistItem?.musics?.length)
       currentPlaylistItem?.musics?.forEach((music) => {
         let _music: MusicItemProps = {} as MusicItemProps
@@ -156,9 +281,7 @@ const MusicLibrary = () => {
           })
         }
       })
-    } else {
-      console.log('fs is null')
-    }
+    } 
   }
 
 
@@ -171,7 +294,6 @@ const MusicLibrary = () => {
     const _path = `${basePath}/${newPlaylistItemTitle}`
     fs?.mkdir(_path, (err: ApiError) => {
       if (err) throw err
-      console.log('created')
 
       if (newPlaylistImageFile) {
         toBase64(newPlaylistImageFile).then((base64) => {
@@ -185,7 +307,6 @@ const MusicLibrary = () => {
 
           fs.writeFile(`${basePath}/${newPlaylistItemTitle}/image.${getExtension(newPlaylistImageFile?.name || '.png')}`, removeTypeFromBase64(base64 as string), (err) => {
             if (err) throw err
-            console.log('saved')
             fs.writeFile(`/${basePath}/${newPlaylistItemTitle}/about.json`, JSON.stringify(newPlaylistProps), (err) => {
               if (err) throw err
               console.log('Successfully created new playlist')
@@ -219,7 +340,6 @@ const MusicLibrary = () => {
     if (fs && editPlaylistItemTitle && editPlaylistItemDescription) {
       fs?.rename(`${basePath}/${currentPlaylistItem?.title}`, `${basePath}/${editPlaylistItemTitle}`, (err) => {
         if (err) throw err
-        console.log('Successfully edited playlist')
         fs.writeFile(`${basePath}/${editPlaylistItemTitle}/about.json`, JSON.stringify({
           ...currentPlaylistItem,
           title: editPlaylistItemTitle,
@@ -265,7 +385,6 @@ const MusicLibrary = () => {
       files?.forEach((file) => {
         fs?.unlink(`${basePath}/${currentPlaylistItem?.title}/${file}`, (err) => {
           if(err) throw err
-          console.log('deleted')
         })
       })
       fs?.rmdir(`${basePath}/${currentPlaylistItem?.title}`, (err) => {
@@ -284,7 +403,6 @@ const MusicLibrary = () => {
     
     if (fs && newMusicItemFile && newMusicItemImgFile && newMusicItemTitle && newMusicItemArtist) {
       const _path = `${basePath}/Musics/${newMusicItemTitle}`
-      console.log("music path:", _path)
       const newMusicProps: MusicItemProps = {
         title: newMusicItemTitle,
         artist: newMusicItemArtist,
@@ -353,8 +471,9 @@ const MusicLibrary = () => {
       <div
         className='w-full h-12  flex my-1 rounded
       justify-center items-center cursor-pointer
-      border-b border-white border-opacity-50
+      border-b border-white border-opacity-5
       hover:bg-white hover:bg-opacity-10 transition-all duration-300 ease-in-out
+      shadow-md drop-shadow-md
       '
         onClick={() => {
           setCurrentPlaylistItem({
@@ -390,6 +509,7 @@ const MusicLibrary = () => {
     imgPath,
     image64,
     filePath,
+    file64,
 
   }: MusicItemProps) => {
 
@@ -404,7 +524,15 @@ const MusicLibrary = () => {
       '
       onClick={() => {
         console.log('clicked')
-        console.log(title, artist, imgPath, filePath)
+        setCurrentMusicIndex(musicItems.findIndex(item => item.title === title))
+          handlerPlayMusic({
+            title,
+            artist,
+            imgPath,
+            image64,
+            filePath,
+            file64,
+          })
       }}
       >
         <div className='w-16 h-full rounded-sm flex justify-center items-center'>
@@ -455,6 +583,27 @@ const MusicLibrary = () => {
           </Menu.Dropdown>
         </Menu>
       </div>
+    )
+  }
+
+  if(isLoading){
+    return (
+      <div
+      className='absolute w-1/2 h-1/2 top-1/4 left-1/4
+    flex flex-col  overflow-hidden
+    rounded-lg '
+    >
+      <div
+        className='w-full h-full flex flex-col'
+        style={{
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white',
+        }}
+      >
+        <Loader
+          color={states.Settings.settings.system.systemHighlightColor || 'cyan'}
+        />
+      </div>
+    </div>
     )
   }
 
@@ -1088,7 +1237,7 @@ const MusicLibrary = () => {
             <div className='w-full h-auto  overflow-y-auto flex justify-start flex-wrap'>
               {/* <MusicItem /> */}
               {
-                musicItems.map((musicItem, index) => {
+                musicItems.slice(0,currentPlaylistItem?.musics?.length).map((musicItem, index) => {
                   return (
                     <MusicItem {...musicItem} key={index} />
                   )
@@ -1100,15 +1249,29 @@ const MusicLibrary = () => {
         <div className='stick flex h-16 w-full p-1 border-t border-white border-opacity-50'>
           <div className='h-full w-1/4 flex ' >
             <div className='h-14 w-14 flex bg-blue-400 rounded justify-center items-center'>
-              img
+            {
+                musicSelected?.image64 ?
+                  <Image
+                    src={musicSelected?.image64 || '/assets/icons/Alaska.png'}
+                    width={56}
+                    height={56}
+                    alt='Music Image'
+                  />
+                  :
+                  <span className='i-mdi-music-note text-2xl'
+                    style={{
+                      color: states.Settings.settings.system.systemTextColor
+                    }}
+                  />
+              }
             </div>
             <div className='h-full w-[calc(100%-56px)] flex flex-col px-1'>
               <CustomText
-                text='Title'
+                text={truncateText(musicSelected?.title || '', 16) || 'Unknown Music'}
                 className='!text-sm !font-semibold'
               />
               <CustomText
-                text='Artist'
+                text={truncateText(musicSelected?.artist || '', 12) || 'Unknown Artist'}
                 className='!text-xs !font-normal -mt-1'
               />
             </div>
@@ -1117,10 +1280,11 @@ const MusicLibrary = () => {
             <div className='h-2/3 w-full flex justify-center items-center'>
               <div className='h-full w-12 mx-0.5 flex justify-center items-center'>
                 <span
-                  className='i-mdi-skip-previous text-3xl '
+                  className='i-mdi-skip-previous text-3xl cursor-pointer '
                   style={{
                     color: states.Settings.settings.system.systemTextColor || 'white',
                   }}
+                  onClick={handlePreviousMusic}
                 />
               </div>
               <div
@@ -1128,30 +1292,39 @@ const MusicLibrary = () => {
                 style={{
                   backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white',
                 }}
+                onClick={handleTogglePause}
               >
-                <span
-                  className='i-mdi-play text-3xl '
+                {!isMusicPaused ?
+                  <span className='i-mdi-pause text-3xl cursor-pointer' 
                   style={{
-                    color: states.Settings.settings.system.systemTextColor || 'white',
+                    color: states.Settings.settings.system.systemTextColor
                   }}
-                />
+                  />
+                  :
+                  <span className='i-mdi-play text-3xl cursor-pointer'
+                  style={{
+                    color: states.Settings.settings.system.systemTextColor
+                  }}
+                  />
+                }
               </div>
               <div className='h-full w-12 mx-0.5 flex justify-center items-center'>
                 <span
-                  className='i-mdi-skip-next text-3xl '
+                  className='i-mdi-skip-next text-3xl cursor-pointer'
                   style={{
                     color: states.Settings.settings.system.systemTextColor || 'white',
                   }}
+                  onClick={handleNextMusic}
                 />
               </div>
             </div>
             <div className='h-1/3 w-full flex justify-evenly items-center'>
               <CustomText
-                text='0:00'
+                text={secondsToMinutes(musicCurrentTime)}
                 className='!text-xs !font-normal '
               />
               <Progress
-                value={50}
+                value={musicProgress}
                 size='sm'
                 color={states.Settings.settings.system.systemHighlightColor}
                 animated
@@ -1159,29 +1332,41 @@ const MusicLibrary = () => {
                 className='w-4/5'
               />
               <CustomText
-                text='0:00'
+                text={secondsToMinutes(musicDuration)}
                 className='!text-xs !font-normal '
               />
             </div>
           </div>
           <div className='h-full w-1/4 flex  px-1' >
             <div className='w-1/6 h-full flex justify-center items-center'>
+              {musicVolume === 0 ? 
+              <span className='i-mdi-volume-mute text-2xl cursor-pointer'
+              style={{
+                color: states.Settings.settings.system.systemTextColor
+              }}
+              onClick={() => {
+                setMusicVolume(0.5)
+              }}
+            />
+              :
               <span className='i-mdi-volume-high text-2xl cursor-pointer'
-                style={{
-                  color: states.Settings.settings.system.systemTextColor
-                }}
-                onClick={() => {
-
-                }}
-              />
+              style={{
+                color: states.Settings.settings.system.systemTextColor
+              }}
+              onClick={() => {
+                setMusicVolume(0)
+              }}
+            />
+              }
             </div>
             <div className='w-5/6 h-full flex justify-center items-center pl-1'>
               <Slider
                 h={6}
                 w={'100%'}
                 color={states.Settings.settings.system.systemTextColor}
+                value={Number((musicVolume * 100).toFixed(0))}
                 onChange={(value) => {
-
+                  setMusicVolume(value / 100)
                 }}
               />
             </div>
