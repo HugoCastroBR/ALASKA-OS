@@ -36,6 +36,7 @@ import ClockApp from '../programs/ClockApp';
 import CustomText from '../atoms/CustomText';
 import FileExplorer from '../programs/FileExplorer';
 import { ImageReaderProps } from '@/types/programs';
+import MusicLibrary from '../programs/MusicLibrary';
 
 const DesktopView = () => {
 
@@ -242,7 +243,7 @@ const DesktopView = () => {
           }
         }
       >
-
+        <MusicLibrary/>
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

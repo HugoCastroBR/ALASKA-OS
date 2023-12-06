@@ -10,6 +10,8 @@ import { mouseContextMenuOptionsProps } from '@/types/mouse'
 import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename, WindowAddTab } from '@/store/actions'
 import { ApiError } from 'next/dist/server/api-utils'
 import jszip from 'jszip'
+// @ts-ignore
+import * as JSZipUtils from 'jszip-utils';
 const MouseMenuContext = ({
   x,
   y,
@@ -507,12 +509,17 @@ const MouseMenuContext = ({
         title='Unzip'
         disabled={getExtension(states.File.selectedFiles[0]) !== 'zip' || states.File.selectedFiles.length !== 1}
         onClick={() => {
+          console.log('unzip')
           const zip = new jszip()
           const path = states.File.selectedFiles[0]
-          fs?.readFile(path, 'utf-8', (err, data) => {
-            console.log(data)
-          })
-        }}
+          if(fs){
+            fs?.readFile(path, (err, data) => {
+              if(err) console.log(err)
+              if(!data) return;
+              console.log(data)
+            })
+          }}
+        }
         className='i-mdi-folder-open'
       />
     )

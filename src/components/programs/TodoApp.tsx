@@ -458,7 +458,7 @@ const TodoApp = ({
               onChange={(e) => {
                 setSearchValue(e.currentTarget.value)
               }}
-              className='mt-1 w-full'
+              className='mt-1 w-full '
               radius={8}
               style={{
                 color: states.Settings.settings.system.systemTextColor || 'white',
