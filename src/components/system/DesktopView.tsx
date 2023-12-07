@@ -38,6 +38,7 @@ import FileExplorer from '../programs/FileExplorer';
 import { ImageReaderProps } from '@/types/programs';
 import MusicLibrary from '../programs/MusicLibrary';
 import { Notifications } from '@mantine/notifications';
+import TrashFolder from '../programs/TrashFolder';
 
 const DesktopView = () => {
 
@@ -90,6 +91,7 @@ const DesktopView = () => {
 
 
   const COMPONENT_MAP: Record<string, React.FC<ImageReaderProps>> = {
+    'Trash': TrashFolder,
     'Console': Console,
     'File Explorer': FileExplorer,
     'Browser': Browser,
@@ -113,6 +115,7 @@ const DesktopView = () => {
     'Todo App': TodoApp,
     'Clock App': ClockApp,
     'Music Library': MusicLibrary,
+    
   };
   
   const handleRenderTabs = () => {
@@ -257,6 +260,7 @@ const DesktopView = () => {
           }
         }
       >
+
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

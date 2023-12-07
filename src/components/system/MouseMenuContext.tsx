@@ -78,26 +78,9 @@ const MouseMenuContext = ({
         disabled={states.File.selectedFiles.length === 0}
         onClick={() => {
           states.File.selectedFiles.forEach((item) => {
-            if (verifyIfIsFile(item)) {
-              deleteFileByPath(item)
-            } else {
-              fs?.rmdir(item, (err) => {
-                if (err) {
-                  fs?.unlink(item, (err) => {
-                    if (err) console.log(err)
-                    console.log('deleted file');
-                    dispatch(ClearFiles())
-
-                  })
-                } else {
-                  console.log('deleted folder');
-                  dispatch(ClearFiles())
-
-                }
-
-
-              })
-            }
+            fs?.rename(item, `/ProgramFiles/Trash/${getLastPathSegment(item)}`, (err) => {
+              console.log(err)
+            })
             dispatch(ClearFiles())
           })
         }}

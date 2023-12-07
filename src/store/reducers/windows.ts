@@ -6,6 +6,12 @@ export const WindowsSlice = createSlice({
   initialState: {
     windows: [
       {
+        title: "Trash",
+        icon: "/assets/icons/trash.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
         title: "Console",
         icon: "/assets/icons/console-icon.png",
         tabs: [] as tabStateProps[],
