@@ -563,7 +563,7 @@ const MouseMenuContext = ({
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
-      <MouseOptionUnzip />
+      {/* <MouseOptionUnzip /> */}
       <MouseOptionCompressFile />
       <MouseOptionCompressFolder />
       <MouseOptionDownload />
