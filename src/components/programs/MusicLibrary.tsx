@@ -9,6 +9,7 @@ import { Dropzone } from '@mantine/dropzone'
 import Image from 'next/image'
 import { addTypeToBase64, getExtension, removeTypeFromBase64, toBase64, wait } from '@/utils/file'
 import { secondsToMinutes } from '@/utils/date'
+import { notifications } from '@mantine/notifications'
 
 const MusicLibrary = () => {
 
@@ -104,6 +105,19 @@ const MusicLibrary = () => {
       setMusicDuration(newAudioElement.duration || 0);
       setIsMusicPlaying(true);
       setIsMusicPaused(false);
+      notifications.show({
+        title: <CustomText text='Now Playing' className='!text-sm !font-semibold' />,
+        message: <CustomText text={`${music.title.slice(0,12)} - ${music.artist.slice(0,12)}`} className='!text-xs !font-semibold' />,
+        icon: <Image
+          alt={music.title}
+          src={music.image64 || '/assets/icons/Alaska.png'}
+          width={80}
+          height={80}
+        />,
+        style:{
+          color: states.Settings.settings.system.systemTextColor,
+        },
+      })
       newAudioElement.play();
     });
     
@@ -187,7 +201,7 @@ const MusicLibrary = () => {
   },[states.System.globalVolumeMultiplier,musicVolume])
 
   useEffect(() => {
-    setMusics(musicItems)
+    setMusics(musicItems.slice(0, currentPlaylistItem?.musics?.length || 0))
   }, [musicItems])
 
   // END Music Methods
@@ -541,7 +555,7 @@ const MusicLibrary = () => {
             height={64}
           />
         </div>
-        <div className='w-[calc(100%-88px)] h-full flex flex-col justify-start px-1'>
+        <div className='w-[calc(100%-64px)] h-full flex flex-col justify-start px-1'>
           <CustomText
             text={truncateText(title, 24)}
             className='!text-xs !font-semibold'
@@ -551,7 +565,7 @@ const MusicLibrary = () => {
             className='!text-xs !font-normal'
           />
         </div>
-        <Menu>
+        {/* <Menu>
           <Menu.Target>
             <div className='w-6 h-6 bg-black bg-opacity-10 rounded flex justify-center items-center
               -ml-1 mt-1 hover:bg-opacity-20 transition-all duration-300 ease-in-out
@@ -579,7 +593,7 @@ const MusicLibrary = () => {
               />
             </Menu.Item>
           </Menu.Dropdown>
-        </Menu>
+        </Menu> */}
       </div>
     )
   }
@@ -1246,7 +1260,7 @@ const MusicLibrary = () => {
         </div>
         <div className='stick flex h-16 w-full p-1 border-t border-white border-opacity-50'>
           <div className='h-full w-1/4 flex ' >
-            <div className='h-14 w-14 flex bg-blue-400 rounded justify-center items-center'>
+            <div className='h-14 w-14 flex  rounded justify-center items-center'>
             {
                 musicSelected?.image64 ?
                   <Image

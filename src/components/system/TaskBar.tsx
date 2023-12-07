@@ -9,7 +9,7 @@ import { SetGlobalVolumeMultiplier, WindowAddTab, WindowRemoveTab, WindowSetTabF
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
 import CustomText from '../atoms/CustomText'
-import { Slider, Tooltip } from '@mantine/core'
+import { Menu, Slider, Tooltip } from '@mantine/core'
 import { getWeather } from '@/api/weatherApi'
 import { uuid } from '@/utils/file'
 
@@ -187,7 +187,62 @@ const TaskBar = () => {
           <StartMenu />
           {handleRenderTabs()}
         </div>
-        <div className='w-2/12 h-full flex justify-end items-center pr-1'>
+        <div className='w-2/12 h-full flex justify-end items-center pr-4'>
+          <div className='flex w-6 h-6 -mr-24 justify-center items-center
+          hover:bg-white hover:bg-opacity-20 rounded transition-all duration-300 ease-in-out
+          '>
+            <Menu
+              position='top-start'
+              offset={10}
+              transitionProps={{
+                transition: 'slide-down',
+                duration: 300
+              }}
+              styles={{
+                dropdown: {
+                  width: '128px',
+                  minHeight: '64px',
+                },
+                item: {
+                  padding: 'none',
+                  margin: 'none',
+                  cursor: 'default',
+                }
+              }}
+            >
+              <Menu.Target>
+                <span className='i-mdi-chevron-up text-xl cursor-pointer '
+                  style={{
+                    color: states.Settings.settings.taskbar.items.color || 'white',
+                  }}
+                />
+              </Menu.Target>
+              <Menu.Dropdown
+                bg={states.Settings.settings.system.systemBackgroundColor}
+              >
+                <Menu.Item
+                  bg={'transparent'}
+                  w={32}
+                  h={32}
+                  p={0}
+                  m={1}
+                >
+                  <Tooltip
+                    label='Music Library'
+                  >
+                    <span
+                      className='i-mdi-music text-xl cursor-pointer m-px'
+                      style={{
+                        color: states.Settings.settings.taskbar.items.color || 'white',
+                      }}
+                      onClick={() => {}}
+                    />
+                  </Tooltip>
+                </Menu.Item>
+
+              </Menu.Dropdown>
+            </Menu>
+          </div>
           <div className='flex w-full items-center justify-end -mr-5'>
             {weatherData?.main?.temp &&
               <div
@@ -222,6 +277,7 @@ const TaskBar = () => {
                 />
               </div>
             }
+
             <span
               className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}

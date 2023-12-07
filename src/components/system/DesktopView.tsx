@@ -37,6 +37,7 @@ import CustomText from '../atoms/CustomText';
 import FileExplorer from '../programs/FileExplorer';
 import { ImageReaderProps } from '@/types/programs';
 import MusicLibrary from '../programs/MusicLibrary';
+import { Notifications } from '@mantine/notifications';
 
 const DesktopView = () => {
 
@@ -202,6 +203,18 @@ const DesktopView = () => {
         />
       </Notification>
       }
+      <Notifications
+        position='top-right'
+        h={80}
+        w={320}
+        styles={{
+          notification:{
+            backgroundColor: states.Settings.settings.system.systemBackgroundColor,
+            color: states.Settings.settings.system.systemTextColor
+          }
+        }}
+      />
+
       <MouseMenuContext
           onRefresh={() => {
             reloadPath('/Desktop')
