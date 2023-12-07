@@ -238,7 +238,6 @@ const MusicLibrary = () => {
 
   useEffect(() => {
     if (currentPlaylistItem) {
-      setMusicItems([])
       setEditPlaylistItemDescription(currentPlaylistItem?.description || '')
       setEditPlaylistItemTitle(currentPlaylistItem?.title || '')
       if(currentPlaylistItem?.musics?.length === 0) return
@@ -257,7 +256,6 @@ const MusicLibrary = () => {
 
 
   const LoadMusics = () => {
-    setMusicItems([])
     if (fs) {
       console.log(currentPlaylistItem?.musics?.length)
       currentPlaylistItem?.musics?.forEach((music) => {
