@@ -3,18 +3,19 @@ import React,{useEffect} from 'react'
 import TaskBar from './TaskBar'
 import DesktopView from './DesktopView'
 import useStore from '@/hooks/useStore'
-import { SettingsSetSettings } from '@/store/actions'
+import { SetCopiedFiles, SettingsSetSettings } from '@/store/actions'
 import useFS from '@/hooks/useFS'
 import useProcess from '@/hooks/useProcess'
 import { Loader } from '@mantine/core'
 import CustomText from '../atoms/CustomText'
+import { useHotkeys } from '@mantine/hooks'
 const Desktop = () => {
 
   const { states, dispatch } = useStore()
   const {loadingMessages} = useProcess()
 
 
-  const { fs } = useFS()
+  const { fs,copyFileByPath,deleteFileByPath,moveFileByPath } = useFS()
 
 
   useEffect(() => {
@@ -56,6 +57,34 @@ const Desktop = () => {
   //   )
   // }
 
+  useHotkeys([
+    ['ctrl+c', () => {
+      dispatch(SetCopiedFiles())
+    
+    }],
+    ['ctrl+v', () => {
+      const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
+      if(states.File.copiedFiles.length){
+        states.File.copiedFiles.forEach((path) => {
+          copyFileByPath(path, pasteTo)
+        })
+      }
+    }],
+    ['ctrl+x', () => {
+      const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
+      if(states.File.copiedFiles.length){
+        states.File.copiedFiles.forEach((path) => {
+          moveFileByPath(path, pasteTo)
+        })
+      }
+    }],
+    ['DELETE', () => {
+      states.File.selectedFiles.forEach((path) => {
+        deleteFileByPath(path)
+      })
+    }]
+  ])
+
   return (
     <main
       className='
@@ -70,6 +99,7 @@ const Desktop = () => {
           backgroundRepeat: 'no-repeat',
         }
       }
+      
     >
 
       <DesktopView/>

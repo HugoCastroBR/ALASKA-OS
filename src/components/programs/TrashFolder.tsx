@@ -17,7 +17,7 @@ const TrashFolder = ({
 
   const basePath = '/ProgramFiles/Trash'
 
-  const {fs} = useFS()
+  const {fs, deletePermanentlyRecursive} = useFS()
   const {states , dispatch } = useStore()
 
   const [totalItems, setTotalItems] = useState<number>(0)
@@ -154,14 +154,18 @@ const TrashFolder = ({
                 fs?.unlink(path, (err) => {
                   if (err) {
                     console.log(err);
-                    fs?.rmdir(path, (err) => {
-                      if (err) {
-                        console.log(err);
-                      } else {
-                        dispatch(ClearFiles())
-                        refresh()
-                      }
-                    })
+                    if(err.code === '2'){
+                      fs?.rmdir(path, (err) => {
+                        if (err) {
+                          if(err.code === 'ENOTEMPTY'){
+                            deletePermanentlyRecursive(path)
+                          }
+                        } else {
+                          dispatch(ClearFiles())
+                          refresh()
+                        }
+                      })
+                    }
                   } else {
                     dispatch(ClearFiles())
                     refresh()
@@ -198,7 +202,7 @@ const TrashFolder = ({
                         console.log(err);
                         fs?.rmdir(`${basePath}/${path}`, (err) => {
                           if (err) {
-                            console.log(err);
+                            deletePermanentlyRecursive(`${basePath}/${path}`)
                           } else {
                             dispatch(ClearFiles())
                             refresh()

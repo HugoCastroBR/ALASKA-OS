@@ -12,6 +12,7 @@ type useFileSystemProps = {
   copyExternalFile: (file:File,toPath:string) => void;
   deleteFileByPath: (path:string) => void;
   moveFileByPath: (fromPath:string,toPath:string) => void;
+  deletePermanentlyRecursive: (path:string) => void;
 }
 
 
@@ -45,18 +46,10 @@ const useFS = ():useFileSystemProps => {
 
 
   const deleteFileByPath = (path:string) => {
-    if(verifyIfIsFile(path)){
-      fs?.unlink(path, (err) => {
-        if (err) {
-          console.log(err)
-          return
-        }
-        console.log('File deleted!')
-        dispatch(ClearFiles())
-      })
-    }else{
-      console.log('To be implemented')
-    }
+    fs?.rename(path, `/ProgramFiles/Trash/${getLastPathSegment(path)}`, (err) => {
+      console.log(err)
+    })
+    dispatch(ClearFiles())
   }
 
   const moveFileByPath =async (fromPath:string,toPath:string) => {
@@ -79,6 +72,36 @@ const useFS = ():useFileSystemProps => {
       })
     }else{
       console.log('To be implemented')
+    }
+  }
+
+  const deletePermanentlyRecursive = (path:string) => {
+    if(verifyIfIsFile(path)){
+      fs?.unlink(path, (err) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        console.log('File deleted!')
+      })
+    }else{
+      fs?.readdir(path, (err, files) => {
+        if(err){
+          console.log(err)
+          return
+        }
+        if(!files) return
+        files.forEach((file) => {
+          deletePermanentlyRecursive(`${path}/${file}`)
+        })
+        fs?.rmdir(path, (err) => {
+          if(err){
+            console.log(err)
+            return
+          }
+          console.log('Folder deleted!')
+        })
+      })
     }
   }
 
@@ -115,7 +138,7 @@ const useFS = ():useFileSystemProps => {
   }
 
   
-  return { fs, copyFileByPath, copyExternalFile,deleteFileByPath,moveFileByPath , isLoadingFS };
+  return { fs, copyFileByPath, copyExternalFile,deleteFileByPath,moveFileByPath , isLoadingFS,deletePermanentlyRecursive };
 }
 
 export default useFS;

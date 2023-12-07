@@ -22,7 +22,7 @@ const MouseMenuContext = ({
 
 
   const { states, dispatch } = useStore()
-  const { fs, deleteFileByPath } = useFS()
+  const { fs, deleteFileByPath, deletePermanentlyRecursive } = useFS()
   const MouseOption = ({
     className,
     title,
@@ -83,6 +83,12 @@ const MouseMenuContext = ({
             })
             dispatch(ClearFiles())
           })
+
+          // CAUTION: This is a recursive function, it will delete all files and folders inside the selected folder
+          // states.File.selectedFiles.forEach((item) => {
+          //   deletePermanentlyRecursive(item)
+          //   dispatch(ClearFiles())
+          // })
         }}
         className='i-mdi-delete'
       />
