@@ -87,7 +87,9 @@ const DefaultWindow = ({
         ${currentTab?.maximized ? '' : 'backdrop-filter backdrop-blur-sm shadow-2xl'}
         ${currentTab?.focused ? 'z-30' : 'z-20'}
         ${resizable && !currentTab?.maximized ? 'hover:resize' : ''}
-        ${className}`}
+        ${className}
+        `}
+        
         style={{
           backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'transparent',
         }}

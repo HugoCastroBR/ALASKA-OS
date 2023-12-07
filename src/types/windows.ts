@@ -11,6 +11,7 @@ export type tabStateProps = {
   url?: string
   extension?: string
   local?: boolean
+  secondPlan?: boolean
 }
 
 

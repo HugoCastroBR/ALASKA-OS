@@ -5,7 +5,7 @@ import StartMenu from './StartMenu'
 import Image from 'next/image'
 import useStore from '@/hooks/useStore'
 import { WeatherProps, programProps } from '@/types/programs'
-import { SetGlobalVolumeMultiplier, WindowAddTab, WindowRemoveTab, WindowSetTabFocused, WindowToggleMinimizeTab } from '@/store/actions'
+import { PutTabInFirstPlan, SetGlobalVolumeMultiplier, WindowAddTab, WindowRemoveTab, WindowSetTabFocused, WindowToggleMinimizeTab } from '@/store/actions'
 import Clock from '../molecules/Clock'
 import { truncateText } from '@/utils/text'
 import CustomText from '../atoms/CustomText'
@@ -104,13 +104,15 @@ const TaskBar = () => {
   const handleRenderTabs = () => {
     return states.Windows.windows.map((window, index) => {
       return window.tabs.map((tab, index) => {
-        return (
-          <TaskBarItem
-            key={index}
-            tab={tab}
-            AlaskaWindow={window}
-          />
-        )
+        if(!tab.secondPlan){
+          return (
+            <TaskBarItem
+              key={index}
+              tab={tab}
+              AlaskaWindow={window}
+            />
+          )
+        }
       })
 
     })
@@ -195,7 +197,7 @@ const TaskBar = () => {
               position='top-start'
               offset={10}
               transitionProps={{
-                transition: 'slide-down',
+                transition: 'pop',
                 duration: 300
               }}
               styles={{
@@ -235,7 +237,45 @@ const TaskBar = () => {
                       style={{
                         color: states.Settings.settings.taskbar.items.color || 'white',
                       }}
-                      onClick={() => {}}
+                      onClick={() => {
+                        const verifyIfHasAMusicLibraryMinimized = () => {
+                          const verify = states.Windows.windows.filter((window) => {
+                            return window.title === 'Music Library' && window?.tabs[0]?.minimized
+                          })
+                          return verify.length > 0
+                        }
+
+                        const verifyIfHasAMusicLibraryInSecondPlan = () => {
+                          const verify = states.Windows.windows.filter((window) => {
+                            return window.title === 'Music Library' && !window?.tabs[0]?.secondPlan
+                          })
+                          return verify.length > 0
+                        }
+
+                        
+
+                        if(verifyIfHasAMusicLibraryMinimized()){
+                          dispatch(WindowToggleMinimizeTab({
+                            title: 'Music Library',
+                            uuid: states.Windows.windows.filter((window) => {
+                              return window.title === 'Music Library'
+                            })[0].tabs[0].uuid,
+                          }))
+                        }
+                        else{
+                          dispatch(WindowAddTab({
+                            title: 'Music Library',
+                            tab: {
+                              title: 'Music Library',
+                              uuid: uuid(6),
+                              value: 'music-library',
+                              maximized: false,
+                              minimized: false,
+                              focused: true,
+                            }
+                          }))
+                        }
+                      }}
                     />
                   </Tooltip>
                 </Menu.Item>

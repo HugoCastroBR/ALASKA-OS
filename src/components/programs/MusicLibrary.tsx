@@ -10,8 +10,14 @@ import Image from 'next/image'
 import { addTypeToBase64, getExtension, removeTypeFromBase64, toBase64, wait } from '@/utils/file'
 import { secondsToMinutes } from '@/utils/date'
 import { notifications } from '@mantine/notifications'
+import DefaultWindow from '../containers/DefaultWindow'
+import { programProps } from '@/types/programs'
+import { PutTabInSecondPlan } from '@/store/actions'
 
-const MusicLibrary = () => {
+const MusicLibrary = ({
+  tab,
+  AlaskaWindow,
+}:programProps) => {
 
   const basePath = '/ProgramFiles/MusicLibrary'
 
@@ -79,7 +85,7 @@ const MusicLibrary = () => {
 
   // Utils
   const [searchText, setSearchText] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(true)
 
   // START Music Methods
   const handleTogglePause = () => {
@@ -208,6 +214,7 @@ const MusicLibrary = () => {
 
 
   const loadPlaylistItems = () => {
+    setIsLoading(true)
     setPlaylistItems([])
     fs?.readdir(basePath, (err, playListsFolder) => {
       if (err) {
@@ -242,6 +249,7 @@ const MusicLibrary = () => {
         })
       }
     })
+    setIsLoading(false)
   }
 
   useEffect(() => {
@@ -270,6 +278,7 @@ const MusicLibrary = () => {
 
 
   const LoadMusics = () => {
+    setIsLoading(true)
     if (fs) {
       console.log(currentPlaylistItem?.musics?.length)
       currentPlaylistItem?.musics?.forEach((music) => {
@@ -293,7 +302,8 @@ const MusicLibrary = () => {
           })
         }
       })
-    } 
+    }
+    setIsLoading(false)
   }
 
 
@@ -304,6 +314,7 @@ const MusicLibrary = () => {
 
   const CreateNewPlaylist = () => {
     const _path = `${basePath}/${newPlaylistItemTitle}`
+    setIsLoading(true)
     fs?.mkdir(_path, (err: ApiError) => {
       if (err) throw err
 
@@ -343,12 +354,13 @@ const MusicLibrary = () => {
           loadPlaylistItems()
         })
       }
-
+      setIsLoading(false)
 
     })
   }
 
   const EditCurrentPlaylist = () => {
+    setIsLoading(true)
     if (fs && editPlaylistItemTitle && editPlaylistItemDescription) {
       fs?.rename(`${basePath}/${currentPlaylistItem?.title}`, `${basePath}/${editPlaylistItemTitle}`, (err) => {
         if (err) throw err
@@ -367,7 +379,7 @@ const MusicLibrary = () => {
       })
       
     }
-    
+    setIsLoading(false)
   }
 
   const RemoveMusicFromPlayList = (musicTitle: string) => {
@@ -392,6 +404,7 @@ const MusicLibrary = () => {
   }
 
   const DeleteCurrentPlayList = () => {
+    setIsLoading(true)
     fs?.readdir(`${basePath}/${currentPlaylistItem?.title}`, (err, files) => {
       if(err) throw err
       files?.forEach((file) => {
@@ -406,13 +419,13 @@ const MusicLibrary = () => {
   
     })
 
-    
+    setIsLoading(false)
     setEditingPlaylistId(null)
     loadPlaylistItems()
   }
 
   const createMusic = () => {
-    
+    setIsLoading(true)
     if (fs && newMusicItemFile && newMusicItemImgFile && newMusicItemTitle && newMusicItemArtist) {
       const _path = `${basePath}/Musics/${newMusicItemTitle}`
       const newMusicProps: MusicItemProps = {
@@ -465,6 +478,7 @@ const MusicLibrary = () => {
       })
 
     }
+    setIsLoading(false)
   }
 
 
@@ -606,12 +620,13 @@ const MusicLibrary = () => {
     rounded-lg '
     >
       <div
-        className='w-full h-full flex flex-col'
+        className='w-full h-full flex flex-col items-center justify-center'
         style={{
           backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white',
         }}
       >
         <Loader
+          size={128}
           color={states.Settings.settings.system.systemHighlightColor || 'cyan'}
         />
       </div>
@@ -620,10 +635,18 @@ const MusicLibrary = () => {
   }
 
   return (
-    <div
-      className='absolute w-1/2 h-1/2 top-1/4 left-1/4
-    flex flex-col  overflow-hidden
-    rounded-lg '
+    <DefaultWindow
+      currentTab={tab}
+      currentWindow={AlaskaWindow}
+      title='Music Library'
+      uuid={tab.uuid}
+      onClose={() => {
+        if(!isMusicPaused){
+          handleTogglePause()
+        }
+      }}
+      onMinimize={() => {}}
+      onMaximize={() => {}}
     >
       <div
         className='w-full h-full flex flex-col'
@@ -1385,7 +1408,7 @@ const MusicLibrary = () => {
           </div>
         </div>
       </div>
-    </div >
+    </DefaultWindow >
   )
 }
 
