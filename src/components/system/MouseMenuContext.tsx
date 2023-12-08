@@ -3,13 +3,15 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
+import { addTypeToBase64, base64ToFile, bufferToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
 import { ClearFiles, SetCopiedFiles, SetIsNewFile, SetIsNewFolder, SetIsRename, WindowAddTab } from '@/store/actions'
 import { ApiError } from 'next/dist/server/api-utils'
 import jszip from 'jszip'
+// @ts-ignore
+import * as JSZipUtils from 'jszip-utils';
 const MouseMenuContext = ({
   x,
   y,
@@ -20,7 +22,7 @@ const MouseMenuContext = ({
 
 
   const { states, dispatch } = useStore()
-  const { fs } = useFS()
+  const { fs, deleteFileByPath, deletePermanentlyRecursive } = useFS()
   const MouseOption = ({
     className,
     title,
@@ -51,7 +53,7 @@ const MouseMenuContext = ({
         className={`${disabled ? 'opacity-50 cursor-not-allowed' : 'opacity-100'}
         text-white text-sm flex items-center 
         transition-all duration-300 ease-in-out cursor-pointer 
-        w-48 h-8 -ml-1 p-2
+        w-48 h-8 -ml-1 px-2 py-1
         `}
         style={{
           backgroundColor: isHovered ? states.Settings.settings.system.systemHighlightColor : 'transparent',
@@ -76,34 +78,17 @@ const MouseMenuContext = ({
         disabled={states.File.selectedFiles.length === 0}
         onClick={() => {
           states.File.selectedFiles.forEach((item) => {
-            if (verifyIfIsFile(item)) {
-              fs?.unlink(item, (err) => {
-                if (err) {
-                  fs?.rmdir(item, (err) => {
-                    if (err) console.log(err)
-                    console.log('deleted folder');
-                  })
-                } else {
-                  console.log('deleted file');
-                }
-
-              })
-            } else {
-              fs?.rmdir(item, (err) => {
-                if (err) {
-                  fs?.unlink(item, (err) => {
-                    if (err) console.log(err)
-                    console.log('deleted file');
-                  })
-                } else {
-                  console.log('deleted folder');
-                }
-
-
-              })
-            }
+            fs?.rename(item, `/ProgramFiles/Trash/${getLastPathSegment(item)}`, (err) => {
+              console.log(err)
+            })
             dispatch(ClearFiles())
           })
+
+          // CAUTION: This is a recursive function, it will delete all files and folders inside the selected folder
+          // states.File.selectedFiles.forEach((item) => {
+          //   deletePermanentlyRecursive(item)
+          //   dispatch(ClearFiles())
+          // })
         }}
         className='i-mdi-delete'
       />
@@ -189,6 +174,7 @@ const MouseMenuContext = ({
                   fs?.writeFile(`${"/Desktop"}/${getLastPathSegment(file)}`, data, (err) => {
                     if (err) console.log(err)
                     console.log('copied');
+                    dispatch(ClearFiles())
                   })
                 })
               }
@@ -196,6 +182,8 @@ const MouseMenuContext = ({
                 fs?.mkdir(`${"/Desktop"}/${getLastPathSegment(file)}`, (err: ApiError) => {
                   if (err) console.log(err)
                   console.log('copied');
+                  dispatch(ClearFiles())
+
                 })
               }
             })
@@ -208,6 +196,8 @@ const MouseMenuContext = ({
                 fs?.writeFile(`${pasteTo}/${getLastPathSegment(file)}`, data, (err) => {
                   if (err) console.log(err)
                   console.log('copied');
+                  dispatch(ClearFiles())
+
                 })
               })
             }
@@ -215,6 +205,8 @@ const MouseMenuContext = ({
               fs?.mkdir(`${pasteTo}/${getLastPathSegment(file)}`, (err: ApiError) => {
                 if (err) console.log(err)
                 console.log('copied');
+                dispatch(ClearFiles())
+
               })
             }
           })
@@ -235,7 +227,37 @@ const MouseMenuContext = ({
           console.log('download')
           states.File.selectedFiles.forEach((file) => {
             if (!verifyIfIsFile(file)) return;
-
+            if (getExtension(file) === 'json') {
+              fs?.readFile(file, (err, buffer) => {
+                if (err) {
+                  console.error('Error reading the file:', err);
+                  return;
+                }
+            
+                if (!buffer || buffer.length === 0) {
+                  console.warn('File is empty');
+                  return;
+                }
+            
+                const fileType = convertFileExtensionToFileType(getExtension(file));
+                const fileName = getLastPathSegment(file);
+                const fileSolved = bufferToFile(buffer, { fileType, fileName });
+            
+                const blob = new Blob([fileSolved]);
+                const objectUrl = URL.createObjectURL(blob);
+            
+                const element = document.createElement('a');
+                element.href = objectUrl;
+                element.download = fileName;
+                document.body.appendChild(element);
+                element.click();
+            
+                // Clean up the objectUrl to avoid memory leaks
+                URL.revokeObjectURL(objectUrl);
+                document.body.removeChild(element);
+              });
+            }
+          
             fs?.readFile(file, 'utf-8', (err, data) => {
               console.log(file,data)
               if (err) console.error(err);
@@ -377,6 +399,34 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenWithDataReader = () => {
+    return (
+      <MouseOption
+        title='Open with Data Reader'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Data Reader',
+                tab: {
+                  title: 'Data Reader',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                  content: data,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-file-eye'
+      />
+    )
+  }
+
   const MouseOptionOpenWith = () => {
     const [isOptionsOpen, setIsOptionsOpen] = React.useState(false)
 
@@ -420,6 +470,7 @@ const MouseMenuContext = ({
                 backgroundColor: states.Settings.settings.system.systemBackgroundColor,
               }}
             >
+              <MouseOptionOpenWithDataReader/>
               <MouseOptionOpenInBrowser />
               <MouseOptionOpenWIthCodeEditor />
               <MouseOptionOpenWithRichTextEditor />
@@ -506,17 +557,34 @@ const MouseMenuContext = ({
         title='Unzip'
         disabled={getExtension(states.File.selectedFiles[0]) !== 'zip' || states.File.selectedFiles.length !== 1}
         onClick={() => {
+          console.log('unzip')
           const zip = new jszip()
           const path = states.File.selectedFiles[0]
-          fs?.readFile(path, 'utf-8', (err, data) => {
-            console.log(data)
-          })
-        }}
+          if(fs){
+            fs?.readFile(path, (err, data) => {
+              if(err) console.log(err)
+              if(!data) return;
+              console.log(data)
+            })
+          }}
+        }
         className='i-mdi-folder-open'
       />
     )
   }
 
+  const MouseOptionClearSelectedFiles = () => {
+    return (
+      <MouseOption
+        title='Clear Selection'
+        disabled={states.File.selectedFiles.length < 1}
+        onClick={() => {
+          dispatch(ClearFiles())
+        }}
+        className='i-mdi-close'
+      />
+    )
+  }
   
 
   return (
@@ -538,11 +606,12 @@ const MouseMenuContext = ({
       
       <MouseOptionCopy />
       <MouseOptionPaste />
+      <MouseOptionClearSelectedFiles />
       <MouseOptionOpenWith />
       <MouseOptionNewFile />
       <MouseOptionNewFolder />
       <MouseOptionRename />
-      <MouseOptionUnzip />
+      {/* <MouseOptionUnzip /> */}
       <MouseOptionCompressFile />
       <MouseOptionCompressFolder />
       <MouseOptionDownload />

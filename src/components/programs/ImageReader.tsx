@@ -8,7 +8,7 @@ import DefaultWindow from '../containers/DefaultWindow'
 
 const ImageReader = ({
   tab,
-  window,
+  AlaskaWindow,
   path
 }:ImageReaderProps) => {
 
@@ -71,7 +71,7 @@ const ImageReader = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title={tab.ficTitle || tab.title}
       onClose={() => {}}
       onMaximize={() => {}}

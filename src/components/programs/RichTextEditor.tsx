@@ -22,7 +22,7 @@ import mammoth from 'mammoth';
 
 const RichTextEditorComponent = ({
   tab,
-  window,
+  AlaskaWindow,
 }: programProps) => {
 
 
@@ -122,7 +122,7 @@ const RichTextEditorComponent = ({
         title='Rich Text Editor'
         className='w-2/4 h-3/5 flex flex-col '
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         uuid={tab.uuid}
         resizable>
         <div className='bg-black h-full w-full flex justify-center items-center'>
@@ -140,7 +140,7 @@ const RichTextEditorComponent = ({
       {saveAsInputOpen &&
         <DefaultWindow
           currentTab={tab}
-          currentWindow={window}
+          currentWindow={AlaskaWindow}
           preventDefaultClose
           onClose={() => {
             setSaveAsInputOpen(false)
@@ -193,7 +193,7 @@ const RichTextEditorComponent = ({
         onClose={() => { }}
         onMaximize={() => { }}
         onMinimize={() => { }}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         uuid={tab.uuid}
         resizable
       >

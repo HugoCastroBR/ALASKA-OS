@@ -118,7 +118,6 @@ const DesktopFile = ({
     case 'ts':
     case 'jsx':
     case 'tsx':
-    case 'json':
     case 'html':
     case 'css':
     case 'py':
@@ -182,6 +181,36 @@ const DesktopFile = ({
           }
         }))
       )
+      case 'json':
+      return(
+        dispatch(WindowAddTab({
+          title: 'Data Reader',
+          tab: {
+            title: 'Data Reader',
+            ficTitle: title,
+            uuid: uuid(6),
+            value: path,
+            maximized: false,
+            minimized: false,
+            focused: true,
+          }
+        }))
+      )
+      default:
+        return(
+          dispatch(WindowAddTab({
+            title: 'Data Reader',
+            tab: {
+              title: 'Data Reader',
+              ficTitle: title,
+              uuid: uuid(6),
+              value: path,
+              maximized: false,
+              minimized: false,
+              focused:true,
+            }
+          }))
+        )
     }
   }
 

@@ -6,11 +6,11 @@ Alaska OS is a web-based operating system that offers a seamless user experience
 
 ### File Support
 
-Alaska OS accommodates a diverse range of file formats, including images (JPG, JPEG, PNG, GIF), text documents (TXT, MD, RTF), audio (MP3, WAV), and more.
+Alaska OS accommodates a diverse range of file formats, including images (JPG, JPEG, PNG, GIF), text documents (TXT, MD, RTF), audio (MP3, WAV), code (HTML, CSS, JS, TS, JSX, TSX, PYTHON), data (JSON,XLSX) and more!
 
 ### Built-in Code Editor
 
-Experience a versatile code editing environment with the Monaco Editor, providing a smooth and efficient coding experience.
+Experience a versatile code editing environment with the Monaco Editor, providing a smooth and efficient coding experience with diverses languages like python, javascript, typescript and more.
 
 ### Functional Web Browser
 
@@ -28,9 +28,13 @@ Effortlessly manage multiple windows with an intuitive interface, streamlining t
 
 Alaska OS comes with EmulatorJS, allowing for the emulation of various systems directly within the operating system. By default, Alaska OS includes the Pokemon Fire Red game, providing entertainment directly within the OS environment.
 
+### Compressed Files
+
+Alaska OS can compress files and folders to .zip! you can also upload or download those files.
+
 ## Interface Features
 
-Explore the capabilities of Alaska OS through these mouse options integrated into the graphical user interface:
+Explore the capabilities of Alaska OS through these mouse options integrated into the graphical user interface, with the new design of the mouse menu context you can:
 
 * **Copy:** Copy selected files or text.
 * **Paste:** Paste copied content.
@@ -38,9 +42,12 @@ Explore the capabilities of Alaska OS through these mouse options integrated int
 * **New Folder:** Create a new folder in the current directory.
 * **Rename:** Rename a selected file or folder.
 * **Download:** Download the selected file.
-* **Delete:** Permanently delete the selected file or folder.
+* **Delete:** Soft delete the selected file or folder.
 * **Refresh:** Refresh the current view.
 * **Open With:** Open selected files with another software.
+* **Compress:** Compress a file or  folder.
+* **Refresh Directory:** Refresh the current directory.
+* **Clear Selection:** Clear the selection.
 
 ## Native Software
 
@@ -68,22 +75,46 @@ Alaska OS includes a variety of pre-configured software for different applicatio
 20. Weather App
 21. Todo App
 22. Clock App
+23. Music Library
+24. Trash Can
+25. Data Reader
 
-## Update 0.2.6 - Python and Optimizations
 
-#### Python is now full supported
+## Update 0.3.1 - Music, Notifications, and Optimizations
 
-In Alaska OS, it is now possible to customize various functionalities and every stylistic detail of the system, in addition to optimizations that have been implemented. Enjoy a personalized experience!
+#### UI Easier Than Ever
 
-- Notifications: Alaska OS, now have notifications with sounds for clock events
-- Performance: Improved and majority of reported bugs are now fixed
-- Styles: Default Styles fixed to a good first experience
-- Loadings faster and a query of process to optimize
-- Now all native apps create the files needed and settings.
-- Settings can be exported
-- File Structure now have a pattern
-- Added new mouse features
+The UI is now much better and optimized than ever before. You can easily navigate between every part of the OS using just the UI, with no need for console commands.
 
+#### Keyboard Utilities
+
+Now you can enjoy using keys to improve your experience:
+
+* **Ctrl + C:** Copy Files/Folders
+* **Ctrl + V:** Paste Files/Folders
+* **Ctrl + X:** Cut Files/Folders
+* **DEL:** Move Files/Folders to Trash
+
+#### File Explorer
+
+In this update, we have a completely new file explorer - optimized, better UI, more functionalities, and much more:
+
+* Show the directory correctly.
+* Move between directories using breadcrumbs.
+* See the size, total, and selected items directly in the directory.
+
+#### Music Apps
+
+In Alaska OS, it is now possible to customize your experiences with different music/audio players, with visualizers, playlists, and much more:
+
+* Notifications: Alaska OS now has notifications when music changes.
+* Performance: Improved, and the majority of reported bugs are now fixed.
+* Styles: Default styles fixed for a good first experience.
+* Faster loadings and a query of processes to optimize.
+* Now all native apps create the necessary files and settings.
+* Settings can be exported.
+* The file structure now follows a pattern.
+* Added new mouse features.
 
 Alaska OS now supports a variety of file types, including:
 
@@ -133,6 +164,10 @@ To set up Alaska OS locally:
 * EmulatorJS
 * Monaco Editor
 * Redux Toolkit
+* jszip
+* python-js
+* react-py
+* json-viewer
 
 ## Getting Started
 

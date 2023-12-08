@@ -106,6 +106,12 @@ export const ClearAllFocused = () => {
 export const CloseALLTabsFromAllWindows = () => {
   return WindowsActions.CLOSE_ALL_TABS_FROM_ALL_WINDOWS()
 }
+export const PutTabInSecondPlan = (payload:{title:string,uuid:string}) => {
+  return WindowsActions.PUT_TAB_IN_SECOND_PLAN(payload)
+}
+export const PutTabInFirstPlan = (payload:{title:string,uuid:string}) => {
+  return WindowsActions.PUT_TAB_IN_FIRST_PLAN(payload)
+}
 
 export const AddSelectedFile = (payload:string) => {
   return FileActions.ADD_SELECTED_FILE(payload)

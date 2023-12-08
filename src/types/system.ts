@@ -33,3 +33,8 @@ export type SystemNotificationType = {
   title: string;
   message: string;
 }
+
+export type HistoryPathProps = {
+  title: string;
+  path: string;
+}

@@ -9,7 +9,7 @@ import DefaultWindow from '../containers/DefaultWindow'
 
 const WeatherApp = ({
   tab,
-  window
+  AlaskaWindow
 }:programProps) => {
 
 
@@ -166,11 +166,11 @@ const WeatherApp = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       className='!w-1/3 !h-2/3'
       resizable
       uuid={tab.uuid}
-      title={window.title}
+      title={AlaskaWindow.title}
       onClose={() => {}}
       onMinimize={() => {}}
     >

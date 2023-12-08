@@ -24,6 +24,25 @@ export const convertSizeToKBMBGB = (size: number) => {
 
   return `${size} B`;
 }
+export const convertSizeToKBMBGBExtended = (size: number) => {
+  const kb = 1024;
+  const mb = kb * 1024;
+  const gb = mb * 1024;
+
+  if (size >= gb) {
+    return `${(size / gb).toFixed(2)} Gigabytes`;
+  }
+
+  if (size >= mb) {
+    return `${(size / mb).toFixed(2)} Megabytes`;
+  }
+
+  if (size >= kb) {
+    return `${(size / kb).toFixed(2)} Kilobytes`;
+  }
+
+  return `${size} Bytes`;
+}
 
 export const uuid = (length: number) => {
   const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz';
@@ -352,17 +371,14 @@ export const htmlToArrayBuffer = (html: string) => {
 }
 
 export const htmlToBase64 = (html: string) => {
-    // Encode the HTML content to handle characters outside the Latin1 range
     const encodedHtml = encodeURIComponent(html);
 
-    // Use btoa to convert the encoded HTML to Base64
     const base64 = btoa(encodedHtml);
   
     return base64;
 }
 
 export const encodedBase64ToArrayBuffer = (base64: string) => {
-  // Decode the Base64 string and handle characters outside the Latin-1 range
   const binaryString = Buffer.from(base64, 'base64').toString('binary');
 
   const len = binaryString.length;
@@ -374,3 +390,16 @@ export const encodedBase64ToArrayBuffer = (base64: string) => {
 
   return bytes.buffer;
 };
+
+export function isFile(item: any): item is File {
+  return item instanceof File;
+}
+
+export const fileToBase64 = async (file: File):Promise<string> => {
+  const base64 = await toBase64(file);
+  return base64 as unknown as string;
+}
+
+export function bufferToFile(buffer: Buffer, options: { fileType: string; fileName: string }): Uint8Array {
+  return new Uint8Array(buffer);
+}

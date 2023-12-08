@@ -3,7 +3,7 @@ import CustomText from '../atoms/CustomText';
 import DefaultWindow from '../containers/DefaultWindow';
 import { programProps } from '@/types/programs';
 
-const Calculator = ({ tab, window }: programProps) => {
+const Calculator = ({ tab, AlaskaWindow }: programProps) => {
   const [expression, setExpression] = useState<string>('');
 
 
@@ -56,7 +56,7 @@ const Calculator = ({ tab, window }: programProps) => {
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='Calculator'
       uuid={tab.uuid}
       onClose={() => { }}

@@ -6,14 +6,26 @@ export const WindowsSlice = createSlice({
   initialState: {
     windows: [
       {
+        title: "Trash",
+        icon: "/assets/icons/trash.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
         title: "Console",
         icon: "/assets/icons/console-icon.png",
         tabs: [] as tabStateProps[],
         showOnDesktop: true
       },
+      // {
+      //   title: "Explorer",
+      //   icon: "/assets/icons/folder.png",
+      //   tabs: [] as tabStateProps[],
+      //   showOnDesktop: false
+      // },
       {
-        title: "Explorer",
-        icon: "/assets/icons/folder.png",
+        title: 'File Explorer',
+        icon: '/assets/icons/folder.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
       },
@@ -136,7 +148,20 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/clock.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: 'Music Library',
+        icon: '/assets/icons/musicLibrary.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
+        title: 'Data Reader',
+        icon: '/assets/icons/dataReader.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
       }
+
     ] as windowStateProps[]
   
   },    
@@ -151,6 +176,24 @@ export const WindowsSlice = createSlice({
       const window = state.windows.find((window) => window.title === payload.title);
       if (window) {
         window.tabs.push(payload.tab);
+      }
+    },
+    PUT_TAB_IN_SECOND_PLAN(state, { payload }: { payload: { title: string; uuid: string } }) {
+      const window = state.windows.find((window) => window.title === payload.title);
+      if (window) {
+        const tab = window.tabs.find((tab) => tab.uuid === payload.uuid);
+        if (tab) {
+          tab.secondPlan = true;
+        }
+      }
+    },
+    PUT_TAB_IN_FIRST_PLAN(state, { payload }: { payload: { title: string; uuid: string } }) {
+      const window = state.windows.find((window) => window.title === payload.title);
+      if (window) {
+        const tab = window.tabs.find((tab) => tab.uuid === payload.uuid);
+        if (tab) {
+          tab.secondPlan = false;
+        }
       }
     },
     REMOVE_TAB(state, { payload }: { payload: { title: string; uuid: string } }) {

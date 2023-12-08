@@ -4,12 +4,12 @@ import DefaultWindow from '../containers/DefaultWindow'
 
 const PokemonFireRed = ({
   tab,
-  window,
+  AlaskaWindow,
 }:programProps) => {
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='Pokemon Fire Red'
       uuid={tab.uuid}
       onClose={() => { }}

@@ -10,7 +10,7 @@ import useStore from '@/hooks/useStore'
 import useSettings from '@/hooks/useSettings'
 const VideoPlayer = ({
   tab,
-  window
+  AlaskaWindow
 }:programProps) => {
 
   const { fs } = useFS()
@@ -105,7 +105,7 @@ const VideoPlayer = ({
       <DefaultWindow
         title={tab?.ficTitle || 'Video Player'}
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         resizable
         uuid={tab?.uuid || ''}
         onClose={() => {
@@ -135,7 +135,7 @@ const VideoPlayer = ({
     <DefaultWindow
       title={tab?.ficTitle || 'Video Player'}
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       resizable
       uuid={tab?.uuid || ''}
       onClose={() => {

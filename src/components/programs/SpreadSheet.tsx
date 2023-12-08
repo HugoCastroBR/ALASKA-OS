@@ -10,7 +10,7 @@ import DefaultWindow from '../containers/DefaultWindow';
 import { programProps } from '@/types/programs';
 const SpreadSheet = ({
   tab,
-  window
+  AlaskaWindow
 }: programProps) => {
 
   const { fs } = useFS()
@@ -144,7 +144,7 @@ const SpreadSheet = ({
     return (
       <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title={tab.ficTitle || tab.title}
       uuid={tab.uuid}
       resizable
@@ -168,7 +168,7 @@ const SpreadSheet = ({
       {saveAsInputOpen &&
         <DefaultWindow
           currentTab={tab}
-          currentWindow={window}
+          currentWindow={AlaskaWindow}
           preventDefaultClose
           onClose={() => {
             setSaveAsInputOpen(false)
@@ -216,7 +216,7 @@ const SpreadSheet = ({
       }
       <DefaultWindow
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         title={tab.ficTitle || tab.title}
         uuid={tab.uuid}
         resizable

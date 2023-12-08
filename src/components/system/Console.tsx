@@ -10,7 +10,7 @@ import useFS from '@/hooks/useFS'
 
 const Console = ({
   tab,
-  window,
+  AlaskaWindow,
   vanilla,
   interceptBrowserConsole
 }:consoleProps) => {
@@ -138,7 +138,7 @@ const Console = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       uuid={tab.uuid}
       onClose={() => {}}
       onMaximize={() => {}}

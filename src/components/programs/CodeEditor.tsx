@@ -15,7 +15,7 @@ import { usePython } from 'react-py';
 import useProcess from '@/hooks/useProcess';
 const CodeEditor = ({
   tab,
-  window
+  AlaskaWindow
 }: programProps) => {
 
   const monaco = useMonaco()
@@ -112,7 +112,7 @@ const CodeEditor = ({
     return (
       <DefaultWindow
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         title='Code Editor'
         uuid={tab.uuid}
         resizable
@@ -136,7 +136,7 @@ const CodeEditor = ({
       {saveAsInputOpen &&
         <DefaultWindow
           currentTab={tab}
-          currentWindow={window}
+          currentWindow={AlaskaWindow}
           preventDefaultClose
           onClose={() => {
             setSaveAsInputOpen(false)
@@ -184,7 +184,7 @@ const CodeEditor = ({
       }
       <DefaultWindow
         currentTab={tab}
-        currentWindow={window}
+        currentWindow={AlaskaWindow}
         title='Code Editor'
         uuid={tab.uuid}
         resizable
@@ -256,7 +256,7 @@ const CodeEditor = ({
             <div className='h-2/6 w-full'>
               <Console
                 tab={tab}
-                window={window}
+                AlaskaWindow={AlaskaWindow}
                 key={tab.uuid}
                 vanilla
                 interceptBrowserConsole

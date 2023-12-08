@@ -5,17 +5,18 @@ import { Dropzone } from '@mantine/dropzone'
 import { truncateText } from '@/utils/text'
 import { MusicItemProps } from '@/types/musics'
 import useFS from '@/hooks/useFS'
-import { addTypeToBase64, audioToBase64, getExtension, getExtensionFromBase64, imageToBase64, removeTypeFromBase64, uuid, verifyIfExtensionIsAudio, wait } from '@/utils/file'
+import { addTypeToBase64, audioToBase64, getExtension, getExtensionFromBase64, getLastPathSegment, imageToBase64, removeTypeFromBase64, uuid, verifyIfExtensionIsAudio, wait } from '@/utils/file'
 import { ApiError } from 'next/dist/server/api-utils'
 import Image from 'next/image'
 import { secondsToMinutes } from '@/utils/date'
 import { programProps } from '@/types/programs'
 import DefaultWindow from '../containers/DefaultWindow'
 import useStore from '@/hooks/useStore'
+import { notifications } from '@mantine/notifications'
 
 const MyMusics = ({
   tab,
-  window
+  AlaskaWindow
 }: programProps) => {
 
   const { fs } = useFS()
@@ -120,6 +121,19 @@ const MyMusics = ({
       setMusicDuration(newAudioElement.duration || 0);
       setIsMusicPlaying(true);
       setIsMusicPaused(false);
+      notifications.show({
+        title: <CustomText text='Now Playing' className='!text-sm !font-semibold' />,
+        message: <CustomText text={`${music.name.slice(0,12)} - ${music.artist.slice(0,12)}`} className='!text-xs !font-semibold' />,
+        icon: <Image
+          alt={music.name}
+          src={music.image || '/assets/icons/Alaska.png'}
+          width={80}
+          height={80}
+        />,
+        style:{
+          color: states.Settings.settings.system.systemTextColor,
+        },
+      })
       newAudioElement.play();
     });
   
@@ -199,63 +213,46 @@ const MyMusics = ({
   }
 
   const LoadMusics = async () => {
-    const FolderName = '/ProgramFiles/myMusics'
+    const FolderName = '/ProgramFiles/MusicLibrary/Musics'
     setMusics([])
     fs?.readdir(FolderName, (err, folders) => {
-      if (err) {
+      if(err){
         console.log(err)
-      } else {
-        folders?.forEach((folder) => {
+      }
+      folders?.forEach((folder) => {
+        fs.readFile(`${FolderName}/${folder}/about.json`,'utf-8', (err, data) => {
+          const fileObj = JSON.parse(data || '{}')
           const music: MusicItemProps = {
-            name: '',
-            artist: '',
+            name: fileObj.title,
+            artist: fileObj.artist,
             image: '',
             music: '',
           }
-          fs?.readdir(`${FolderName}/${folder}`, (err, files) => {
-            files?.forEach((file) => {
-              if (getExtension(file) === 'json') {
-                fs?.readFile(`${FolderName}/${folder}/${file}`, (err, jsonBuffer) => {
-                  if (err) {
-                    console.log(err)
-                  } else {
-                    if (jsonBuffer) {
-                      const jsonData = Buffer.from(jsonBuffer).toString()
-                      music.artist = JSON.parse(jsonData).artist
-                      music.name = JSON.parse(jsonData).name
-                    }
-
-                  }
-                })
-              } else {
-                fs?.readFile(`${FolderName}/${folder}/${file}`, 'utf-8', (err, data) => {
-                  if (err) {
-                    console.log(err)
-                  } else {
-                    if (data) {
-                      if (verifyIfExtensionIsAudio(getExtension(file))) {
-                        music.music = addTypeToBase64(getExtension(file), data)
-                      } else {
-                        music.image = addTypeToBase64(getExtension(file), data)
-                      }
-                      AppendToMusics(music)
-                    }
-                  }
-                })
-              }
-            })
+          fs.readFile(fileObj.imgPath, 'utf-8', (err, imgItem) => {
+            if(err){
+              console.log(err)
+            }
+            if(imgItem){
+              music.image = addTypeToBase64(getExtension(fileObj.imgPath),imgItem)
+              fs?.readFile(fileObj.filePath, 'utf-8', (err, musicItem) => {
+                if(err){
+                  console.log(err)
+                }
+                if(musicItem){
+                  music.music = addTypeToBase64(getExtension(fileObj.filePath),musicItem)
+                  AppendToMusics(music)
+                }
+              })
+            }
           })
         })
-      }
+      })
     })
   }
 
 
 
   useEffect(() => {
-    console.log("Global Volume:", states.System.globalVolumeMultiplier);
-    console.log("Tab Volume:", musicVolume)
-    console.log("Final Volume:", musicVolume * states.System.globalVolumeMultiplier)
     setAudioElement((audio) => {
       if (audio) {
         audio.volume = musicVolume * states.System.globalVolumeMultiplier
@@ -293,42 +290,33 @@ const MyMusics = ({
         image: image64,
       }
 
-      const FolderName = `/ProgramFiles/myMusics/${uuid(8)}`
-      fs?.mkdir(FolderName, (err: ApiError) => {
-        if (err) {
+      const FolderName = `/ProgramFiles/MusicLibrary/Musics/${ObjectToUpload.name}`
+      fs?.mkdir(FolderName, (err:ApiError) => {
+        if(err){
           console.log(err)
-        } else {
-          if (image64 !== '') {
-            fs?.writeFile(`${FolderName}/image.${getExtension(imageToUpload?.name || '.png')}`, removeTypeFromBase64(image64), (err) => {
-              if (err) {
-                console.log(err)
-              } else {
-                console.log('Image Uploaded')
-              }
-            })
-          }
-          if (music64 !== '') {
-            fs?.writeFile(`${FolderName}/music.${getExtension(musicToUpload.name)}`, removeTypeFromBase64(music64), (err) => {
-              if (err) {
-                console.log(err)
-              } else {
-                console.log('Music Uploaded')
-              }
-            })
-          }
-          fs?.writeFile(`${FolderName}/music.json`, JSON.stringify({
-            name: name,
-            artist: artist,
-          }), (err) => {
-            if (err) {
-              console.log(err)
-            } else {
-              console.log('Success!')
-              LoadMusics()
-            }
-          }
-          )
         }
+        fs?.writeFile(`${FolderName}/about.json`, JSON.stringify({
+          title: ObjectToUpload.name,
+          artist: ObjectToUpload.artist,
+          imgPath: `${FolderName}/image.${getExtensionFromBase64(ObjectToUpload.image)}`,
+          filePath: `${FolderName}/music.${getExtensionFromBase64(ObjectToUpload.music) === 'mpeg' ? 'mp3' : getExtensionFromBase64(ObjectToUpload.music) }`,
+        }), (err) => {
+          if(err){
+            console.log(err)
+          }
+          fs?.writeFile(`${FolderName}/image.${getExtensionFromBase64(ObjectToUpload.image)}`, removeTypeFromBase64(ObjectToUpload.image), (err) => {
+            if(err){
+              console.log(err)
+            }
+            fs?.writeFile(`${FolderName}/music.${getExtensionFromBase64(ObjectToUpload.music) === 'mpeg' ? 'mp3' : getExtensionFromBase64(ObjectToUpload.music) }`,
+            removeTypeFromBase64(ObjectToUpload.music), (err) => {
+              if(err){
+                console.log(err)
+              }
+              LoadMusics()
+            })
+          })
+        })
       })
       console.log(ObjectToUpload)
     }
@@ -339,7 +327,7 @@ const MyMusics = ({
   return (
     <DefaultWindow
       currentTab={tab}
-      currentWindow={window}
+      currentWindow={AlaskaWindow}
       title='My Musics'
       uuid={tab?.uuid || ''}
       onClose={() => { 
