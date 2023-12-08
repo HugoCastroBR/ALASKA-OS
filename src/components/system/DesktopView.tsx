@@ -40,6 +40,7 @@ import MusicLibrary from '../programs/MusicLibrary';
 import { Notifications } from '@mantine/notifications';
 import TrashFolder from '../programs/TrashFolder';
 import DataReader from '../programs/DataReader';
+import Terminal from './Terminal';
 
 const DesktopView = () => {
 
@@ -263,6 +264,7 @@ const DesktopView = () => {
         }
       >
 
+        <Terminal />
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 

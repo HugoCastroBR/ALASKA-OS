@@ -8,6 +8,8 @@ import { ClearFiles } from '@/store/actions';
 type useFileSystemProps = {
   fs: FSModule | null;
   isLoadingFS: boolean;
+  readPath: (path:string) => string[];
+  readFile: (path:string) => string;
   copyFileByPath: (fromPath:string, toPath:string) => void;
   copyExternalFile: (file:File,toPath:string) => void;
   deleteFileByPath: (path:string) => void;
@@ -43,6 +45,14 @@ const useFS = ():useFileSystemProps => {
     }
     setIsLoadingFS(false);
   }, [setFs]);
+
+  const readPath = (path:string):string[] => {
+    return fs?.readdirSync(path) || []
+  }
+
+  const readFile = (path:string):string => {
+    return fs?.readFileSync(path, 'utf-8') || ''
+  }
 
 
   const deleteFileByPath = (path:string) => {
@@ -138,7 +148,19 @@ const useFS = ():useFileSystemProps => {
   }
 
   
-  return { fs, copyFileByPath, copyExternalFile,deleteFileByPath,moveFileByPath , isLoadingFS,deletePermanentlyRecursive };
+  return { 
+    
+    fs,
+    readPath,
+    readFile,
+    copyFileByPath,
+    copyExternalFile,
+    deleteFileByPath,
+    moveFileByPath ,
+    isLoadingFS,
+    deletePermanentlyRecursive
+
+    };
 }
 
 export default useFS;
