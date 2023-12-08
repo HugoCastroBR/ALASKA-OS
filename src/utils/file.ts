@@ -371,17 +371,14 @@ export const htmlToArrayBuffer = (html: string) => {
 }
 
 export const htmlToBase64 = (html: string) => {
-    // Encode the HTML content to handle characters outside the Latin1 range
     const encodedHtml = encodeURIComponent(html);
 
-    // Use btoa to convert the encoded HTML to Base64
     const base64 = btoa(encodedHtml);
   
     return base64;
 }
 
 export const encodedBase64ToArrayBuffer = (base64: string) => {
-  // Decode the Base64 string and handle characters outside the Latin-1 range
   const binaryString = Buffer.from(base64, 'base64').toString('binary');
 
   const len = binaryString.length;
@@ -403,3 +400,6 @@ export const fileToBase64 = async (file: File):Promise<string> => {
   return base64 as unknown as string;
 }
 
+export function bufferToFile(buffer: Buffer, options: { fileType: string; fileName: string }): Uint8Array {
+  return new Uint8Array(buffer);
+}

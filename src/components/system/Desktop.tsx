@@ -57,6 +57,7 @@ const Desktop = () => {
   //   )
   // }
 
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   useHotkeys([
     ['ctrl+c', () => {
       dispatch(SetCopiedFiles())

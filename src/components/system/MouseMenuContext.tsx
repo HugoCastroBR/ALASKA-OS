@@ -3,7 +3,7 @@
 import useStore from '@/hooks/useStore'
 import useFS from '@/hooks/useFS'
 import type { MouseMenuContext } from '@/types/mouse'
-import { addTypeToBase64, base64ToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
+import { addTypeToBase64, base64ToFile, bufferToFile, convertFileExtensionToFileType, getExtension, getLastPathSegment, removeExtension, removeTypeFromBase64, uuid, verifyIfIsFile, wait } from '@/utils/file'
 import React from 'react'
 import CustomText from '../atoms/CustomText'
 import { mouseContextMenuOptionsProps } from '@/types/mouse'
@@ -227,7 +227,37 @@ const MouseMenuContext = ({
           console.log('download')
           states.File.selectedFiles.forEach((file) => {
             if (!verifyIfIsFile(file)) return;
-
+            if (getExtension(file) === 'json') {
+              fs?.readFile(file, (err, buffer) => {
+                if (err) {
+                  console.error('Error reading the file:', err);
+                  return;
+                }
+            
+                if (!buffer || buffer.length === 0) {
+                  console.warn('File is empty');
+                  return;
+                }
+            
+                const fileType = convertFileExtensionToFileType(getExtension(file));
+                const fileName = getLastPathSegment(file);
+                const fileSolved = bufferToFile(buffer, { fileType, fileName });
+            
+                const blob = new Blob([fileSolved]);
+                const objectUrl = URL.createObjectURL(blob);
+            
+                const element = document.createElement('a');
+                element.href = objectUrl;
+                element.download = fileName;
+                document.body.appendChild(element);
+                element.click();
+            
+                // Clean up the objectUrl to avoid memory leaks
+                URL.revokeObjectURL(objectUrl);
+                document.body.removeChild(element);
+              });
+            }
+          
             fs?.readFile(file, 'utf-8', (err, data) => {
               console.log(file,data)
               if (err) console.error(err);
@@ -369,6 +399,34 @@ const MouseMenuContext = ({
     )
   }
 
+  const MouseOptionOpenWithDataReader = () => {
+    return (
+      <MouseOption
+        title='Open with Data Reader'
+        disabled={states.File.selectedFiles.length !== 1}
+        onClick={() => {
+          states.File.selectedFiles.forEach((file) => {
+            const content = fs?.readFile(file, 'utf-8', (err, data) => {
+              dispatch(WindowAddTab({
+                title: 'Data Reader',
+                tab: {
+                  title: 'Data Reader',
+                  ficTitle: getLastPathSegment(file),
+                  uuid: uuid(6),
+                  value: file,
+                  maximized: false,
+                  minimized: false,
+                  content: data,
+                }
+              }))
+            })
+          })
+        }}
+        className='i-mdi-file-eye'
+      />
+    )
+  }
+
   const MouseOptionOpenWith = () => {
     const [isOptionsOpen, setIsOptionsOpen] = React.useState(false)
 
@@ -412,6 +470,7 @@ const MouseMenuContext = ({
                 backgroundColor: states.Settings.settings.system.systemBackgroundColor,
               }}
             >
+              <MouseOptionOpenWithDataReader/>
               <MouseOptionOpenInBrowser />
               <MouseOptionOpenWIthCodeEditor />
               <MouseOptionOpenWithRichTextEditor />

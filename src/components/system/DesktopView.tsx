@@ -39,6 +39,7 @@ import { ImageReaderProps } from '@/types/programs';
 import MusicLibrary from '../programs/MusicLibrary';
 import { Notifications } from '@mantine/notifications';
 import TrashFolder from '../programs/TrashFolder';
+import DataReader from '../programs/DataReader';
 
 const DesktopView = () => {
 
@@ -115,6 +116,7 @@ const DesktopView = () => {
     'Todo App': TodoApp,
     'Clock App': ClockApp,
     'Music Library': MusicLibrary,
+    'Data Reader': DataReader,
     
   };
   

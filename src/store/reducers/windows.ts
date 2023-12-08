@@ -154,6 +154,12 @@ export const WindowsSlice = createSlice({
         icon: '/assets/icons/musicLibrary.png',
         tabs: [] as tabStateProps[],
         showOnDesktop: true
+      },
+      {
+        title: 'Data Reader',
+        icon: '/assets/icons/dataReader.png',
+        tabs: [] as tabStateProps[],
+        showOnDesktop: false
       }
 
     ] as windowStateProps[]
