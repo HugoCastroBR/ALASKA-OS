@@ -37,54 +37,37 @@ const Desktop = () => {
 
 
 
-  // if(!states.System.isSystemLoaded){
-  //   return (
-  //     <main
-  //       className='
-  //       min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
-  //       bg-cover bg-center bg-no-repeat bg-slate-50
-  //       '
-  //     >
-  //       <Loader size={128} />
-  //       <CustomText
-  //         text={loadingMessages}
-  //         className='text-slate-500 font-medium text-lg mt-4'
-  //         style={{
-  //           color: 'rgba(0,0,0,1)'
-  //         }}
-  //       />
-  //     </main>
-  //   )
-  // }
+  if(!states.System.isSystemLoaded){
+    return (
+      <main
+        className='
+        min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
+        bg-cover bg-center bg-no-repeat bg-slate-50 transition-all duration-300
+        '
+        style={{
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white'
+        }}
+      >
+        <Loader 
+        size={128}
+        color={states.Settings.settings.system.systemHighlightColor || 'blue'}
+        className='
+        transition-all duration-300 
+        '
+        />
+        <CustomText
+          text={loadingMessages}
+          className='text-slate-500 font-medium text-lg mt-4 transition-all duration-300'
+          style={{
+            color: states.Settings.settings.system.systemTextColor || 'black'
+          }}
+        />
+      </main>
+    )
+  }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
-  useHotkeys([
-    ['ctrl+c', () => {
-      dispatch(SetCopiedFiles())
-    
-    }],
-    ['ctrl+v', () => {
-      const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
-      if(states.File.copiedFiles.length){
-        states.File.copiedFiles.forEach((path) => {
-          copyFileByPath(path, pasteTo)
-        })
-      }
-    }],
-    ['ctrl+x', () => {
-      const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
-      if(states.File.copiedFiles.length){
-        states.File.copiedFiles.forEach((path) => {
-          moveFileByPath(path, pasteTo)
-        })
-      }
-    }],
-    ['DELETE', () => {
-      states.File.selectedFiles.forEach((path) => {
-        deleteFileByPath(path)
-      })
-    }]
-  ])
+  
 
   return (
     <main

@@ -4,13 +4,14 @@ import useSettings from './useSettings';
 import useStore from './useStore';
 import useFS from './useFS';
 import { wait } from '@/utils/file';
-import { SetIsSystemLoaded } from '@/store/actions';
+import { SetCopiedFiles, SetIsSystemLoaded } from '@/store/actions';
 import { ApiError } from 'next/dist/server/api-utils';
+import { useHotkeys } from '@mantine/hooks';
 
 
 export default function useProcess(){
 
-    const {fs, isLoadingFS} = useFS()
+    const {fs, isLoadingFS,copyFileByPath,moveFileByPath,deleteFileByPath} = useFS()
     const { runPython,isLoading, isReady,prompt,stdout,stderr } = usePython()
     const { isLoadingSettings,startLoadingSettings,loadedSuccessfullySettings } = useSettings()
     const { states , dispatch } = useStore()
@@ -19,6 +20,33 @@ export default function useProcess(){
     const [currentLoadingProcess, setCurrentLoadingProcess] = useState(0)
     const [loadingMessages, setLoadingMessages] = useState<string>('Hi, I am loading... it make take a while.')
 
+    useHotkeys([
+      ['ctrl+c', () => {
+        dispatch(SetCopiedFiles())
+      
+      }],
+      ['ctrl+v', () => {
+        const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
+        if(states.File.copiedFiles.length){
+          states.File.copiedFiles.forEach((path) => {
+            copyFileByPath(path, pasteTo)
+          })
+        }
+      }],
+      ['ctrl+x', () => {
+        const pasteTo = states.Mouse.mousePathHistory[states.Mouse.mousePathHistory.length - 1]
+        if(states.File.copiedFiles.length){
+          states.File.copiedFiles.forEach((path) => {
+            moveFileByPath(path, pasteTo)
+          })
+        }
+      }],
+      ['DELETE', () => {
+        states.File.selectedFiles.forEach((path) => {
+          deleteFileByPath(path)
+        })
+      }]
+    ])
 
     const startLoading = async () => {
       await createProgramFilesFolder()
@@ -162,7 +190,7 @@ export default function useProcess(){
           console.log(err)
         }
         if(data?.includes('todoApp')){
-          setLoadingMessages('Welcome back, I am loading your TodoApp folder')
+          setLoadingMessages('Welcome back, I am just finishing here !!')
           await wait(500)
         }else{
           setLoadingMessages('We are just finishing here, I am creating your all the folders you need')
