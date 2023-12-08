@@ -37,34 +37,34 @@ const Desktop = () => {
 
 
 
-  if(!states.System.isSystemLoaded){
-    return (
-      <main
-        className='
-        min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
-        bg-cover bg-center bg-no-repeat bg-slate-50 transition-all duration-300
-        '
-        style={{
-          backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white'
-        }}
-      >
-        <Loader 
-        size={128}
-        color={states.Settings.settings.system.systemHighlightColor || 'blue'}
-        className='
-        transition-all duration-300 
-        '
-        />
-        <CustomText
-          text={loadingMessages}
-          className='text-slate-500 font-medium text-lg mt-4 transition-all duration-300'
-          style={{
-            color: states.Settings.settings.system.systemTextColor || 'black'
-          }}
-        />
-      </main>
-    )
-  }
+  // if(!states.System.isSystemLoaded){
+  //   return (
+  //     <main
+  //       className='
+  //       min-h-full min-w-full w-screen h-screen overflow-hidden flex flex-col justify-center items-center
+  //       bg-cover bg-center bg-no-repeat bg-slate-50 transition-all duration-300
+  //       '
+  //       style={{
+  //         backgroundColor: states.Settings.settings.system.systemBackgroundColor || 'white'
+  //       }}
+  //     >
+  //       <Loader 
+  //       size={128}
+  //       color={states.Settings.settings.system.systemHighlightColor || 'blue'}
+  //       className='
+  //       transition-all duration-300 
+  //       '
+  //       />
+  //       <CustomText
+  //         text={loadingMessages}
+  //         className='text-slate-500 font-medium text-lg mt-4 transition-all duration-300'
+  //         style={{
+  //           color: states.Settings.settings.system.systemTextColor || 'black'
+  //         }}
+  //       />
+  //     </main>
+  //   )
+  // }
 
   // eslint-disable-next-line react-hooks/rules-of-hooks
   

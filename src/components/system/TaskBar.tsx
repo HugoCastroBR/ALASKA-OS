@@ -12,6 +12,7 @@ import CustomText from '../atoms/CustomText'
 import { Menu, Slider, Tooltip } from '@mantine/core'
 import { getWeather } from '@/api/weatherApi'
 import { uuid } from '@/utils/file'
+import { useNetwork } from '@mantine/hooks'
 
 
 
@@ -98,6 +99,9 @@ const TaskBarItem = ({
 const TaskBar = () => {
 
   const { states, dispatch } = useStore()
+
+  const networkStatus = useNetwork()
+
   const [globalVolume, setGlobalVolume] = React.useState(100)
   const [isVolumeOpen, setIsVolumeOpen] = React.useState(false)
 
@@ -190,7 +194,7 @@ const TaskBar = () => {
           {handleRenderTabs()}
         </div>
         <div className='w-2/12 h-full flex justify-end items-center pr-4'>
-          <div className='flex w-6 h-6 -mr-24 justify-center items-center
+          <div className='flex w-6 h-6 -mr-16 justify-center items-center
           hover:bg-white hover:bg-opacity-20 rounded transition-all duration-300 ease-in-out
           '>
             <Menu
@@ -317,7 +321,151 @@ const TaskBar = () => {
                 />
               </div>
             }
-
+            <Menu
+            position='top-start'
+            offset={6}
+            transitionProps={{
+              transition: 'pop',
+              duration: 300
+            }}
+            styles={{
+              dropdown: {
+                width: '146px',
+                minHeight: '286px',
+              },
+              item: {
+                padding: 'none',
+                margin: 'none',
+                cursor: 'default',
+              }
+            }}
+            >
+              <Menu.Target>
+                <div>
+                  {networkStatus.online ?
+                  <span
+                  className='i-mdi-wifi text-lg cursor-pointer mr-3 mt-2'
+                  style={{
+                    color: states.Settings.settings.taskbar.items.color || 'white',
+                  }}
+                />
+                  :
+                  <span
+                  className='i-mdi-wifi-off text-lg cursor-pointer mr-3 mt-2'
+                  style={{
+                    color: states.Settings.settings.taskbar.items.color || 'white',
+                  }}  
+                  />
+                  }
+                </div>
+              </Menu.Target>
+              <Menu.Dropdown
+                bg={states.Settings.settings.system.systemBackgroundColor}
+              >
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Internet: ${networkStatus.online ? 'Online' : 'Offline'}`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Ping: ${networkStatus.rtt?.toFixed(0) || 0}ms`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Download: ${networkStatus.downlink?.toFixed(0) || 0} Mbps`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Max: ${networkStatus.downlink?.toFixed(0) || 0} Mbps`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Type: ${networkStatus.type || 'wifi'}`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+                <Menu.Item
+                  bg={'transparent'}
+                  w={136}
+                  h={44}
+                  p={0}
+                  m={1}
+                >
+                  <div className='w-full h-full flex justify-start items-center'>
+                    <CustomText
+                      text={`Connection: ${networkStatus.effectiveType}`}
+                      className='!text-sm ml-1'
+                      style={{
+                        color: states.Settings.settings.system.systemTextColor || 'white',
+                      }}
+                    />
+                  </div>
+                </Menu.Item>
+              </Menu.Dropdown>
+            </Menu>
             <span
               className='i-mdi-volume-high text-lg cursor-pointer mr-2 mt-0.5'
               onClick={() => setIsVolumeOpen(!isVolumeOpen)}
