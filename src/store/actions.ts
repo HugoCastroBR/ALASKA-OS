@@ -112,6 +112,9 @@ export const PutTabInSecondPlan = (payload:{title:string,uuid:string}) => {
 export const PutTabInFirstPlan = (payload:{title:string,uuid:string}) => {
   return WindowsActions.PUT_TAB_IN_FIRST_PLAN(payload)
 }
+export const RemoveTabByUuid = (payload:{uuid:string}) => {
+  return WindowsActions.REMOVE_TAB_BY_UUID(payload)
+}
 
 export const AddSelectedFile = (payload:string) => {
   return FileActions.ADD_SELECTED_FILE(payload)

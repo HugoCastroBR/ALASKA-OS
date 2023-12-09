@@ -12,10 +12,16 @@ export const WindowsSlice = createSlice({
         showOnDesktop: true
       },
       {
+        title: "Terminal",
+        icon: "/assets/icons/terminal.png",
+        tabs: [] as tabStateProps[],
+        showOnDesktop: true
+      },
+      {
         title: "Console",
         icon: "/assets/icons/console-icon.png",
         tabs: [] as tabStateProps[],
-        showOnDesktop: true
+        showOnDesktop: false
       },
       // {
       //   title: "Explorer",
@@ -205,6 +211,11 @@ export const WindowsSlice = createSlice({
         }
         // window.tabs = window.tabs.filter((tab) => tab.uuid === payload.uuid);
       }
+    },
+    REMOVE_TAB_BY_UUID(state, { payload }: { payload: { uuid: string } }) {
+      state.windows.forEach((window) => {
+        window.tabs = window.tabs.filter((tab) => tab.uuid !== payload.uuid);
+      });
     },
     TOGGLE_MAXIMIZE_TAB(state, { payload }: { payload: { title: string; uuid: string } }) {
       const window = state.windows.find((window) => window.title === payload.title);
