@@ -131,6 +131,7 @@ const TaskBar = () => {
   }
 
   const [weatherData, setWeatherData] = useState<WeatherProps>({} as any)
+  
 
   useEffect(() => {
     if (navigator.geolocation) {

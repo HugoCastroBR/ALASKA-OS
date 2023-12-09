@@ -1,9 +1,10 @@
 import useStore from '@/hooks/useStore'
-import React from 'react'
+import React, { useEffect } from 'react'
 import CustomText from '../atoms/CustomText'
 import useFS from '@/hooks/useFS'
-import { useDebouncedState } from '@mantine/hooks'
+import { useDebouncedState, useNetwork } from '@mantine/hooks'
 import { convertSizeToKBMBGB, verifyIfIsFile } from '@/utils/file'
+import { ApiError } from 'browserfs/dist/node/core/api_error'
 
 const Terminal = () => {
 
@@ -19,11 +20,16 @@ const Terminal = () => {
     }
   }
 
-  const { states, dispatch } = useStore()
-  const { fs, readPath } = useFS()
 
+
+  const { states, dispatch } = useStore()
+  const { fs, copyFileByPath } = useFS()
+
+  const networkStatus = useNetwork()
+  const [inputValue, setInputValue] = useDebouncedState<string>('', 0)
+
+  const endRef = React.useRef<HTMLDivElement>(null)
   const [commandsHistory, setCommandsHistory] = React.useState<string[]>([])
-  const [inputValue, setInputValue] = useDebouncedState<string>('', 10)
 
   const [executedCommandsIndex, setExecutedCommandsIndex] = React.useState<number>(0)
   const [executedCommands, setExecutedCommands] = React.useState<{
@@ -37,8 +43,13 @@ const Terminal = () => {
   }
 
   ) => {
+
     setExecutedCommands((prev) => [...prev, command]);
   }
+
+  useEffect(() => {
+    endRef.current?.scrollIntoView({ behavior: 'smooth',block: 'end',})
+  }, [commandsHistory])
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
@@ -56,9 +67,43 @@ const Terminal = () => {
       })
     }
     setInputValue('')
+    
   }
 
-
+  
+  const handleTabPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key !== 'Tab') {
+      return;
+    } else {
+      e.preventDefault();
+    }
+  
+    fs?.readdir(currentPath, (err, files) => {
+      if (err) {
+        warningPattern(`The system cannot find the path specified.`);
+        return;
+      }
+  
+      const currentInputValue = inputValue.trim().split(' ')[1];
+      let matchingCommands = files?.filter((command) =>
+        command.startsWith(currentInputValue)
+      );
+  
+      if (!matchingCommands || matchingCommands.length === 0) {
+        return;
+      }
+  
+      if (matchingCommands.length === 1) {
+        setInputValue(`${inputValue.trim().split(' ')[0]} ${matchingCommands[0]} `);
+      } else if (matchingCommands.length > 1) {
+        // if more than one command matches, cycle through them on subsequent Tab presses
+        const currentIndex = matchingCommands.indexOf(currentInputValue as string);
+        const nextIndex = (currentIndex !== -1 ? currentIndex + 1 : 0) % matchingCommands.length;
+        setInputValue(`${inputValue.trim().split(' ')[0]} ${matchingCommands[nextIndex]} `);
+      }
+    });
+  };
+  
 
 
   const hasColor = (input: string): boolean => {
@@ -191,7 +236,7 @@ const Terminal = () => {
 
     if (args[0].name === '-al') {
       clearCommand()
-      if (args[1].name || false) {
+      if (args[1]?.name || false) {
         listDetailed(args[1].name)
         return
       }else{
@@ -203,7 +248,7 @@ const Terminal = () => {
 
     if (args[0].name === '-a') {
       clearCommand()
-      if (args[1].name || false) {
+      if (args[1]?.name || false) {
         listDefault(args[1].name)
         return
       }else{
@@ -467,10 +512,418 @@ const Terminal = () => {
       }
     }
 
-    const rmRecursive = (path: string) => {
+    const rmTree = (path: string) => {
+      const fullPath = `${currentPath}/${path}`.replaceAll('//', '/');
+    
+      fs?.rmdir(fullPath, (err) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            // errorPattern(`The system cannot find the path specified.`);
+            return;
+          } else if (err.code === 'ENOTEMPTY') {
+            // Directory not empty, remove its contents first
+            fs?.readdir(fullPath, (err, files) => {
+              if (err) {
+                // errorPattern(`Error reading directory: ${err.message}`);
+                return;
+              }
+    
+              files?.forEach((file) => {
+                const filePath = `${fullPath}/${file}`.replaceAll('//', '/');
+                if (verifyIfIsFile(filePath)) {
+                  // Remove file
+                  fs?.unlink(filePath, (err) => {
+                    if (err) {
+                      // errorPattern(`Error deleting file ${file}: ${err.message}`);
+                    }
+                  });
+                } else {
+                  // Recursively remove subdirectory
+                  rmTree(`${path}/${file}`);
+                }
+              });
+    
+              // After removing contents, attempt to remove the directory again
+              rmTree(path);
+            });
+            return;
+          } else {
+            // errorPattern(`Error deleting directory: ${err.message}`);
+            return;
+          }
+        }
+    
+        successPattern(`Directory deleted successfully`);
+      });
+    };
+
+    if (args[0].name && !args[1]?.name) {
+      rmDefault(args[0].name)
+      return
+    }
+
+    if (args[0].name === '-R') {
+      rmTree(args[1].name)
+      return
+    }
+
+    if((args[0].name as string) === '-h' || (args[0].name as string) === '--help'){
+      clearCommand();
+      processCommand(`Usage: rm [OPTION]`);
+      processCommand(`Remove (unlink) the FILE(s).`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`-R, Remove the directory and its contents recursively`);
+      processCommand(`[PATH], Remove the file`);
+      return;
+    }
+
+  }
+
+  const mkdirCommand = (args: commandArgProps[]) => {
+    const mkdirDefault = (path: string) => {
+      fs?.mkdir(`${currentPath}/${path}`.replaceAll('//', '/'), (err:ApiError) => {
+        if (err) {
+          fs?.mkdir(`${path}`.replaceAll('//', '/'), (err:ApiError) => {
+            if (err) {
+              errorPattern(`The system cannot find the path specified.`)
+              return
+            }
+            successPattern(`Directory created successfully`)
+          })
+        }
+        successPattern(`Directory created successfully`)
+      })
+    }
+
+    if (args[0].name && !args[1]?.name) {
+      mkdirDefault(args[0].name)
+      return
+    }
+
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: mkdir [DIRECTORY]`);
+      processCommand(`Create the DIRECTORY, if they do not already exist.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`[PATH], Create the directory`);
+      return;
+    }
+  }
+
+  const historyCommand = (args: commandArgProps[]) => {
+    console.log(args)
+    if (!args[0]) {
+      clearCommand()
+      executedCommands?.forEach((item, index) => {
+        processCommand(`${index} -- ${item}`)
+      })
+      return
+    }
+    if (args[0]?.name === '-c') {
+      clearCommand()
+      setExecutedCommands([])
+      return
+    }
+
+    if ((args[0]?.name as string) === '-h' || (args[0]?.name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: history [OPTION]`);
+      processCommand(`Show the history of commands executed.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`-c, Clear the history`);
+      return;
+    }
+  }
+
+  const mvCommand = (args: commandArgProps[]) => {
+    const mvDefault = (path: string, newPath: string) => {
+      fs?.rename(`${currentPath}/${path}`.replaceAll('//', '/'), `${currentPath}/${newPath}`.replaceAll('//', '/'), (err) => {
+        if (err) {
+          fs?.rename(`${path}`.replaceAll('//', '/'), `${newPath}`.replaceAll('//', '/'), (err) => {
+            if (err) {
+              errorPattern(`The system cannot find the path specified.`)
+              return
+            }
+            successPattern(`File moved successfully`)
+          })
+        }
+        successPattern(`File moved successfully`)
+      })
+    }
+
+    if (args[0].name && args[1]?.name) {
+      mvDefault(args[0].name, args[1].name)
+      return
+    }
+
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: mv [OPTION]`);
+      processCommand(`Move (rename) the FILE(s).`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`[PATH] [NEW PATH], Move the file to the new path`);
+      return;
+    }
+  }
+
+  const cpCommand = (args: commandArgProps[]) => {
+    
+    const cpDefault = (path: string, newPath: string) => {
+      console.log(`${currentPath}/${path}`.replaceAll('//', '/'), `${newPath}`.replaceAll('//', '/') )
+
+      fs?.readFile(`${currentPath}/${path}`.replaceAll('//', '/'), 'utf-8', (err, data) => {
+        if(err){
+          errorPattern(err.message)
+        }
+        if(!data){
+          warningPattern(`The file is empty`)
+          fs?.writeFile(`${newPath}`.replaceAll('//', '/'), '', (err) => {})
+          return
+        }
+        fs?.writeFile(`${newPath}`.replaceAll('//', '/'), data, (err) => {
+          if(err){
+            errorPattern(err.message)
+            return
+          }
+          successPattern(`File copied successfully`)
+        })
+      })
+    }
+    
+    const cpFullPath = (path: string, newPath: string) => {
+      fs?.readFile(`${path}`.replaceAll('//', '/'), 'utf-8', (err, data) => {
+        if(err){
+          errorPattern(err.message)
+        }
+        if(!data){
+          warningPattern(`The file is empty`)
+          fs?.writeFile(`${newPath}`.replaceAll('//', '/'), '', (err) => {})
+          return
+        }
+        fs?.writeFile(`${newPath}`.replaceAll('//', '/'), data, (err) => {
+          if(err){
+            errorPattern(err.message)
+            return
+          }
+          successPattern(`File copied successfully`)
+        })
+      })
+    }
+
+    if (args[0].name && args[1]?.name && !args[2]?.name) {
+      cpDefault(args[0].name, args[1].name)
+      return
+    }
+
+    if (args[0].name === '-f' && args[1]?.name && args[2]?.name) {
+      cpFullPath(args[1].name, args[2].name)
+      return
+    }
+
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: cp [OPTION]`);
+      processCommand(`Copy the FILE(s).`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`-f [PATH] [NEW PATH],Copy the file to the new path(Specify the full path)`);
+      processCommand(`[PATH] [NEW PATH], Copy the file to the new path`);
+      return;
+    }
+  }
+
+  const echoCommand = (args: commandArgProps[]) => {
+    const echoDefault = (text: string) => {
+      processCommand(`${text}`)
+    }
+
+    if (args[0].name && !args[1]?.name) {
+      echoDefault(args[0].name)
+      return
+    }
+
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: echo [OPTION]`);
+      processCommand(`Display a line of text.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`[TEXT], Display the text`);
+      return;
+    }
+  }
+
+  const grepCommand = (args: commandArgProps[]) => {
+    const grepDefault = (text: string, path: string) => {
+      fs?.readFile(`${currentPath}/${path}`.replaceAll('//', '/'), 'utf-8', (err, data) => {
+        if (err) {
+          if (err.code === 'EISDIR') {
+            errorPattern(`grep: ${currentPath}/${path}: Is a directory`)
+            return
+          }
+          fs?.readFile(`${path}`.replaceAll('//', '/'), 'utf-8', (err, data) => {
+            if (err) {
+              if (err.code === 'EISDIR') {
+                errorPattern(`grep: ${path}: Is a directory`)
+                return
+              }
+              errorPattern(`The system cannot find the path specified.`)
+              return
+            }
+            const lines = data?.split('\n') || []
+            lines?.forEach((line, index) => {
+              if (line.includes(text)) {
+                processCommand(`${index} -- ${line}`)
+              }
+            })
+          })
+        }
+        const lines = data?.split('\n') || []
+        lines?.forEach((line, index) => {
+          if (line.includes(text)) {
+            processCommand(`${index} -- ${line}`)
+          }
+        })
+      })
+    }
+
+    if (args[0].name && args[1]?.name) {
+      grepDefault(args[0].name, args[1].name)
+      return
+    }
+
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: grep [OPTION]`);
+      processCommand(`Print lines matching a pattern.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`[TEXT] [PATH], Search for the text in the file`);
+      return;
+    }
+  }
+
+  const findCommand = (args: commandArgProps[]) => {
+    const findFile = (filename: string, basePath: string) => {
+      fs?.readdir(basePath, (err, items) => {
+        if (err) {
+          errorPattern(`The system cannot find the path specified.`);
+          return;
+        }
+  
+        items?.forEach((item) => {
+          const fullPath = `${basePath}/${item}`;
+  
+          fs?.stat(fullPath, (err, stats) => {
+            if (err) {
+              errorPattern(`Error reading file or directory ${fullPath}: ${err}`);
+              return;
+            }
+  
+            if (stats?.isDirectory()) {
+              // Recursively search in subdirectories
+              findFile(filename, fullPath);
+            } else if (stats?.isFile() && item === filename) {
+              processCommand(`Found at: ${fullPath}`);
+            }
+          });
+        });
+      });
+    };
+  
+    if (args[0].name && args[1]?.name) {
+      clearCommand();
+      findFile(args[0].name, args[1].name);
+      return;
+    }
+
+    if(args[0].name && !args[1]?.name){
+      clearCommand();
+      findFile(args[0].name, currentPath);
+      return;
+    }
+  
+    if ((args[0].name as string) === '-h' || (args[0].name as string) === '--help') {
+      clearCommand();
+      processCommand(`Usage: find [OPTION]`);
+      processCommand(`Search for files in a directory hierarchy.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      processCommand(`[FILENAME] [PATH], Search for the specified file in directories`);
+      return;
+    }
+  };
+
+  const netCommand = (args: commandArgProps[]) => {
+    if(!args[0]?.name){
+      clearCommand()
+      processCommand(`Connection status: ${networkStatus.online ? 'Online' : 'Offline'}`)
+      processCommand(`Connection type: ${networkStatus.type}`)
+      processCommand(`Connection downlink: ${networkStatus.downlink} Mbps`)
+      processCommand(`Connection rtt: ${networkStatus.rtt} ms`)
+      processCommand(`Connection saveData: ${networkStatus.saveData ? 'true' : 'false'}`)
+      processCommand(`Connection effectiveType: ${networkStatus.effectiveType}`)
+      return
+    }
+
+    if(args[0]?.name === '-h' || args[0]?.name === '--help'){
+      clearCommand();
+      processCommand(`Usage: net [OPTION]`);
+      processCommand(`Show network information.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      return;
+    }
+  }
+
+  const topCommand = (args: commandArgProps[]) => {
+    const topDefault = () => {
+      let count = 0
+      states.Windows.windows.forEach((item) => {
+        if(item.tabs.length === 0 && count === 0){
+          warningPattern(`There are no running processes`)
+          count++
+          return
+        }
+        item.tabs.forEach((tab) => {
+          processCommand(`UUID: ${tab.uuid} -- Name: ${tab.title} -- Status: ${tab.maximized ? 'Maximized' : tab.minimized ? 'Minimized' : 'Normal'}`)
+        })
+      })
+
+
       
     }
 
+    if(!args[0]?.name){
+      clearCommand()
+      topDefault()
+      return
+    }
+
+    if(args[0]?.name === '-h' || args[0]?.name === '--help'){
+      clearCommand();
+      processCommand(`Usage: top [OPTION]`);
+      processCommand(`Show the current running processes.`);
+      processCommand(`Options:`);
+      processCommand(`-h, --help, Show this help`);
+      return;
+    }
+  }
+
+  const killCommand = (args: commandArgProps[]) => {
+    //kill by uuid
+  }
+
+  const openInCodeEditor = (path: string) => {
+    //open in code editor
+  }
+
+  const openInDataReader = (path: string) => {
+    //open in data reader
   }
 
   const commands = ({
@@ -499,6 +952,48 @@ const Terminal = () => {
         AppendToExecutedCommands(command)
         touchCommand(command.args || [])
         break;
+      case 'rmdir':
+      case 'rm':
+        AppendToExecutedCommands(command)
+        rmCommand(command.args || [])
+        break;
+      case 'history':
+        AppendToExecutedCommands(command)
+        historyCommand(command.args || [])
+        break;
+      case 'mv':
+        AppendToExecutedCommands(command)
+        mvCommand(command.args || [])
+        break;
+      case 'cp':
+        AppendToExecutedCommands(command)
+        cpCommand(command.args || [])
+        break;
+      case 'echo':
+        AppendToExecutedCommands(command)
+        echoCommand(command.args || [])
+        break;
+      case 'grep':
+        AppendToExecutedCommands(command)
+        grepCommand(command.args || [])
+        break;
+      case 'find':
+        AppendToExecutedCommands(command)
+        findCommand(command.args || [])
+        break;
+      case 'net':
+        AppendToExecutedCommands(command)
+        netCommand(command.args || [])
+        break;
+      case 'top':
+        AppendToExecutedCommands(command)
+        topCommand(command.args || [])
+        break;
+      case 'mkdir':
+        AppendToExecutedCommands(command)
+        mkdirCommand(command.args || [])
+        break;
+      
       default:
         AppendToExecutedCommands(command)
         errorPattern(`'${command.name}' is not recognized as an internal or external command, operable program or batch file.`)
@@ -525,10 +1020,15 @@ const Terminal = () => {
           {commandsHistory?.map((item, index) => {
 
             return (
-              <ProcessColor
+              <>
+                <ProcessColor
                 key={index}
                 text={`${item}`.replaceAll('//', '/')}
               />
+                <div
+                  ref={endRef}
+                />
+              </>
             )
           })}
         </div>
@@ -551,6 +1051,7 @@ const Terminal = () => {
               color: states.Settings.settings.system.systemTextColor
             }}
             onKeyPress={handleKeyPress}
+            onKeyDown={handleTabPress}
             onKeyUp={(e) => {
               if (e.key === 'ArrowUp') {
                 setExecutedCommandsIndex(executedCommands.length - 1)
