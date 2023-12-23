@@ -6,13 +6,15 @@ import { useDebouncedState, useNetwork, useOs } from '@mantine/hooks'
 import { convertSizeToKBMBGB, getLastPathSegment, uuid, verifyIfIsFile } from '@/utils/file'
 import { ApiError } from 'browserfs/dist/node/core/api_error'
 import { RemoveTabByUuid, WindowAddTab } from '@/store/actions'
-import { programProps } from '@/types/programs'
+import { consoleProps, programProps } from '@/types/programs'
 import DefaultWindow from '../containers/DefaultWindow'
 
 const Terminal = ({
   AlaskaWindow,
   tab,
-}:programProps) => {
+  interceptBrowserConsole,
+  vanilla
+}:consoleProps) => {
 
   type commandArgProps = {
     name: string,
@@ -578,6 +580,50 @@ const Terminal = ({
       });
     };
 
+    const rmTreeForce = (path: string) => {
+      const fullPath = `${currentPath}/${path}`.replaceAll('//', '/');
+      fs?.rmdir(fullPath, (err) => {
+        if (err) {
+          if (err.code === 'ENOENT') {
+            // errorPattern(`The system cannot find the path specified.`);
+            return;
+          } else if (err.code === 'ENOTEMPTY') {
+            // Directory not empty, remove its contents first
+            fs?.readdir(fullPath, (err, files) => {
+              if (err) {
+                // errorPattern(`Error reading directory: ${err.message}`);
+                return;
+              }
+    
+              files?.forEach((file) => {
+                const filePath = `${fullPath}/${file}`.replaceAll('//', '/');
+                if (verifyIfIsFile(filePath)) {
+                  // Remove file
+                  fs?.unlink(filePath, (err) => {
+                    if (err) {
+                      // errorPattern(`Error deleting file ${file}: ${err.message}`);
+                    }
+                  });
+                } else {
+                  // Recursively remove subdirectory
+                  rmTree(`${path}/${file}`);
+                }
+              });
+    
+              // After removing contents, attempt to remove the directory again
+              rmTree(path);
+            });
+            return;
+          } else {
+            // errorPattern(`Error deleting directory: ${err.message}`);
+            return;
+          }
+        }
+    
+        successPattern(`Directory deleted successfully`);
+      });
+    }
+
     if (args[0].name && !args[1]?.name) {
       rmDefault(args[0].name)
       return
@@ -587,6 +633,12 @@ const Terminal = ({
       rmTree(args[1].name)
       return
     }
+
+    if(args[0].name === '-rf'){
+      rmTreeForce(args[1].name)
+      return
+    }
+
 
     if((args[0].name as string) === '-h' || (args[0].name as string) === '--help'){
       clearCommand();
@@ -903,13 +955,7 @@ const Terminal = ({
 
   const topCommand = (args: commandArgProps[]) => {
     const topDefault = () => {
-      let count = 0
       states.Windows.windows.forEach((item) => {
-        if(item.tabs.length === 0 && count === 0){
-          warningPattern(`There are no running processes`)
-          count++
-          return
-        }
         item.tabs.forEach((tab) => {
           processCommand(`UUID: ${tab.uuid} -- Name: ${tab.title} -- Status: ${tab.maximized ? 'Maximized' : tab.minimized ? 'Minimized' : 'Normal'}`)
         })
@@ -2002,6 +2048,84 @@ const Terminal = ({
         errorPattern(`'${command.name}' is not recognized as an internal or external command, operable program or batch file.`)
         break;
     }
+  }
+
+  if(interceptBrowserConsole){
+    console.log = (message: string, ...optionalParams: any[]) => {
+      setCommandsHistory([...commandsHistory, message]);
+    }
+  }
+
+  if(vanilla){
+    return(
+      <div
+        className='w-full h-full
+      flex flex-col-reverse overflow-hidden
+      p-1
+      '
+        style={{
+          backgroundColor: states.Settings.settings.system.systemBackgroundColor
+        }}
+      >
+        <div className='w-full h-[calc(100%-32px)]  overflow-auto flex flex-col'>
+          {commandsHistory?.map((item, index) => {
+
+            return (
+              <>
+                <ProcessColor
+                key={index}
+                text={`${item}`.replaceAll('//', '/')}
+              />
+                <div
+                  ref={endRef}
+                />
+              </>
+            )
+          })}
+        </div>
+        <div
+          className='sticky w-full h-8 flex items-center justify-start shrink-0 p-1'
+        >
+          <div className='w-auto h-full pr-1 mt-1 shrink-0'>
+            <CustomText
+              className='!text-xs'
+              text={`C:${currentPath}> `.replaceAll('//', '/')}
+            />
+          </div>
+          <input
+            className='w-full h-8 bg-transparent text-sm outline-none mt-1'
+            type='text'
+            autoFocus
+            onChange={(e) => setInputValue(e.currentTarget.value)}
+            value={`${inputValue}`}
+            style={{
+              color: states.Settings.settings.system.systemTextColor
+            }}
+            onKeyPress={handleKeyPress}
+            onKeyDown={handleTabPress}
+            onKeyUp={(e) => {
+              if (e.key === 'ArrowUp') {
+                setExecutedCommandsIndex(executedCommands.length - 1)
+                if(executedCommandsIndex < 0) return
+                setInputValue(`${executedCommands[executedCommandsIndex].name} ${executedCommands[executedCommandsIndex].args?.map((item) => {
+                  if(!item.value) return item.name
+                  return `${item.name} ${item.value}`
+                })} `)
+              }
+              if (e.key === 'ArrowDown') {
+                setExecutedCommandsIndex(executedCommands.length + 1)
+                if(executedCommandsIndex > executedCommands.length) return
+                setInputValue(`${executedCommands[executedCommandsIndex].name} ${executedCommands[executedCommandsIndex].args?.map((item) => {
+                  if(!item.value) return item.name
+                  return `${item.name} ${item.value}`
+                })} `)
+              }
+              
+            }}
+          />
+        </div>
+      </div>
+    )
   }
 
   return (

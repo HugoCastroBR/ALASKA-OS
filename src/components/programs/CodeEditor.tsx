@@ -13,6 +13,7 @@ import useCommands from '@/hooks/useCommands';
 import useStore from '@/hooks/useStore';
 import { usePython } from 'react-py';
 import useProcess from '@/hooks/useProcess';
+import Terminal from '../system/Terminal';
 const CodeEditor = ({
   tab,
   AlaskaWindow
@@ -219,9 +220,10 @@ const CodeEditor = ({
             setConsoleOpen(!consoleOpen)
           }}
         />
-        <div className='w-full h-full  flex flex-col'>
+        <div className='w-full h-full  flex flex-col sticky flex-grow-0 flex-shrink-0'>
           <Editor
-            height={`${consoleOpen ? '67%' : '100%'}`}
+            height={`${consoleOpen ? '65%' : '100%'}`}
+            className='w-full h-full flex-shrink-0 flex-grow-0'
             language={language}
             theme="vs-light"
             loading={
@@ -253,8 +255,8 @@ const CodeEditor = ({
             onChange={(value) => setContent(value || '')}
           />
           {consoleOpen &&
-            <div className='h-2/6 w-full'>
-              <Console
+            <div className='h-2/6 sticky flex flex-shrink-0 flex-grow-0 overflow-y-auto w-full'>
+              <Terminal
                 tab={tab}
                 AlaskaWindow={AlaskaWindow}
                 key={tab.uuid}

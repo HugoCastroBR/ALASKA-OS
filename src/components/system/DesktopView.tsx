@@ -264,7 +264,30 @@ const DesktopView = () => {
           }
         }
       >
-
+        {/* <CodeEditor
+          tab={{
+            uuid: 'code-editor',
+            title: 'Code Editor',
+            maximized: false,
+            minimized: false,
+            value: '/Desktop'
+          }}
+          AlaskaWindow={{
+            showOnDesktop: true,
+            title: 'Code Editor',
+            icon: '/assets/icons/vscode.png',
+            tabs: [
+              {
+                title: 'Code Editor',
+                uuid: 'code-editor',
+                value: '/Desktop',
+                maximized: false,
+                minimized: false,
+              }
+            ]
+            
+          }}
+        /> */}
         {handleRenderTabs()}
         
         <SimpleGrid cols={{xs: 7, base: 8, sm: 10,md: 12, lg: 15,xl:20 }} 
