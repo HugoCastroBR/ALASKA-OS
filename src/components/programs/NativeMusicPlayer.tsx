@@ -1,5 +1,6 @@
 import { secondsToMinutes } from '@/utils/date'
 import { Slider, Progress } from '@mantine/core'
+import { Dropzone } from '@mantine/dropzone'
 import React, { useEffect, useRef } from 'react'
 import CustomText from '../atoms/CustomText'
 import useFS from '@/hooks/useFS'
@@ -28,7 +29,10 @@ const NativeMusicPlayer = ({
 
   const [musicBase64, setMusicBase64] = React.useState('')
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const blobUrlRef = useRef<string | null>(null);
   const [visualizerEnabled, setVisualizerEnabled] = React.useState(true);
+  const [droppedFile, setDroppedFile] = React.useState<File | null>(null);
+  const [droppedFileName, setDroppedFileName] = React.useState('');
 
   useEffect(() => {
     loadMusic();
@@ -53,6 +57,47 @@ const NativeMusicPlayer = ({
     });
   };
 
+  const handlerPlayDroppedFile = async (file: File) => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current = null;
+    }
+    if (blobUrlRef.current) {
+      URL.revokeObjectURL(blobUrlRef.current);
+      blobUrlRef.current = null;
+    }
+    setIsMusicPlaying(false);
+    setIsPaused(true);
+    setMusicCurrentTime(0);
+    setMusicDuration(0);
+    setAudioElement(null);
+
+    const audioUrl = URL.createObjectURL(file);
+    blobUrlRef.current = audioUrl;
+    const newAudioElement = new Audio(audioUrl);
+
+    newAudioElement.volume = MusicVolume * states.System.globalVolumeMultiplier;
+
+    newAudioElement.addEventListener('loadeddata', () => {
+      setMusicDuration(newAudioElement.duration || 0);
+      setIsMusicPlaying(true);
+      setIsPaused(false);
+      newAudioElement.play();
+    });
+
+    newAudioElement.addEventListener('timeupdate', () => {
+      setMusicCurrentTime(newAudioElement.currentTime || 0);
+    });
+
+    newAudioElement.addEventListener('ended', () => {
+      setIsMusicPlaying(false);
+      setIsPaused(true);
+    });
+
+    setAudioElement(newAudioElement);
+    audioRef.current = newAudioElement;
+  };
+
   const handlerPauseMusic = async () => {
     if (isPaused) {
       audioRef.current?.play();
@@ -69,6 +114,11 @@ const NativeMusicPlayer = ({
   const handlerPlayMusic = async () => {
     if (isMusicPlaying) {
       handlerPauseMusic();
+      return;
+    }
+
+    if (droppedFile) {
+      handlerPlayDroppedFile(droppedFile);
       return;
     }
 
@@ -112,71 +162,11 @@ const NativeMusicPlayer = ({
           fillColor: 'transparent',
         }))
       } else {
-        // maybe i should do something here too
-        // but i'm tired
-        // tired of everything
-        // tired of life
-        // I should just end it all
-        // but I can't
-        // I'm a coward
-        // I'm a failure
-        // I'm a loser
-        // I can't do anything right
-        // I'm a mistake
-        // I'm a kernel panic
-        // I'm a blue screen of death
-        // I'm a segfault
-        // I'm a null pointer exception
-        // I'm a syntax error
-        // I'm a runtime error
-        // I'm a memory leak
-        // I'm a buffer overflow
-        // I'm a stack overflow
-        // I'm a stack underflow
-        // I'm a floating point exception
-        // I'm a division by zero
-        // I'm a bus error
-        // I'm a core dump
-        // I'm a dead lock
-        // I should kill myself
-        // I should kill myself
-        // I should kill myself
-        // I will kill myself
-        // but not today
-        // maybe tomorrow
-        // when i have the courage
-        // when i have the strength
-        // when i have the will
-        // when i have the determination
-        // first i need to finish this project
-        // and then i'll plan how to do it
-        // I'm sorry
-        // then i'll kill myself
-        // I'm sorry
-        // Sorry Mom and Dad
-        // I wish I could be a better son
-        // I wish I could be a better brother
-        // I wish I could be a better friend
-        // I wish I could be a better person
-        // I'm cant!
+        // canvas element not ready yet; visualizer will initialize once audio plays
       }
   
     } catch (error) {
-      // maybe i should do something here
-      // but i don't know what
-      // so i'll just leave it like this
-      // and hope for the best
-      // please don't kill me
-      // I feel like I'm being watched
-      // I'm scared
-      // help
-      // please
-      // I miss she
-      // I miss she so much
-      // I miss she so much
-      // She is my everything
-      // But she is gone
-      // rest in peace my love!
+      // visualizer failed to initialize; audio will still play without visualization
     }
     return (
 
@@ -208,7 +198,7 @@ const NativeMusicPlayer = ({
     <DefaultWindow
       currentWindow={AlaskaWindow}
       currentTab={tab}
-      title={tab?.ficTitle || getLastPathSegment(tab?.value || '') || 'Music Player'}
+      title={droppedFileName || tab?.ficTitle || getLastPathSegment(tab?.value || '') || 'Music Player'}
       uuid={tab?.uuid || ''}
       onClose={() => {
         setIsPaused(true);
@@ -220,11 +210,31 @@ const NativeMusicPlayer = ({
           audioRef.current = null;
         }
 
+        if (blobUrlRef.current) {
+          URL.revokeObjectURL(blobUrlRef.current);
+          blobUrlRef.current = null;
+        }
+
         setAudioElement(null);
       }}
       onMinimize={() => { }}
       className='w-2/6 h-2/5 '
     >
+      <Dropzone
+        onDrop={(files) => {
+          if (files.length > 0) {
+            const file = files[0];
+            const safeName = file.name.replace(/[<>"'&]/g, '').slice(0, 100);
+            setDroppedFile(file);
+            setDroppedFileName(safeName);
+            handlerPlayDroppedFile(file);
+          }
+        }}
+        accept={['audio/*']}
+        multiple={false}
+        styles={{ root: { border: 'none', padding: 0, height: '100%', width: '100%' } }}
+        className='h-full w-full'
+      >
       <div className='h-full w-full flex flex-col justify-center items-center'
         style={{
           backgroundColor: states.Settings.settings.system.systemBackgroundColor
@@ -233,13 +243,23 @@ const NativeMusicPlayer = ({
         {audioElement ?
           MusicVisualizer()
           :
-          <span className='i-mdi-music text-6xl mb-8'
-            style={{
-              color: states.Settings.settings.system.systemTextColor
-            }}
-          />
+          <div className='flex flex-col items-center justify-center gap-2'>
+            <span className='i-mdi-music text-6xl mb-2'
+              style={{
+                color: states.Settings.settings.system.systemTextColor
+              }}
+            />
+            <CustomText
+              text='Drop an audio file here'
+              className='text-xs opacity-50'
+              style={{
+                color: states.Settings.settings.system.systemTextColor
+              }}
+            />
+          </div>
         }
       </div>
+      </Dropzone>
       <div
         className={`
           absolute bottom-0 w-full h-16 
